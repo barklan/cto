@@ -1,0 +1,51 @@
+<template>
+    <div>
+        <vue-json-pretty :path="'res'" :data="jsonData"></vue-json-pretty>
+    </div>
+</template>
+
+<script lang="ts">
+import VueJsonPretty from "vue-json-pretty";
+import "vue-json-pretty/lib/styles.css";
+
+export default {
+    components: {
+        VueJsonPretty,
+    },
+    data() {
+        return {
+            jsonData: { msg: "Fetching the best results for you...  (not really, just throttling your stupid request)" },
+        };
+    },
+    beforeMount() {
+        // setTimeout(() => {
+        fetch(
+            import.meta.env.VITE_PROTOCOL +
+            "://" +
+            import.meta.env.VITE_HOSTNAME +
+            "/api/log/exact?key=" +
+            this.$route.query.key
+        )
+            .then((response) => {
+                if (response.status == 404) {
+                    return { msg: "No logs found for this query." };
+                } else if (response.status != 200) {
+                    return { msg: "Failed to fetch data from server. Please try again later." };
+                }
+                return response.json()
+            })
+            .then((data) => {
+                console.log(data);
+                this.jsonData = data;
+            });
+        // }, 600)
+    },
+};
+</script>
+
+<style>
+.vjs-tree__node.is-highlight,
+.vjs-tree__node:hover {
+  background-color: #262626 !important;
+}
+</style>

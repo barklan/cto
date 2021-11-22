@@ -1,0 +1,182 @@
+[
+  {
+    "container_id": "843161eca9ad3c5b945a291e766aa1fc002bf9e0a6733b821a5d7645e85a4d3d",
+    "container_name": "/stag_celeryworker.1.idrw4y432vdwa08f1ekr5fsfl",
+    "fluentd_hostname": "stag.nftgallerydev.online",
+    "fluentd_time": "2021-10-28 09:44:49 +0000",
+    "hostname": "c6162f5404bb",
+    "log": "{\"text\": \"promo_code_created is none ! item_id: 51ff3e3e-b585-4cd3-ac97-764cf97cc928\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:16:09.900529\", \"seconds\": 969.900529}, \"exception\": null, \"extra\": {\"payload\": null, \"user\": null, \"request_id\": null, \"method\": null}, \"file\": {\"name\": \"tasks.py\", \"path\": \"/app/app/items/tasks.py\"}, \"function\": \"end_promo_items\", \"level\": {\"icon\": \"\\u274c\", \"name\": \"ERROR\", \"no\": 40}, \"line\": 206, \"message\": \"promo_code_created is none ! item_id: 51ff3e3e-b585-4cd3-ac97-764cf97cc928\", \"module\": \"tasks\", \"name\": \"app.items.tasks\", \"process\": {\"id\": 15, \"name\": \"ForkPoolWorker-1\"}, \"thread\": {\"id\": 140305561651008, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2021-10-28 09:44:49.318614+00:00\", \"timestamp\": 1635414289.318614}}}",
+    "record": {
+      "elapsed": {
+        "repr": "0:16:09.900529",
+        "seconds": 969.900529
+      },
+      "exception": null,
+      "extra": {
+        "method": null,
+        "payload": null,
+        "request_id": null,
+        "user": null
+      },
+      "file": {
+        "name": "tasks.py",
+        "path": "/app/app/items/tasks.py"
+      },
+      "function": "end_promo_items",
+      "level": {
+        "icon": "❌",
+        "name": "ERROR",
+        "no": 40
+      },
+      "line": 206,
+      "message": "promo_code_created is none ! item_id: 51ff3e3e-b585-4cd3-ac97-764cf97cc928",
+      "module": "tasks",
+      "name": "app.items.tasks",
+      "process": {
+        "id": 15,
+        "name": "ForkPoolWorker-1"
+      },
+      "thread": {
+        "id": 140305561651008,
+        "name": "MainThread"
+      },
+      "time": {
+        "repr": "2021-10-28 09:44:49.318614+00:00",
+        "timestamp": 1635414289.318614
+      }
+    },
+    "service_name": "celerybeat-logger",
+    "source": "stdout",
+    "stack_name": "efk",
+    "tag": "docker.efk.celerybeat-logger",
+    "text": "promo_code_created is none ! item_id: 51ff3e3e-b585-4cd3-ac97-764cf97cc928\n"
+  },
+  {
+    "container_id": "05bf47b16d7752d811bbdcf1843baaeb8f825b838afffd9addcc863b61fa2c1c",
+    "container_name": "/stag_celerybeat.1.2zsq3vhw8fpqy6shk3uexbg3h",
+    "fluentd_hostname": "stag.nftgallerydev.online",
+    "fluentd_time": "2021-10-28 09:45:49 +0000",
+    "hostname": "c6162f5404bb",
+    "log": "[2021-10-28 09:45:49,323: INFO/MainProcess] Scheduler: Sending due task items_unfreeze (app.items.tasks.items_unfreeze)",
+    "log_json": "[2021-10-28 09:45:49,323: INFO/MainProcess] Scheduler: Sending due task items_unfreeze (app.items.tasks.items_unfreeze)",
+    "service_name": "celerybeat-logger",
+    "source": "stderr",
+    "stack_name": "efk",
+    "tag": "docker.efk.celerybeat-logger"
+  },
+  {
+    "container_id": "6bfc553e8d51b7fbaba8b5899de3d0156b47e6f8f25d12d8fee903500c73aa7b",
+    "container_name": "/stag_backend.1.thgmzxuabrunsot9x2date775",
+    "fluentd_hostname": "stag.nftgallerydev.online",
+    "fluentd_time": "2021-10-28 09:46:20 +0000",
+    "hostname": "c6162f5404bb",
+    "log": "{\"text\": \"10.0.1.116:47190 - \\\"GET /api/v1/orders/sdek_cities HTTP/1.1\\\" 200\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:17:55.031819\", \"seconds\": 1075.031819}, \"exception\": null, \"extra\": {\"payload\": null, \"user\": null, \"request_id\": \"app\"}, \"file\": {\"name\": \"logging.py\", \"path\": \"/usr/local/lib/python3.8/site-packages/sentry_sdk/integrations/logging.py\"}, \"function\": \"sentry_patched_callhandlers\", \"level\": {\"icon\": \"\\u2139\\ufe0f\", \"name\": \"INFO\", \"no\": 20}, \"line\": 86, \"message\": \"10.0.1.116:47190 - \\\"GET /api/v1/orders/sdek_cities HTTP/1.1\\\" 200\", \"module\": \"logging\", \"name\": \"sentry_sdk.integrations.logging\", \"process\": {\"id\": 15, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 139940975335232, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2021-10-28 09:46:20.598280+00:00\", \"timestamp\": 1635414380.59828}}}",
+    "record": {
+      "elapsed": {
+        "repr": "0:17:55.031819",
+        "seconds": 1075.031819
+      },
+      "exception": null,
+      "extra": {
+        "payload": null,
+        "request_id": "app",
+        "user": null
+      },
+      "file": {
+        "name": "logging.py",
+        "path": "/usr/local/lib/python3.8/site-packages/sentry_sdk/integrations/logging.py"
+      },
+      "function": "sentry_patched_callhandlers",
+      "level": {
+        "icon": "ℹ️",
+        "name": "INFO",
+        "no": 20
+      },
+      "line": 86,
+      "message": "10.0.1.116:47190 - \"GET /api/v1/orders/sdek_cities HTTP/1.1\" 200",
+      "module": "logging",
+      "name": "sentry_sdk.integrations.logging",
+      "process": {
+        "id": 15,
+        "name": "MainProcess"
+      },
+      "thread": {
+        "id": 139940975335232,
+        "name": "MainThread"
+      },
+      "time": {
+        "repr": "2021-10-28 09:46:20.598280+00:00",
+        "timestamp": 1635414380.59828
+      }
+    },
+    "service_name": "backend-logger",
+    "source": "stdout",
+    "stack_name": "efk",
+    "tag": "docker.efk.backend-logger",
+    "text": "10.0.1.116:47190 - \"GET /api/v1/orders/sdek_cities HTTP/1.1\" 200\n"
+  },
+  {
+    "container_id": "843161eca9ad3c5b945a291e766aa1fc002bf9e0a6733b821a5d7645e85a4d3d",
+    "container_name": "/stag_celeryworker.1.idrw4y432vdwa08f1ekr5fsfl",
+    "fluentd_hostname": "stag.nftgallerydev.online",
+    "fluentd_time": "2021-10-28 09:46:49 +0000",
+    "hostname": "c6162f5404bb",
+    "log": "[2021-10-28 09:46:49,387: INFO/MainProcess] Task app.order.tasks.sdek_create_orders_task[91723b52-c92e-4c0b-8e72-9a392d4fd5ed] received",
+    "log_json": "[2021-10-28 09:46:49,387: INFO/MainProcess] Task app.order.tasks.sdek_create_orders_task[91723b52-c92e-4c0b-8e72-9a392d4fd5ed] received",
+    "service_name": "celerybeat-logger",
+    "source": "stderr",
+    "stack_name": "efk",
+    "tag": "docker.efk.celerybeat-logger"
+  },
+  {
+    "container_id": "14077b036b064f49c50c2f64c59f39d5b4a92b014e1bd7d43aa6ad68a54070de",
+    "container_name": "/stag_backend.2.es116uowhrr96j5mw1pwlg4vs",
+    "fluentd_hostname": "stag.nftgallerydev.online",
+    "fluentd_time": "2021-10-28 09:47:26 +0000",
+    "hostname": "c6162f5404bb",
+    "log": "{\"text\": \"10.0.1.116:54490 - \\\"GET /api/v1/items/on-sale HTTP/1.1\\\" 200\\n\", \"record\": {\"elapsed\": {\"repr\": \"0:18:53.901324\", \"seconds\": 1133.901324}, \"exception\": null, \"extra\": {\"payload\": null, \"user\": null, \"request_id\": \"app\"}, \"file\": {\"name\": \"logging.py\", \"path\": \"/usr/local/lib/python3.8/site-packages/sentry_sdk/integrations/logging.py\"}, \"function\": \"sentry_patched_callhandlers\", \"level\": {\"icon\": \"\\u2139\\ufe0f\", \"name\": \"INFO\", \"no\": 20}, \"line\": 86, \"message\": \"10.0.1.116:54490 - \\\"GET /api/v1/items/on-sale HTTP/1.1\\\" 200\", \"module\": \"logging\", \"name\": \"sentry_sdk.integrations.logging\", \"process\": {\"id\": 16, \"name\": \"MainProcess\"}, \"thread\": {\"id\": 140168057530176, \"name\": \"MainThread\"}, \"time\": {\"repr\": \"2021-10-28 09:47:26.583224+00:00\", \"timestamp\": 1635414446.583224}}}",
+    "record": {
+      "elapsed": {
+        "repr": "0:18:53.901324",
+        "seconds": 1133.901324
+      },
+      "exception": null,
+      "extra": {
+        "payload": null,
+        "request_id": "app",
+        "user": null
+      },
+      "file": {
+        "name": "logging.py",
+        "path": "/usr/local/lib/python3.8/site-packages/sentry_sdk/integrations/logging.py"
+      },
+      "function": "sentry_patched_callhandlers",
+      "level": {
+        "icon": "ℹ️",
+        "name": "INFO",
+        "no": 20
+      },
+      "line": 86,
+      "message": "10.0.1.116:54490 - \"GET /api/v1/items/on-sale HTTP/1.1\" 200",
+      "module": "logging",
+      "name": "sentry_sdk.integrations.logging",
+      "process": {
+        "id": 16,
+        "name": "MainProcess"
+      },
+      "thread": {
+        "id": 140168057530176,
+        "name": "MainThread"
+      },
+      "time": {
+        "repr": "2021-10-28 09:47:26.583224+00:00",
+        "timestamp": 1635414446.583224
+      }
+    },
+    "service_name": "backend-logger",
+    "source": "stdout",
+    "stack_name": "efk",
+    "tag": "docker.efk.backend-logger",
+    "text": "10.0.1.116:54490 - \"GET /api/v1/items/on-sale HTTP/1.1\" 200\n"
+  }
+]

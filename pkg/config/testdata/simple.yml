@@ -1,0 +1,21 @@
+tg:
+  bot_token: 'someBotToken'
+  main_chat_id: '-342413234'
+  admin_nickname: 'admin'
+
+data_path: '/some/path/to/data'
+
+checks:
+  gitlab:
+    project_id: 342413234
+    api_token: 'someToken'
+    failed_pipelines_main: true
+    # commented is part of the test - unset bool should be false
+    # mr_approvals: true
+  traefik:
+    username: 'traefik'
+    password: 'somePassword'
+    unusual_activity: true
+  simple_url_checks:
+    - 'https://google.com'
+    - 'https://amazon.com'

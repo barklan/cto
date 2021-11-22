@@ -1,0 +1,66 @@
+services:
+  - docker:20.10.8-dind
+
+image: barklan/docker_and_compose:1.2.0
+
+variables:
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+  DOCKER_DRIVER: overlay2
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+  GIT_DEPTH: 0
+
+workflow:
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+stages:
+  - test
+  - build
+
+golangci:
+  stage: test
+  needs: []
+  image: golangci/golangci-lint
+  script:
+    - golangci-lint run -v --fast
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "main"'
+
+tests:
+  stage: test
+  needs: []
+  image: golang:1.17.2
+  script:
+    - go test ./...
+    - go vet ./...
+    - go test -race ./...
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+  rules:
+    - if: '$CI_COMMIT_BRANCH != "main"'
+
+
+# build-image:
+#   stage: build
+#   before_script:
+#     - docker login -u barklan -p ${DOCKERHUB_TOKEN}
+#   script:
+#     # - current=$(curl -s -S "https://registry.hub.docker.com/v2/repositories/barklan/gitlab-workflow-bot/tags/" | jq '."results"[]["name"]' | sed -n 1p | tr -d '"')
+#     # - IFS=. read major minor patch <<< "${current}"
+#     # - ((minor++)) || true
+#     # - final="${major}.${minor}.0"
+#     # - docker build -t "barklan/gitlab-workflow-bot:${final}" .
+#     # - docker image push "barklan/gitlab-workflow-bot:${final}"
+#     - docker build -t "barklan/gitlab-workflow-bot:rolling" .
+#     - docker image push "barklan/gitlab-workflow-bot:rolling"
+#     - >
+#       IP_ADDRESS=${IP_ADDRESS}
+#       ACCESS_KEY=${ACCESS_KEY}
+#       bash ./scripts/deploy.sh
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH == "main"'
