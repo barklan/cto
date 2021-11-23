@@ -23,7 +23,7 @@ function _dc {
 # ----------------------------------------------------------------------------
 # * General purpose local functions.
 
-function run {
+function up {
     export CTO_DATA_PATH=/home/barklan/dev/gitlab_workflow_bot/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
@@ -52,9 +52,8 @@ function push {
     docker image push "barklan/gitlab-workflow-bot:$1"
 }
 
-# DO NOT USE!
-function nft {
-    bash  scripts/direct.sh
+function direct {
+    bash scripts/direct.sh
 }
 
 
