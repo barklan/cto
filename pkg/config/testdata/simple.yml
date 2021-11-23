@@ -1,7 +1,6 @@
 tg:
   bot_token: 'someBotToken'
   main_chat_id: '-342413234'
-  admin_nickname: 'admin'
 
 data_path: '/some/path/to/data'
 

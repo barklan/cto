@@ -15,8 +15,7 @@ type ProjectConfig struct {
 	ProjectID string   `yaml:"project_id"`
 	Envs      []string `yaml:"envs"`
 	TG        struct {
-		ChatID        int64  `yaml:"chat_id"`
-		AdminNickname string `yaml:"admin_nickname"`
+		ChatID int64 `yaml:"chat_id"`
 	} `yaml:"tg"`
 	Checks struct {
 		GitLab struct {
@@ -85,7 +84,7 @@ func ReadAllProjectsConfigs() map[string]ProjectConfig {
 			if filename != "internal.yml" && filename != "local.yml" && isLocal {
 				projectConfig, err := ReadProjectConfig(config_path + "/" + filename)
 				if err != nil {
-					log.Println("failed to read project config:", err)
+					log.Printf("failed to read project config %s, %v:", filename, err)
 				}
 
 				configs[projectConfig.ProjectID] = projectConfig
@@ -94,7 +93,7 @@ func ReadAllProjectsConfigs() map[string]ProjectConfig {
 			if filename != "internal.yml" && filename != "local.yml" && !isLocal {
 				projectConfig, err := ReadProjectConfig(config_path + "/" + filename)
 				if err != nil {
-					log.Println("failed to read project config:", err)
+					log.Printf("failed to read project config %s, %v:", filename, err)
 				}
 
 				configs[projectConfig.ProjectID] = projectConfig

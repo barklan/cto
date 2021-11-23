@@ -100,6 +100,8 @@ Your user ID is %s.
 	})
 
 	registerOnTextHanler(b, data)
+
+	registerProjectManagementHandlers(b, data)
 }
 
 func getRequest(url string) string {
