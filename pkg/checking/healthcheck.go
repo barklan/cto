@@ -12,8 +12,9 @@ import (
 )
 
 func CheckByExternalRequest(b *tb.Bot, data *storage.Data, args ...interface{}) {
-	url := args[0].(string)
-	try := args[1].(int)
+	projectName := args[0].(string)
+	url := args[1].(string)
+	try := args[2].(int)
 	badgerKey := fmt.Sprintf("isHalted-%s", url)
 	isHaltedStr := data.GetStr(badgerKey)
 
@@ -37,7 +38,7 @@ func CheckByExternalRequest(b *tb.Bot, data *storage.Data, args ...interface{}) 
 			return
 		}
 		if isHalted == false {
-			data.CSend(fmt.Sprintf("Cannot reach:\n%s.", url))
+			data.PSend(projectName, fmt.Sprintf("Cannot reach:\n%s.", url))
 			data.SetObj(badgerKey, "true", 45*time.Minute)
 		}
 		return
@@ -51,13 +52,13 @@ func CheckByExternalRequest(b *tb.Bot, data *storage.Data, args ...interface{}) 
 		}
 		if isHalted == false {
 			msg := fmt.Sprintf("Code %d:\n%s", resp.StatusCode, url)
-			data.CSend(msg)
+			data.PSend(projectName, msg)
 			data.SetObj(badgerKey, "true", 45*time.Minute)
 		}
 		return
 	}
 	if isHalted == true {
 		data.SetObj(badgerKey, "false", 5*time.Minute)
-		data.CSend(fmt.Sprintf("%s is up again!", url))
+		data.PSend(projectName, fmt.Sprintf("%s is up again!", url))
 	}
 }

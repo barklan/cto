@@ -17,7 +17,7 @@ func LaunchChecks(b *tb.Bot, data *storage.Data, projectName string) {
 		title := fmt.Sprintf("Healthcheck: %s", url)
 		interval := 1 * time.Minute
 		GoCheck(b, data, &wg, title, interval,
-			CheckByExternalRequest, url, 0)
+			CheckByExternalRequest, projectName, url, 0)
 	}
 
 	// if data.Config.P[projectName].Checks.GitLab.FailedPipelinesMain == true {
