@@ -1,10 +1,5 @@
 package gitlab
 
-import (
-	"encoding/json"
-	"log"
-)
-
 type Project struct {
 	Links struct {
 		Events        string `json:"events"`
@@ -123,22 +118,12 @@ type Project struct {
 	WikiEnabled                     bool          `json:"wiki_enabled"`
 }
 
-func GetMainProjectName() (string, error) {
-	project := Project{}
-	dump, _ := request("")
-	err := json.Unmarshal(dump, &project)
-	if err != nil {
-		return "", err
-	}
-	return project.Name, nil
-}
-
-func GetProjectReadme() string {
-	project := Project{}
-	dump, _ := request("")
-	err := json.Unmarshal(dump, &project)
-	if err != nil {
-		log.Println(err)
-	}
-	return project.ReadmeURL
-}
+// func GetMainProjectName() (string, error) {
+// 	project := Project{}
+// 	dump, _ := request("")
+// 	err := json.Unmarshal(dump, &project)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return project.Name, nil
+// }

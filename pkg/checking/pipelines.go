@@ -10,10 +10,13 @@ import (
 )
 
 func CheckFailedPipelines(b *tb.Bot, data *storage.Data, args ...interface{}) {
-	branch := args[0].(string)
+	projectName := args[0].(string)
+	branch := args[1].(string)
 
-	failedPipelines, err1 := gitlab.GetPipelines(branch, "failed")
-	succeededPipelines, err2 := gitlab.GetPipelines(branch, "success")
+	gitlabProjectId := fmt.Sprint(data.Config.P[projectName].Checks.GitLab.ProjectID)
+	gitlabToken := data.Config.P[projectName].Checks.GitLab.APIToken
+	failedPipelines, err1 := gitlab.GetPipelines(gitlabProjectId, gitlabToken, branch, "failed")
+	succeededPipelines, err2 := gitlab.GetPipelines(gitlabProjectId, gitlabToken, branch, "success")
 	if err1 != nil || err2 != nil {
 		log.Println("failed to get gitlab pipelines")
 		return
@@ -34,6 +37,6 @@ func CheckFailedPipelines(b *tb.Bot, data *storage.Data, args ...interface{}) {
 	}
 
 	if latestFailID > latestSuccessID {
-		data.CSend(fmt.Sprintf("@barklan. Pipeline %s failed on %s.", fmt.Sprint(latestFailID), branch))
+		data.PSend(projectName, fmt.Sprintf("Pipeline %s failed on %s.", fmt.Sprint(latestFailID), branch))
 	}
 }

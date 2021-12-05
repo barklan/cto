@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/barklan/cto/pkg/gitlab"
 	"github.com/barklan/cto/pkg/storage"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -55,17 +54,6 @@ Your user ID is %s.
 		data.SetObj("muted", "false", 5*time.Minute)
 		b.Delete(m)
 		data.CSend("Unmuted.")
-	})
-
-	b.Handle("/help", func(m *tb.Message) {
-		menu := &tb.ReplyMarkup{ResizeReplyKeyboard: true}
-		readmeBtn := menu.URL("Project Readme", gitlab.GetProjectReadme())
-		menu.Inline(
-			menu.Row(readmeBtn),
-		)
-		b.Delete(m)
-		data.CSend(
-			getHelpString(data), menu, tb.ModeMarkdown)
 	})
 
 	b.Handle(tb.OnQuery, func(q *tb.Query) {

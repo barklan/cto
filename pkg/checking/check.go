@@ -20,13 +20,13 @@ func LaunchChecks(b *tb.Bot, data *storage.Data, projectName string) {
 			CheckByExternalRequest, projectName, url, 0)
 	}
 
-	// if data.Config.P[projectName].Checks.GitLab.FailedPipelinesMain == true {
-	// 	title := "Main pipelines healthcheck"
-	// 	interval := 5 * time.Minute
-	// 	branch := "main"
-	// 	GoCheck(b, data, &wg, title, interval,
-	// 		CheckFailedPipelines, branch)
-	// }
+	if data.Config.P[projectName].Checks.GitLab.FailedPipelinesMain == true {
+		title := "Main pipelines healthcheck"
+		interval := 5 * time.Minute
+		branch := "main"
+		GoCheck(b, data, &wg, title, interval,
+			CheckFailedPipelines, projectName, branch)
+	}
 
 	// if data.Config.P[projectName].Checks.GitLab.MRApprovals == true {
 	// 	title := "Check approved mrs (slow)"
@@ -38,16 +38,6 @@ func LaunchChecks(b *tb.Bot, data *storage.Data, projectName string) {
 	// 	title = "Check approved mrs (fast)"
 	// 	GoCheck(b, data, &wg, title, interval, CheckEachMrInApprovedMREventsFast)
 	// }
-
-	// TODO do we really need this handle? Aren't "less is more"?
-	// b.Handle("/checks", func(m *tb.Message) {
-	// 	var str string
-	// 	for _, check := range checklist {
-	// 		str = str + fmt.Sprintf("\n - %s", check)
-	// 	}
-	// 	msg := fmt.Sprintf("Registered checks: %v.", str)
-	// 	data.CSend(msg)
-	// })
 
 	wg.Wait()
 	msg := "All registered checks exited."

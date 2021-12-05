@@ -1,11 +1,5 @@
 package gitlab
 
-import (
-	"encoding/json"
-	"fmt"
-	"log"
-)
-
 type Runner struct {
 	Active      bool   `json:"active"`
 	Description string `json:"description"`
@@ -18,14 +12,14 @@ type Runner struct {
 	Status      string `json:"status"`
 }
 
-func GetActiveGroupRunners() ([]Runner, error) {
-	runners := make([]Runner, 1)
-	dump, _ := request(fmt.Sprintf("runners?status=active&type=group_type"))
-	fmt.Println(string(dump))
-	err := json.Unmarshal(dump, &runners)
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-	return runners, nil
-}
+// func GetActiveGroupRunners() ([]Runner, error) {
+// 	runners := make([]Runner, 1)
+// 	dump, _ := request(fmt.Sprintf("runners?status=active&type=group_type"))
+// 	fmt.Println(string(dump))
+// 	err := json.Unmarshal(dump, &runners)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return nil, err
+// 	}
+// 	return runners, nil
+// }

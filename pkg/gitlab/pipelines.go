@@ -18,9 +18,13 @@ type Pipeline struct {
 	WebURL    string `json:"web_url"`
 }
 
-func GetPipelines(branch, status string) ([]Pipeline, error) {
+func GetPipelines(gitlabProjectId, gitlabToken, branch, status string) ([]Pipeline, error) {
 	pipelines := make([]Pipeline, 1)
-	dump, _ := request(fmt.Sprintf("pipelines?ref=%s&status=%s", branch, status))
+	dump, _ := request(
+		gitlabProjectId,
+		gitlabToken,
+		fmt.Sprintf("pipelines?ref=%s&status=%s", branch, status),
+	)
 	err := json.Unmarshal(dump, &pipelines)
 	if err != nil {
 		return nil, err
