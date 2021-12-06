@@ -3,7 +3,7 @@ package storage
 import "testing"
 
 func TestSetGet(t *testing.T) {
-	db := OpenDB("/home/barklan/dev/gitlab_workflow_bot/.cache/badger_test", "/main")
+	db := OpenDB("/tmp/badger_test", "/main")
 	defer db.Close()
 	key := "foo"
 	value := "bar"
