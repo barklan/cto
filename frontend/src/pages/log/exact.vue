@@ -4,7 +4,7 @@
     </div>
 </template>
 
-<script lang="ts">
+<script lang="js">
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
 
@@ -14,7 +14,7 @@ export default {
     },
     data() {
         return {
-            jsonData: { msg: "Fetching the best results for you...  (not really, just throttling your stupid request)" },
+            jsonData: { msg: "Throttling request... " },
         };
     },
     beforeMount() {
