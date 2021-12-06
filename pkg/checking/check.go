@@ -11,6 +11,7 @@ import (
 
 func LaunchChecks(b *tb.Bot, data *storage.Data, projectName string) {
 	var wg sync.WaitGroup
+	wg.Add(2)
 
 	for _, url := range data.Config.P[projectName].Checks.SimpleURLChecks {
 		time.Sleep(2 * time.Second) // don't want them to be started at the same time

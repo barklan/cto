@@ -30,10 +30,9 @@ func GoCheck(
 	checkerFunc func(*tb.Bot, *storage.Data, ...interface{}),
 	args ...interface{},
 ) {
-	wg.Add(1)
 	go func() {
 		defer func() {
-			data.Send(data.Chat, fmt.Sprintf("%s crashed. @%s.", checkTitle, data.SysAdmin))
+			data.CSend(fmt.Sprintf("%s crashed. @%s.", checkTitle, data.SysAdmin))
 			wg.Done()
 		}()
 
