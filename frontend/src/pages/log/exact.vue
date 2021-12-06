@@ -18,7 +18,6 @@ export default {
         };
     },
     beforeMount() {
-        // setTimeout(() => {
         fetch(
             import.meta.env.VITE_PROTOCOL +
             "://" +
@@ -38,7 +37,6 @@ export default {
                 console.log(data);
                 this.jsonData = data;
             });
-        // }, 600)
     },
 };
 </script>

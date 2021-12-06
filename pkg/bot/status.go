@@ -8,12 +8,22 @@ import (
 	"strings"
 	"time"
 
+	"github.com/barklan/cto/pkg/gitlab"
 	"github.com/barklan/cto/pkg/logserver"
 	"github.com/barklan/cto/pkg/storage"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-// TODO fix this for v3
+func gitlabRunnersInfo(data *storage.Data, projectName string) string {
+	gitlabProjectId := fmt.Sprint(data.Config.P[projectName].Checks.GitLab.ProjectID)
+	gitlabToken := data.Config.P[projectName].Checks.GitLab.APIToken
+	runners, err := gitlab.GetActiveGroupRunners(gitlabProjectId, gitlabToken)
+	if err != nil {
+		return "Failed to get GitLab runners info."
+	}
+	return fmt.Sprintf("%d active GitLab runners.", len(runners))
+}
+
 func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 	b.Handle("/status", func(m *tb.Message) {
 		projectName, ok := VerifySender(data, m)
@@ -83,6 +93,8 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 		msg += "\n"
 
 		msg += fmt.Sprintf("Logs are retained for %d hours. ", data.Config.Internal.Log.RetentionHours)
+
+		msg += gitlabRunnersInfo(data, projectName)
 
 		// TODO delete this later
 		msg += fmt.Sprintf("%s.", projectName)

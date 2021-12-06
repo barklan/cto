@@ -2,9 +2,7 @@ package bot
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
 	"strconv"
 	"time"
 
@@ -92,20 +90,6 @@ Your user ID is %s.
 	registerProjectManagementHandlers(b, data)
 }
 
-func getRequest(url string) string {
-	req, _ := http.NewRequest(http.MethodGet, url, nil)
-	// req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("GITLAB_API_TOKEN")))
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return ""
-	}
-	defer resp.Body.Close()
-
-	body, _ := ioutil.ReadAll(resp.Body)
-
-	return string(body)
-}
-
 // VerifySender returns projectName and if chat is registered
 func VerifySender(data *storage.Data, m *tb.Message) (string, bool) {
 	if v, ok := data.Config.ChatIDToProjectName[m.Chat.ID]; ok {
@@ -114,15 +98,6 @@ func VerifySender(data *storage.Data, m *tb.Message) (string, bool) {
 	data.JustSend(m.Chat, "I am not registered for this chat.")
 	return "", false
 }
-
-// TODO deprecate
-// func OnlyMainChat(data *storage.Data, m *tb.Message) error {
-// if m.Chat.ID != data.Chat.ID {
-// data.Send(m.Chat, "I am not registered for this chat.")
-// return fmt.Errorf("Wrong chat")
-// }
-// return nil
-// }
 
 // Queries should only be allowed for responsible users.
 func AdminQuery(data *storage.Data, q *tb.Query) error {

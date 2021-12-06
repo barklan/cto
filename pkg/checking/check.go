@@ -29,17 +29,6 @@ func LaunchChecks(b *tb.Bot, data *storage.Data, projectName string) {
 			CheckFailedPipelines, projectName, branch)
 	}
 
-	// if data.Config.P[projectName].Checks.GitLab.MRApprovals == true {
-	// 	title := "Check approved mrs (slow)"
-	// 	interval := 8 * time.Hour
-	// 	GoCheck(b, data, &wg, title, interval, CheckEachMrInApprovedMREventsSlow)
-
-	// 	data.SetObj("fastMRChecksMuted", "false", -1)
-	// 	interval = 45 * time.Minute
-	// 	title = "Check approved mrs (fast)"
-	// 	GoCheck(b, data, &wg, title, interval, CheckEachMrInApprovedMREventsFast)
-	// }
-
 	wg.Wait()
 	msg := "All registered checks exited."
 	data.CSend(msg)

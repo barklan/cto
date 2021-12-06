@@ -11,7 +11,13 @@ import (
 )
 
 // Blocking function.
-func Tick(b *tb.Bot, data *storage.Data, duration time.Duration, checkerFunc func(*tb.Bot, *storage.Data, ...interface{}), args ...interface{}) {
+func Tick(
+	b *tb.Bot,
+	data *storage.Data,
+	duration time.Duration,
+	checkerFunc func(*tb.Bot, *storage.Data, ...interface{}),
+	args ...interface{},
+) {
 	ticker := time.NewTicker(duration)
 	log.Print("Ticker created.")
 

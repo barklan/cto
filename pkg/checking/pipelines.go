@@ -37,6 +37,13 @@ func CheckFailedPipelines(b *tb.Bot, data *storage.Data, args ...interface{}) {
 	}
 
 	if latestFailID > latestSuccessID {
-		data.PSend(projectName, fmt.Sprintf("Pipeline %s failed on %s.", fmt.Sprint(latestFailID), branch))
+		data.PSend(
+			projectName,
+			fmt.Sprintf(
+				"Pipeline %s failed on %s.",
+				fmt.Sprint(latestFailID),
+				branch,
+			),
+		)
 	}
 }
