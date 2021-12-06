@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@antfu/eslint-config': ^0.9.0
   '@iconify-json/carbon': ^1.0.7
+  '@iconify-json/ic': ^1.0.7
   '@types/node': ^16.11.6
   '@vitejs/plugin-vue': ^1.9.4
   '@vueuse/core': ^6.7.4
@@ -31,6 +32,7 @@ dependencies:
 devDependencies:
   '@antfu/eslint-config': 0.9.0_eslint@7.32.0+typescript@4.4.4
   '@iconify-json/carbon': 1.0.7
+  '@iconify-json/ic': 1.0.7
   '@types/node': 16.11.6
   '@vitejs/plugin-vue': 1.9.4_vite@2.6.13
   cross-env: 7.0.3
@@ -414,6 +416,12 @@ packages:
 
   /@iconify-json/carbon/1.0.7:
     resolution: {integrity: sha512-WZ8Dw9I1n7+rf+9mp7pvsIGx0V2chux3unnjaYjGCTvcD1N2Tr1+iwAJEuohBWGYYFeqJwU+J7MTNEG7wR5yTQ==}
+    dependencies:
+      '@iconify/types': 1.0.10
+    dev: true
+
+  /@iconify-json/ic/1.0.7:
+    resolution: {integrity: sha512-Cz2u1h+L/aMmeyKrcYVUY0SZdntvYK4cD5XrdT+XnyESh6IwzJ9hyNaIBGL6fnz5KCL7AfmFMlBhs0bilhrwXQ==}
     dependencies:
       '@iconify/types': 1.0.10
     dev: true
