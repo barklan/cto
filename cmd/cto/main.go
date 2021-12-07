@@ -180,6 +180,24 @@ func main() {
 	}()
 
 	go func() {
+		defer data.CSend("All SLA checks exited.")
+		wgSLA := new(sync.WaitGroup)
+		wgSLA.Add(len(data.Config.P))
+
+		for projectName := range data.Config.P {
+			go func(pName string) {
+				defer func() {
+					data.CSend(fmt.Sprintf("SLA exited for project %s.", pName))
+					wgSLA.Done()
+				}()
+				checking.SLAAggregator(data, pName)
+			}(projectName)
+		}
+
+		wgSLA.Wait()
+	}()
+
+	go func() {
 		handleSysSignals(data)
 	}()
 
