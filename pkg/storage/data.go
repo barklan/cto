@@ -22,6 +22,8 @@ type Data struct {
 	Config   config.Config
 }
 
+var GData *Data
+
 func (d *Data) GetStr(key string) string {
 	return string(Get(d.DB, key))
 }

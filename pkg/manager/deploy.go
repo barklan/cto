@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
 	"github.com/barklan/cto/pkg/manager/alembic"
 	"github.com/barklan/cto/pkg/manager/exec"
+	"github.com/barklan/cto/pkg/manager/reporting"
 	"github.com/joho/godotenv"
 )
+
+var projectName = "nftg"
 
 func resetAndDeployCmds(deployCmd string) []string {
 	commands := []string{}
@@ -76,20 +80,32 @@ func Deploy(target, backendImage string) {
 	// TODO make migrations part of ci instead of prestart script
 	needMigrate := false
 
+	var deployMsg string
 	if targetTag == currentTag {
-		log.Println("Fast deploy: deploying the same image.")
+		deployMsg = "Fast deploy: deploying the same image."
 	} else if target == "prod" {
-		log.Println("Fast deploy: deploying on prod.")
+		deployMsg = "Fast deploy: deploying on prod."
 	} else if currentAlembicVersion == targetAlembicHead {
-		log.Println("Fast deploy: alembic head is the same.")
+		deployMsg = "Fast deploy: alembic head is the same."
 	} else if currentAlembicVersionIsInHistory {
-		log.Println("Fast deploy: current alembic version exists in history.")
+		deployMsg = "Fast deploy: current alembic version exists in history."
 		needMigrate = true
 	} else {
-		log.Println("Destructive deploy. Some data may be lost.")
+		deployMsg = "Destructive deploy. Some data may be lost."
 		commands = resetAndDeployCmds(deployCmd)
 		needMigrate = true
 	}
+
+	log.Println(deployMsg)
+
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		if _, err := reporting.Report(deployMsg); err != nil {
+			log.Printf("Failed to report back: %v", err)
+		}
+	}()
 
 	exec.ExecuteCmds(commands)
 
@@ -99,4 +115,6 @@ func Deploy(target, backendImage string) {
 		log.Println("Launching migrations! (not really)")
 		Migrate(target)
 	}
+
+	wg.Wait()
 }
