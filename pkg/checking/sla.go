@@ -55,7 +55,6 @@ func SLAAggregator(data *storage.Data, projectName string) {
 				}
 				start = time.Now()
 			}
-			<-ticker.C
 
 			totalRuningTimeKey := fmt.Sprintf("%s-totalRunningTime", projectName)
 			var totalRunningTime time.Duration
@@ -71,6 +70,8 @@ func SLAAggregator(data *storage.Data, projectName string) {
 			totalRunningTime += time.Since(startCycle)
 			startCycle = time.Now()
 			data.SetObj(totalRuningTimeKey, totalRunningTime, -1)
+
+			<-ticker.C
 		}
 	}
 }
