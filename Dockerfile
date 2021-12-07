@@ -37,7 +37,7 @@ COPY . .
 # Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
     -ldflags='-w -s -extldflags "-static"' -a \
-    -o /go/bin/hello .
+    -o /go/bin/hello ./cmd/cto/.
 
 RUN mkdir -p /app/media
 

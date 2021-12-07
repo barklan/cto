@@ -84,15 +84,6 @@ func main() {
 
 	defer CrashExit(data, "Deferred in main.")
 
-	// TODO checks recovery
-	// go func() {
-	// _, err := gitlab.GetMainProjectName()
-	// if err != nil {
-	// data.CSend("Failed to get GitLab project name.")
-	// }
-	//
-	// }()
-
 	var wg sync.WaitGroup
 
 	wg.Add(1)

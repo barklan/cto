@@ -27,7 +27,7 @@ function up {
     export CTO_DATA_PATH=/home/barklan/dev/gitlab_workflow_bot/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
-    go run main.go
+    go run cmd/cto/main.go
 }
 
 function reset {
