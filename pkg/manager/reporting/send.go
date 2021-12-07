@@ -2,6 +2,8 @@ package reporting
 
 import (
 	"context"
+	"log"
+	"sync"
 	"time"
 
 	pb "github.com/barklan/cto/pkg/protos"
@@ -12,6 +14,13 @@ var (
 	addr        = "ctopanel.com:50051"
 	projectName = "nftg"
 )
+
+func GoReport(wg *sync.WaitGroup, message string) {
+	defer wg.Done()
+	if _, err := Report(message); err != nil {
+		log.Printf("Failed to report back: %v", err)
+	}
+}
 
 func Report(message string) (string, error) {
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())

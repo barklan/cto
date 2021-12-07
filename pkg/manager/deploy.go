@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/barklan/cto/pkg/manager/alembic"
 	"github.com/barklan/cto/pkg/manager/exec"
@@ -101,14 +102,14 @@ func Deploy(target, backendImage string) {
 
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		if _, err := reporting.Report(reportString); err != nil {
-			log.Printf("Failed to report back: %v", err)
-		}
-	}()
+	reporting.GoReport(wg, reportString)
 
+	start := time.Now()
 	exec.ExecuteCmds(commands)
+	timeTook := time.Since(start)
+
+	wg.Add(1)
+	reporting.GoReport(wg, fmt.Sprintf("Deploy successfull. Approximate downtime: %s", timeTook))
 
 	WriteCurrentVersion(targetTag, targetBranch)
 
