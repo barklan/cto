@@ -56,6 +56,10 @@ function direct {
     bash scripts/direct.sh
 }
 
+function manager:stag {
+    bash scripts/update_manager_stag.sh
+}
+
 
 # ----------------------------------
 # * Non-local functions
