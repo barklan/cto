@@ -42,7 +42,7 @@ func getSLAinfo(data *storage.Data, projectName string) string {
 	invertedSLA := float64(totalDownTime) / float64(totalRunningTime) * 100
 	sla := 100.0 - invertedSLA
 	return fmt.Sprintf(
-		"SLA: %.10f%% (total: %s, down: %s). ",
+		"Uptime: %.10f%% (total: %s, down: %s). ",
 		sla,
 		totalRunningTime.Round(time.Second),
 		totalDownTime.Round(time.Second),

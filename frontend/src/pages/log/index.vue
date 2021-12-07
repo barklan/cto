@@ -14,7 +14,7 @@
           class="text-gray-400"
         >{{ timestamp }} UTC</span>
         <br />
-        &nbsp;&nbsp;env service { dd [hh:mm:ss] | ##m }
+        &nbsp;&nbsp;env service dd [hh:mm:ss]
       </code>
     </div>
 
@@ -146,10 +146,10 @@
           is not specified, then range is taken;
         </span>
       </li>
-      <li class="pb-2">
-        <code class="font-extrabold">##m</code>
-        <span>- alternative to the above, minutes since now;</span>
-      </li>
+      <!-- <li class="pb-2"> -->
+        <!-- <code class="font-extrabold">##m</code> -->
+        <!-- <span>- alternative to the above, minutes since now;</span> -->
+      <!-- </li> -->
       <li class="pb-2">
         <code class="font-extrabold">service</code> - service name;
         can be a substring that uniquely identifies service;

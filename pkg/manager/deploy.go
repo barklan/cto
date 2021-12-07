@@ -98,7 +98,7 @@ func Deploy(target, backendImage string) {
 	}
 	log.Println(deployMsg)
 
-	reportString := fmt.Sprintf("%s Target branch: %s.", deployMsg, targetBranch)
+	reportString := fmt.Sprintf("%s. %s Target branch: %s.", target, deployMsg, targetBranch)
 
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
@@ -109,7 +109,7 @@ func Deploy(target, backendImage string) {
 	timeTook := time.Since(start)
 
 	wg.Add(1)
-	reporting.GoReport(wg, fmt.Sprintf("Deploy successful. Approximate downtime: %s", timeTook))
+	reporting.GoReport(wg, fmt.Sprintf("%s. Deploy successful. Approximate downtime: %s", target, timeTook))
 
 	WriteCurrentVersion(targetTag, targetBranch)
 
