@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: main-workflow
 on:
   push:
     branches: [ main ]
@@ -8,7 +8,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -28,3 +31,17 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   steps:
+
+  #     - name: Execute script
+  #     - run: |
+  #         # make file runnable, might not be necessary
+  #         chmod +x "${GITHUB_WORKSPACE}/scripts/deploy.sh"
+
+  #         # run script
+  #         ACCESS_KEY="${{ secrets.ACCESS_KEY }}" \
+  #         IP_ADDRESS="${{ secrets.IP_ADDRESS }}" \
+  #         bash "${GITHUB_WORKSPACE}/scripts/deploy.sh"
