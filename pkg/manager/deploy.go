@@ -95,14 +95,15 @@ func Deploy(target, backendImage string) {
 		commands = resetAndDeployCmds(deployCmd)
 		needMigrate = true
 	}
-
 	log.Println(deployMsg)
+
+	reportString := fmt.Sprintf("%s Target branch: %s.", deployMsg, targetBranch)
 
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if _, err := reporting.Report(deployMsg); err != nil {
+		if _, err := reporting.Report(reportString); err != nil {
 			log.Printf("Failed to report back: %v", err)
 		}
 	}()
