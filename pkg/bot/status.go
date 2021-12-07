@@ -14,14 +14,43 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+func getSLAinfo(data *storage.Data, projectName string) string {
+	totalRuningTimeKey := fmt.Sprintf("%s-totalRunningTime", projectName)
+	var totalRunningTime time.Duration
+	totalRunningTimeRaw := data.Get(totalRuningTimeKey)
+	if string(totalRunningTimeRaw) == "" {
+		totalRunningTime = 0
+	} else {
+		err := json.Unmarshal(totalRunningTimeRaw, &totalRunningTime)
+		if err != nil {
+			data.CSend("Failed to unmarshal totalRunningTime")
+		}
+	}
+
+	downTimeKey := fmt.Sprintf("%s-downTime", projectName)
+	var totalDownTime time.Duration
+	totalDownTimeRaw := data.Get(downTimeKey)
+	if string(totalDownTimeRaw) == "" {
+		totalDownTime = 0
+	} else {
+		err := json.Unmarshal(totalDownTimeRaw, &totalDownTime)
+		if err != nil {
+			data.CSend("Failed to unmarshal totalDownTime")
+		}
+	}
+
+	sla := totalDownTime / totalRunningTime * 100
+	return fmt.Sprintf("SLA: %d", sla)
+}
+
 func gitlabRunnersInfo(data *storage.Data, projectName string) string {
 	gitlabProjectId := fmt.Sprint(data.Config.P[projectName].Checks.GitLab.ProjectID)
 	gitlabToken := data.Config.P[projectName].Checks.GitLab.APIToken
 	runners, err := gitlab.GetActiveGroupRunners(gitlabProjectId, gitlabToken)
 	if err != nil {
-		return "Failed to get GitLab runners info."
+		return "Failed to get GitLab runners info. "
 	}
-	return fmt.Sprintf("%d active GitLab runners.", len(runners))
+	return fmt.Sprintf("%d active GitLab runners. ", len(runners))
 }
 
 func registerStatusHandler(b *tb.Bot, data *storage.Data) {
@@ -95,6 +124,8 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 		msg += fmt.Sprintf("Logs are retained for %d hours. ", data.Config.Internal.Log.RetentionHours)
 
 		msg += gitlabRunnersInfo(data, projectName)
+
+		msg += getSLAinfo(data, projectName)
 
 		// TODO delete this later
 		msg += fmt.Sprintf("%s.", projectName)

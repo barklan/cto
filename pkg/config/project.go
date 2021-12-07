@@ -29,6 +29,7 @@ type ProjectConfig struct {
 			Password string `yaml:"password"`
 		}
 		SimpleURLChecks []string `yaml:"simple_url_checks"`
+		SLA             string   `yaml:"sla"`
 	} `yaml:"checks"`
 	Log struct {
 		RetentionHours      int     `yaml:"retention_hours"`

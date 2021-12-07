@@ -109,7 +109,7 @@ func Deploy(target, backendImage string) {
 	timeTook := time.Since(start)
 
 	wg.Add(1)
-	reporting.GoReport(wg, fmt.Sprintf("Deploy successfull. Approximate downtime: %s", timeTook))
+	reporting.GoReport(wg, fmt.Sprintf("Deploy successful. Approximate downtime: %s", timeTook))
 
 	WriteCurrentVersion(targetTag, targetBranch)
 
