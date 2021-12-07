@@ -41,7 +41,7 @@ func getSLAinfo(data *storage.Data, projectName string) string {
 
 	invertedSLA := float64(totalDownTime) / float64(totalRunningTime) * 100
 	sla := 100.0 - invertedSLA
-	return fmt.Sprintf("SLA: %.12f ", sla)
+	return fmt.Sprintf("SLA: %.10f ", sla)
 }
 
 func gitlabRunnersInfo(data *storage.Data, projectName string) string {
