@@ -6,9 +6,10 @@ import (
 	manager "github.com/barklan/cto/pkg/manager"
 )
 
+var generalCommand = flag.String("cmd", "none", "What command to execute.")
+
 func main() {
 	image := "registry.gitlab.com/nftgalleryx/nftgallery_backend/backend"
-	generalCommand := flag.String("cmd", "none", "What command to execute.")
 	flag.Parse()
 	switch *generalCommand {
 	case "deployStag":

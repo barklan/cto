@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	"strings"
 	"time"
@@ -14,12 +15,25 @@ import (
 )
 
 type Data struct {
-	B        *tb.Bot
-	Chat     *tb.Chat
-	SysAdmin string
-	DB       *badger.DB
-	LogDB    *badger.DB
-	Config   config.Config
+	B         *tb.Bot
+	Chat      *tb.Chat
+	SysAdmin  string
+	DB        *badger.DB
+	LogDB     *badger.DB
+	Config    config.Config
+	MediaPath string
+}
+
+func InitData() *Data {
+	data := Data{}
+
+	if _, ok := os.LookupEnv("CTO_LOCAL_ENV"); ok {
+		data.MediaPath = ".cache/media"
+	} else {
+		data.MediaPath = "/app/media"
+	}
+
+	return &data
 }
 
 var GData *Data

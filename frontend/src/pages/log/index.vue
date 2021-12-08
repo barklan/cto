@@ -14,7 +14,7 @@
           class="text-gray-400"
         >{{ timestamp }} UTC</span>
         <br />
-        &nbsp;&nbsp;env service dd [hh:mm:ss]
+        &nbsp;&nbsp;&nbsp;&nbsp;env service dd [hh:mm:ss]
       </code>
     </div>
 

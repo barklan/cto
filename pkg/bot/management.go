@@ -9,6 +9,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// TODO add restart handler
 func registerProjectManagementHandlers(b *tb.Bot, data *storage.Data) {
 	b.Handle(tb.OnDocument, func(m *tb.Message) {
 		if m.Sender.Username != data.SysAdmin {

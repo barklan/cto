@@ -26,3 +26,4 @@ vendor/
 .vscode/settings.json
 
 environment/*.yml
+environment/*.pem

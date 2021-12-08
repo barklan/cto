@@ -31,6 +31,18 @@ type ProjectConfig struct {
 		SimpleURLChecks []string `yaml:"simple_url_checks"`
 		SLA             string   `yaml:"sla"`
 	} `yaml:"checks"`
+	Backups struct {
+		DB struct {
+			Enable          bool   `yaml:"enable"`
+			IntervalMinutes int    `yaml:"interval_minutes"`
+			SSHUser         string `yaml:"ssh_user"`
+			SSHHostname     string `yaml:"ssh_hostname"`
+			SSHKeyFilename  string `yaml:"ssh_key_filename"`
+			Driver          string `yaml:"driver"`
+			ContainerName   string `yaml:"container_name"`
+			Database        string `yaml:"database"`
+		} `yaml:"db"`
+	} `yaml:"backups"`
 	Log struct {
 		RetentionHours      int     `yaml:"retention_hours"`
 		SimilarityThreshold float64 `yaml:"similarity_threshold"`
@@ -86,6 +98,7 @@ func ReadAllProjectsConfigs() map[string]ProjectConfig {
 				projectConfig, err := ReadProjectConfig(config_path + "/" + filename)
 				if err != nil {
 					log.Printf("failed to read project config %s, %v:", filename, err)
+					continue
 				}
 
 				configs[projectConfig.ProjectID] = projectConfig
@@ -95,6 +108,7 @@ func ReadAllProjectsConfigs() map[string]ProjectConfig {
 				projectConfig, err := ReadProjectConfig(config_path + "/" + filename)
 				if err != nil {
 					log.Printf("failed to read project config %s, %v:", filename, err)
+					continue
 				}
 
 				configs[projectConfig.ProjectID] = projectConfig

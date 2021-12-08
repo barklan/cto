@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	dbbackups "github.com/barklan/cto/pkg/backups/db"
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/barklan/cto/pkg/checking"
 	"github.com/barklan/cto/pkg/config"
@@ -72,7 +73,7 @@ func main() {
 
 	// TODO the fuck is this hardcoded
 	mainChat := bot.GetBoss(342621688)
-	data := &storage.Data{}
+	data := storage.InitData()
 	storage.GData = data
 	data.SysAdmin = sysAdmin
 	data.B = b
@@ -196,6 +197,8 @@ func main() {
 
 		wgSLA.Wait()
 	}()
+
+	go dbbackups.PeriodicDBBackupsAllProjects(data)
 
 	go func() {
 		handleSysSignals(data)
