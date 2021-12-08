@@ -27,7 +27,7 @@ func writeBufferToFile(buffer *bytes.Buffer, fullFilename string) {
 func constructBackupFilename(targetContainer, targetDatabase string) string {
 	backupFilenameStamp := time.Now().Format("2006_01_02__15_04_05")
 	backupFilename := fmt.Sprintf(
-		"%s_%s_%s.sql",
+		"%s_%s_%s.sql.gz",
 		targetContainer,
 		targetDatabase,
 		backupFilenameStamp,

@@ -6,7 +6,7 @@ import (
 
 func backupPostgresCmdString(containerName, databaseName string) string {
 	cmd := fmt.Sprintf(
-		"docker exec $(docker ps -q -f name=%s) pg_dump -U postgres %s",
+		"docker exec $(docker ps -q -f name=%s) pg_dump -U postgres %s | gzip",
 		containerName,
 		databaseName,
 	)
