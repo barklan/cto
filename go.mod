@@ -10,8 +10,9 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/kr/pretty v0.2.1
 	github.com/lib/pq v1.10.4
+	github.com/pkg/sftp v1.13.4
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	google.golang.org/grpc v1.33.2
 	google.golang.org/protobuf v1.27.1
 	gopkg.in/tucnak/telebot.v2 v2.4.0
@@ -36,6 +37,7 @@ require (
 	github.com/google/flatbuffers v2.0.0+incompatible // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/kr/fs v0.1.0 // indirect
 	github.com/kr/text v0.1.0 // indirect
 	github.com/moby/term v0.0.0-20201216013528-df9cb8a40635 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect

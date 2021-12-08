@@ -36,6 +36,19 @@ func InitData() *Data {
 	return &data
 }
 
+func (d *Data) CreateMediaDirIfNotExists(dirname string) {
+	fullDirname := d.MediaPath + "/" + dirname
+	_, err := os.Stat(fullDirname)
+
+	if os.IsNotExist(err) {
+		errDir := os.MkdirAll(fullDirname, 0755)
+		if errDir != nil {
+			log.Panic(err)
+		}
+
+	}
+}
+
 var GData *Data
 
 func (d *Data) GetStr(key string) string {

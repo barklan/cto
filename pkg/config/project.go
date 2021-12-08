@@ -34,6 +34,8 @@ type ProjectConfig struct {
 	Backups struct {
 		DB struct {
 			Enable          bool   `yaml:"enable"`
+			Continuous      bool   `yaml:"continuous"`
+			ContinuousPath  string `yaml:"continuous_path"`
 			IntervalMinutes int    `yaml:"interval_minutes"`
 			SSHUser         string `yaml:"ssh_user"`
 			SSHHostname     string `yaml:"ssh_hostname"`

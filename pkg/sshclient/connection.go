@@ -10,6 +10,12 @@ import (
 	ssh "golang.org/x/crypto/ssh"
 )
 
+type SSHConnectionData struct {
+	Hostname string
+	Username string
+	Keypath  string
+}
+
 var port = "22"
 
 func executeCmd(command, hostname string, config *ssh.ClientConfig) (bytes.Buffer, error) {
@@ -45,14 +51,9 @@ func PublicKeyFile(file string) (ssh.AuthMethod, error) {
 	return ssh.PublicKeys(key), nil
 }
 
-func ConnectAndExecute(
-	data *storage.Data,
-	projectName string,
-	cmd string,
-) (bytes.Buffer, error) {
-
+func GetConfig(data *storage.Data, projectName string, sshData SSHConnectionData) (*ssh.ClientConfig, error) {
 	// TODO this may cause runtime panic
-	baseFileName := data.Config.P[projectName].Backups.DB.SSHKeyFilename
+	baseFileName := sshData.Keypath
 	var keyFilename string
 
 	if _, ok := os.LookupEnv("CTO_LOCAL_ENV"); ok {
@@ -63,11 +64,11 @@ func ConnectAndExecute(
 
 	publicKey, err := PublicKeyFile(keyFilename)
 	if err != nil {
-		return bytes.Buffer{}, err
+		return nil, err
 	}
 
 	// TODO this may cause runtime panic
-	user := data.Config.P[projectName].Backups.DB.SSHUser
+	user := sshData.Username
 	config := &ssh.ClientConfig{
 		User: user,
 		Auth: []ssh.AuthMethod{
@@ -76,10 +77,22 @@ func ConnectAndExecute(
 		},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
+	return config, nil
+}
+
+func ConnectAndExecute(
+	data *storage.Data,
+	projectName string,
+	sshData SSHConnectionData,
+	cmd string,
+) (bytes.Buffer, error) {
+	config, err := GetConfig(data, projectName, sshData)
+	if err != nil {
+		return bytes.Buffer{}, err
+	}
 
 	// TODO this may cause runtime panic
-	hostname := data.Config.P[projectName].Backups.DB.SSHHostname
-	output, err := executeCmd(cmd, hostname, config)
+	output, err := executeCmd(cmd, sshData.Hostname, config)
 	if err != nil {
 		return bytes.Buffer{}, err
 	}
