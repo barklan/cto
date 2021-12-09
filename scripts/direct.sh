@@ -20,8 +20,8 @@ scp -r environment "helper:/home/docker/cto"
 
 ssh -tt -o StrictHostKeyChecking=no "helper" \
 "cd /home/docker/cto && \
-mkdir -p .cache/media && \
 docker volume create cto-data && \
+docker volume create cto-media && \
 docker image rm barklan/gitlab-workflow-bot:rolling || true && \
 docker image rm barklan/cto-explorer:rolling || true && \
 docker-compose up -d"

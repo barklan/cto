@@ -41,11 +41,11 @@ COPY htpasswd /etc/nginx/htpasswd
     client_max_body_size 5M;
 
     location / {
-        alias /home/app/media/%s;
+        alias /home/app/media/%s/;
         autoindex on;
     }
 }
-`, "")
+`, projectName)
 
 	if err := os.WriteFile(nginxFilePath, []byte(nginxFileStr), 0777); err != nil {
 		return err
