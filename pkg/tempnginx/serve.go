@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/barklan/cto/pkg/docker"
 	"github.com/barklan/cto/pkg/manager/exec"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/foomo/htpasswd"
@@ -78,6 +79,17 @@ func TemporaryNginx(
 ) {
 	data.CreateMediaDirIfNotExists(projectName)
 
+	containerName := "tempnginx"
+	alreadyRunning, err := docker.CheckIfNamedContainerIsRunning(containerName)
+	if err != nil {
+		data.PSend(projectName, "Failed to check if container is running. Will not proceed.")
+		return
+	}
+	if alreadyRunning {
+		data.PSend(projectName, "Only one temporary nginx container can be running (project agnostic).")
+		return
+	}
+
 	if err := buildNginx(data, projectName, basicAuthUsername, basicAuthPassword); err != nil {
 		log.Println(err)
 		data.PSend(projectName, "Failed to build temporary nginx server.")
@@ -85,7 +97,6 @@ func TemporaryNginx(
 	}
 
 	// TODO randomize port and name to allow for multiple nginx servers running simultaneously
-	containerName := "tempnginx"
 	port := "9090"
 
 	cmd := []string{
@@ -100,7 +111,7 @@ func TemporaryNginx(
 		fmt.Sprintf("nginx:%s", projectName),
 	}
 
-	_, err := exec.ExecNoShell(cmd)
+	_, err = exec.ExecNoShell(cmd)
 	if err != nil {
 		log.Println(err)
 		data.PSend(projectName, "Failed to start temporary nginx server.")
