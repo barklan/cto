@@ -89,7 +89,7 @@ services:
       - traefik-public
     volumes:
       - cto-data:/app/data
-      - .cache/media:/app/media
+      - cto-media:/app/media
       - ./environment:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
@@ -128,6 +128,8 @@ services:
 volumes:
   traefik-public-certificates: null
   cto-data:
+    external: true
+  cto-media:
     external: true
 
 networks:

@@ -27,7 +27,11 @@ type Data struct {
 func InitData() *Data {
 	data := Data{}
 
-	if _, ok := os.LookupEnv("CTO_LOCAL_ENV"); ok {
+	configEnvironment, ok := os.LookupEnv("CONFIG_ENV")
+	if !ok {
+		log.Panic("Config environment variable CONFIG_ENV must be specified.")
+	}
+	if configEnvironment == "dev" {
 		currentDir, err := os.Getwd()
 		if err != nil {
 			log.Panic(err)
@@ -53,7 +57,6 @@ func (d *Data) CreateMediaDirIfNotExists(dirname string) string {
 		if errDir != nil {
 			log.Panic(err)
 		}
-
 	}
 
 	return fullDirname

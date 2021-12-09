@@ -32,7 +32,7 @@ COPY htpasswd /etc/nginx/htpasswd
 	}
 
 	nginxFilePath := builderPath + "/nginx.conf"
-	nginxFileStr := `server {
+	nginxFileStr := fmt.Sprintf(`server {
 
 	auth_basic           "Restricted Area";
 	auth_basic_user_file /etc/nginx/htpasswd;
@@ -41,11 +41,11 @@ COPY htpasswd /etc/nginx/htpasswd
     client_max_body_size 5M;
 
     location / {
-        alias /home/app/media/;
+        alias /home/app/media/%s;
         autoindex on;
     }
 }
-`
+`, "")
 
 	if err := os.WriteFile(nginxFilePath, []byte(nginxFileStr), 0777); err != nil {
 		return err
@@ -76,13 +76,13 @@ func TemporaryNginx(
 	basicAuthUsername,
 	basicAuthPassword string,
 ) {
+	data.CreateMediaDirIfNotExists(projectName)
+
 	if err := buildNginx(data, projectName, basicAuthUsername, basicAuthPassword); err != nil {
 		log.Println(err)
 		data.PSend(projectName, "Failed to build temporary nginx server.")
 		return
 	}
-
-	sharedDirectoryPath := data.CreateMediaDirIfNotExists(projectName)
 
 	// TODO randomize port and name to allow for multiple nginx servers running simultaneously
 	containerName := "tempnginx"
@@ -95,14 +95,14 @@ func TemporaryNginx(
 		containerName,
 		"--rm",
 		"-d",
-		"-v",
-		fmt.Sprintf("%s:/home/app/media", sharedDirectoryPath),
+		"-v", "cto-media:/home/app/media",
 		"-p", fmt.Sprintf("%s:%s", port, port),
 		fmt.Sprintf("nginx:%s", projectName),
 	}
 
 	_, err := exec.ExecNoShell(cmd)
 	if err != nil {
+		log.Println(err)
 		data.PSend(projectName, "Failed to start temporary nginx server.")
 		return
 	}
