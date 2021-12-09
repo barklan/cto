@@ -46,7 +46,7 @@ func registerTemporaryNginxHandler(b *tb.Bot, data *storage.Data) {
 			return
 		}
 
-		minutes := 1
+		minutes := 5
 		basicAuthUsername := "nginx"
 		basicAuthPassword := RandString(24)
 
@@ -72,7 +72,8 @@ func registerTemporaryNginxHandler(b *tb.Bot, data *storage.Data) {
 		data.PSend(
 			projectName,
 			fmt.Sprintf(
-				`Temporary nginx started at %s for %d minutes. To download all files use:
+				`Temporary nginx started at %s for %d minutes.
+To download all files use something like this:
 %s`,
 				address,
 				minutes,

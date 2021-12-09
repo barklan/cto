@@ -149,15 +149,6 @@ func PerformContinuity(data *storage.Data, projectName string) error {
 		}
 	}
 
-	data.PSend(
-		projectName,
-		fmt.Sprintf(
-			"%s. Successfully backed up %d new WAL files.",
-			containerName,
-			len(filesToCopy),
-		),
-	)
-
 	return nil
 }
 
