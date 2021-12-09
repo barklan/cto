@@ -22,9 +22,3 @@ func ExecuteCmd(command string) (string, error) {
 	output := string(out)
 	return output, err
 }
-
-func ExecNoShell(command []string) (string, error) {
-	out, err := exec.Command(command[0], command[1:]...).Output()
-	output := string(out)
-	return output, err
-}

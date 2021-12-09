@@ -41,6 +41,11 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
 
 RUN mkdir -p /app/media
 
+# Get docker binary.
+WORKDIR /app/media
+RUN wget https://download.docker.com/linux/static/stable/x86_64/docker-20.10.9.tgz
+RUN tar xzvf docker-20.10.9.tgz
+
 ############################
 # STEP 2 build a small image
 ############################
@@ -52,6 +57,8 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
 COPY --from=builder /app/media /app/media
+
+COPY --from=builder /app/media/docker/* /usr/bin/
 
 # Copy our static executable
 COPY --from=builder /go/bin/hello /go/bin/hello

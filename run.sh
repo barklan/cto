@@ -27,6 +27,7 @@ function up {
     export CTO_DATA_PATH=/home/barklan/dev/gitlab_workflow_bot/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
+    export CONFIG_ENV=dev
     go run cmd/cto/main.go
 }
 
@@ -39,9 +40,9 @@ function front {
     cd frontend && pnpm dev
 }
 
-function runD {
+function upd {
     export DOCKER_BUILDKIT=1
-    docker-compose -f docker-compose.local.yml up --build
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml up --build backend
 }
 
 function build {

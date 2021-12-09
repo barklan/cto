@@ -39,3 +39,9 @@ envs:
 tg:
   chat_id: -##############
 ```
+
+To download all files from a directory:
+
+```bash
+wget --no-verbose --no-parent --recursive --level=1 --no-directories <url>
+```

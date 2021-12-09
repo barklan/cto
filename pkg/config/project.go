@@ -85,7 +85,11 @@ func ReadProjectConfig(path string) (ProjectConfig, error) {
 
 func ReadAllProjectsConfigs() map[string]ProjectConfig {
 	config_path := "/app/config"
-	if _, ok := os.LookupEnv("CTO_LOCAL_ENV"); ok {
+	configEnvironment, ok := os.LookupEnv("CONFIG_ENV")
+	if !ok {
+		log.Panic("Config environment variable CONFIG_ENV must be specified.")
+	}
+	if configEnvironment == "dev" {
 		config_path = "environment"
 	}
 	items, _ := ioutil.ReadDir(config_path)
@@ -95,7 +99,7 @@ func ReadAllProjectsConfigs() map[string]ProjectConfig {
 		filename := item.Name()
 		isLocal := strings.Contains(filename, "_local")
 
-		if _, ok := os.LookupEnv("CTO_LOCAL_ENV"); ok {
+		if configEnvironment == "dev" || configEnvironment == "devdocker" {
 			if filename != "internal.yml" && filename != "local.yml" && isLocal {
 				projectConfig, err := ReadProjectConfig(config_path + "/" + filename)
 				if err != nil {

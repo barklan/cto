@@ -2,25 +2,11 @@
 version: "3.7"
 services:
 
-  frontend:
-    build: ./frontend
-    ports:
-      - 3333:3333
-      - 80:80
-
   backend:
     build: .
     environment:
-      - CTO_LOCAL_ENV=true
-    # env_file:
-      # - ./environment/.env
-    ports:
-      - 8080:8080
-    volumes:
-      - cto-data:/app/data
-      - .cache/media:/app/media
-      - ./environment:/app/config
+      - CONFIG_ENV=devdocker
 
 volumes:
   cto-data:
-    external: true
+    external: false

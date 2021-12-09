@@ -91,6 +91,10 @@ services:
       - cto-data:/app/data
       - .cache/media:/app/media
       - ./environment:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      # CONFIG_ENV should be one of "dev", "devdocker", "prod"
+      - CONFIG_ENV=prod
     # deploy:
     labels:
       - traefik.enable=true

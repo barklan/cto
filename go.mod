@@ -6,6 +6,7 @@ require (
 	github.com/adrg/strutil v0.2.3
 	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/docker/docker v20.10.11+incompatible
+	github.com/foomo/htpasswd v0.0.0-20200116085101-e3a90e78da9c
 	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/joho/godotenv v1.4.0
 	github.com/kr/pretty v0.2.1
@@ -20,6 +21,7 @@ require (
 )
 
 require (
+	github.com/GehirnInc/crypt v0.0.0-20190301055215-6c0105aabd46 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect

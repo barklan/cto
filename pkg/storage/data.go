@@ -28,7 +28,12 @@ func InitData() *Data {
 	data := Data{}
 
 	if _, ok := os.LookupEnv("CTO_LOCAL_ENV"); ok {
-		data.MediaPath = ".cache/media"
+		currentDir, err := os.Getwd()
+		if err != nil {
+			log.Panic(err)
+		}
+
+		data.MediaPath = currentDir + "/.cache/media"
 	} else {
 		data.MediaPath = "/app/media"
 	}
@@ -36,7 +41,10 @@ func InitData() *Data {
 	return &data
 }
 
-func (d *Data) CreateMediaDirIfNotExists(dirname string) {
+// CreateMediaDirIfNotExists creates the directory in default media path.
+// It can accept nested directory path, but all parent directories must
+// exist. Returns full directory path.
+func (d *Data) CreateMediaDirIfNotExists(dirname string) string {
 	fullDirname := d.MediaPath + "/" + dirname
 	_, err := os.Stat(fullDirname)
 
@@ -47,6 +55,8 @@ func (d *Data) CreateMediaDirIfNotExists(dirname string) {
 		}
 
 	}
+
+	return fullDirname
 }
 
 var GData *Data

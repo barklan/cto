@@ -37,14 +37,14 @@ func ContinuousDBBackups(data *storage.Data, projectName string) {
 		return
 	}
 
-	ticker := time.NewTicker(30 * time.Second)
+	ticker := time.NewTicker(5 * time.Minute)
 
 	// FIXME base backup should be performed on handle (check if continuity is enabled and wal files exist)
 	// FIXME there should be handle (or periodic goroutine that cleans both basebackup and all wal files)
 	for range ticker.C {
 		err := PerformContinuity(data, projectName)
 		if err != nil {
-			data.PSend(projectName, "Contious backup failed. Will retry later.")
+			data.PSend(projectName, "Continuous backup failed. Will retry later.")
 			data.PSend(projectName, err.Error())
 			log.Println(err)
 		}

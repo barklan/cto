@@ -66,8 +66,8 @@ func PerformContinuity(data *storage.Data, projectName string) error {
 	// Remote command lists only files (without directories).
 	sshData := sshclient.SSHConnectionData{
 		Hostname: data.Config.P[projectName].Backups.DB.SSHHostname,
-		Username: data.Config.P[projectName].Backups.DB.SSHHostname,
-		Keypath:  data.Config.P[projectName].Backups.DB.SSHHostname,
+		Username: data.Config.P[projectName].Backups.DB.SSHUser,
+		Keypath:  data.Config.P[projectName].Backups.DB.SSHKeyFilename,
 	}
 
 	remoteFolder := data.Config.P[projectName].Backups.DB.ContinuousPath

@@ -30,10 +30,18 @@ type InternalConfig struct {
 func ReadInternalConfig(path string) (InternalConfig, error) {
 	var config_path string
 	if path == "" {
-		if _, ok := os.LookupEnv("CTO_LOCAL_ENV"); ok {
+		configEnvironment, ok := os.LookupEnv("CONFIG_ENV")
+		if !ok {
+			log.Panic("Config environment variable CONFIG_ENV must be specified.")
+		}
+		if configEnvironment == "dev" {
 			config_path = "environment/local.yml"
-		} else {
+		} else if configEnvironment == "devdocker" {
+			config_path = "/app/config/local.yml"
+		} else if configEnvironment == "prod" {
 			config_path = "/app/config/internal.yml"
+		} else {
+			log.Panic("CONFIG_ENV must be either dev or prod.")
 		}
 	} else {
 		config_path = path
