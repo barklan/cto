@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	dbbackups "github.com/barklan/cto/pkg/backups"
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/barklan/cto/pkg/checking"
 	"github.com/barklan/cto/pkg/config"
@@ -198,8 +197,9 @@ func main() {
 		wgSLA.Wait()
 	}()
 
-	go dbbackups.PeriodicDBBackupsAllProjects(data)
-	go dbbackups.ContinuousDBBackupsAllProjects(data)
+	// TODO purge it
+	// go dbbackups.PeriodicDBBackupsAllProjects(data)
+	// go dbbackups.ContinuousDBBackupsAllProjects(data)
 
 	go func() {
 		handleSysSignals(data)

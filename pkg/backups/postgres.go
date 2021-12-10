@@ -25,6 +25,7 @@ func backupPostgresCmdString(containerName, databaseName string) string {
 func performDump(data *storage.Data, projectName, containerName, databaseName string) {
 	cmd := backupPostgresCmdString(containerName, databaseName)
 
+	// TODO this is flawed
 	sshData := sshclient.SSHConnectionData{
 		Hostname: data.Config.P[projectName].Backups.DB.SSHHostname,
 		Username: data.Config.P[projectName].Backups.DB.SSHHostname,
