@@ -16,6 +16,7 @@ import (
 const (
 	flagError    = "err"
 	flagCritical = "crit"
+	flagFatal    = "fatal"
 	flagNone     = "none"
 )
 
@@ -82,7 +83,7 @@ func processLogRecord(
 	// log.Printf("Log added with key: %q", badgerKey)
 
 	// Send message if error
-	if (logData["flag"] == flagError) || (logData["flag"] == flagCritical) {
+	if logData["flag"] != flagNone {
 		projectSessData := sessDataMap[projectName]
 		_ = handleErrorRecordInteractive(data, logData, record, badgerKey, projectSessData, projectName)
 	}
@@ -118,6 +119,8 @@ func assignFlag(str string) string {
 		return flagError
 	} else if strings.Contains(str, "CRITICAL") {
 		return flagCritical
+	} else if strings.Contains(str, "FATAL") {
+		return flagFatal
 	}
 	return flagNone
 }
