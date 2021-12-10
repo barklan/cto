@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	flagError    = "err"
-	flagCritical = "crit"
-	flagFatal    = "fatal"
-	flagNone     = "none"
+	flagError     = "err"
+	flagCritical  = "crit"
+	flagFatal     = "fatal"
+	flagEmergency = "emerg"
+	flagNone      = "none"
 )
 
 type RawLogRecord map[string]interface{}
@@ -114,14 +115,24 @@ func constructBadgerKey(
 }
 
 // TODO more flags!
+// TODO flags for traefik
 func assignFlag(str string) string {
-	if strings.Contains(str, "ERROR") {
+	if strings.Contains(str, "ERROR") || strings.Contains(str, " [error] ") {
 		return flagError
-	} else if strings.Contains(str, "CRITICAL") {
+	}
+
+	if strings.Contains(str, "CRITICAL") {
 		return flagCritical
-	} else if strings.Contains(str, "FATAL") {
+	}
+
+	if strings.Contains(str, "FATAL") {
 		return flagFatal
 	}
+
+	if strings.Contains(str, " [emerg] ") {
+		return flagEmergency
+	}
+
 	return flagNone
 }
 

@@ -68,6 +68,7 @@ func PeriodicDBBackups(data *storage.Data, projectName string) {
 	}
 }
 
+// TODO should use scheduling
 func PeriodicDBBackupsAllProjects(data *storage.Data) {
 	defer data.CSend("PeriodicDBBackupsAllProjects exited for all projects.")
 	wg := new(sync.WaitGroup)
