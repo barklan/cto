@@ -34,7 +34,7 @@ func CheckByExternalRequest(b *tb.Bot, data *storage.Data, args ...interface{}) 
 	if err != nil {
 		if try == 0 && isHalted == false {
 			time.Sleep(30 * time.Second)
-			CheckByExternalRequest(b, data, url, try+1)
+			CheckByExternalRequest(b, data, projectName, url, try+1)
 			return
 		}
 		if isHalted == false {
@@ -47,7 +47,7 @@ func CheckByExternalRequest(b *tb.Bot, data *storage.Data, args ...interface{}) 
 	if resp.StatusCode != http.StatusOK {
 		if try == 0 && isHalted == false {
 			time.Sleep(30 * time.Second)
-			CheckByExternalRequest(b, data, url, try+1)
+			CheckByExternalRequest(b, data, projectName, url, try+1)
 			return
 		}
 		if isHalted == false {
