@@ -8,9 +8,7 @@ require (
 	github.com/docker/docker v20.10.11+incompatible
 	github.com/foomo/htpasswd v0.0.0-20200116085101-e3a90e78da9c
 	github.com/golang-jwt/jwt/v4 v4.1.0
-	github.com/joho/godotenv v1.4.0
 	github.com/kr/pretty v0.2.1
-	github.com/lib/pq v1.10.4
 	github.com/pkg/sftp v1.13.4
 	github.com/thedevsaddam/gojsonq/v2 v2.5.2
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a

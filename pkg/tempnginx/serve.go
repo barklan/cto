@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/barklan/cto/pkg/docker"
-	"github.com/barklan/cto/pkg/manager/exec"
+	"github.com/barklan/cto/pkg/exec"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/foomo/htpasswd"
 )
