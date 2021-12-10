@@ -47,7 +47,7 @@ func handleSysSignals(data *storage.Data) {
 }
 
 func CrashExit(data *storage.Data, info string) {
-	data.CSend(fmt.Sprintf("@%s help! I crashed! %s", data.SysAdmin, info))
+	data.CSendSync(fmt.Sprintf("@%s help! I crashed! %s", data.SysAdmin, info))
 	data.DB.Close()
 	data.B.Close()
 	os.Exit(1)
@@ -171,7 +171,7 @@ func main() {
 	// }()
 
 	go func() {
-		if data.Config.Internal.TG.ClearOnRestart == true {
+		if data.Config.Internal.TG.ClearOnRestart {
 			data.CSend("ClearOnRestart is set to true. " +
 				"Cleaning up in 10 seconds.")
 			time.Sleep(10 * time.Second)
