@@ -9,18 +9,10 @@ import (
 
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
+	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
-
-func constructOneLogURLView(data *storage.Data, json string) (string, error) {
-	url := fmt.Sprintf(
-		"%s/onelog?record=%s",
-		data.Config.Internal.Log.ServiceHostname,
-		json,
-	)
-	return url, nil
-}
 
 func handleErrorRecordInteractive(
 	data *storage.Data,
@@ -51,7 +43,7 @@ func handleErrorRecordInteractive(
 	// similar errors not found at this point
 
 	// add error
-	newError := KnownError{
+	newError := types.KnownError{
 		OriginBadgerKey: badgerKey,
 		LogStr:          logData["log"],
 		Counter:         1,

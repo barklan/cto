@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/barklan/cto/pkg/gitlab"
-	"github.com/barklan/cto/pkg/logserver"
+	logservertypes "github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -66,7 +66,7 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 			return
 		}
 
-		knownErrors := make([]logserver.KnownError, 0)
+		knownErrors := make([]logservertypes.KnownError, 0)
 		knownErrorsRaw := data.Get(fmt.Sprintf("knownErrors-%s", projectName))
 		if string(knownErrorsRaw) != "" {
 			if err := json.Unmarshal(knownErrorsRaw, &knownErrors); err != nil {
@@ -109,7 +109,7 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 
 		msg += "\n"
 
-		periodicReport := logserver.PeriodicReport{}
+		periodicReport := logservertypes.PeriodicReport{}
 		periodicReportRaw := data.Get(fmt.Sprintf("periodicLogReport-%s", projectName))
 		if string(periodicReportRaw) == "" {
 			msg += "Periodic report is not ready yet."

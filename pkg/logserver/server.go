@@ -12,15 +12,11 @@ import (
 	"time"
 
 	"github.com/barklan/cto/pkg/logserver/querying"
+	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
 )
 
-type KnownError struct {
-	OriginBadgerKey string
-	LogStr          string
-	Counter         uint64 // should use atomic operations on this one
-	LastSeen        time.Time
-}
+var LogServerSessionDataMap map[string]*SessionData
 
 type LogRecordReport struct {
 	ProjectName string
@@ -28,7 +24,7 @@ type LogRecordReport struct {
 
 type SessionData struct {
 	KnownErrorsMutex sync.Mutex
-	KnownErrors      []KnownError
+	KnownErrors      []types.KnownError
 }
 
 func logOneRequest(
@@ -71,19 +67,15 @@ func logOneRequest(
 	}(body)
 }
 
-func remove(s []KnownError, i int) []KnownError {
+func remove(s []types.KnownError, i int) []types.KnownError {
 	s[i] = s[len(s)-1]
 	return s[:len(s)-1]
-}
-
-type PeriodicReport struct {
-	Period   time.Duration
-	Recieved int
 }
 
 func LogServerServe(data *storage.Data) {
 	rand.Seed(time.Now().UnixNano())
 	sessionDataMap := openSession(data)
+	LogServerSessionDataMap = sessionDataMap
 
 	// TODO maybe use this for websocket watch mode?
 	reportChan := make(chan LogRecordReport, 20) // TODO maybe not enough
@@ -101,7 +93,7 @@ func LogServerServe(data *storage.Data) {
 			ticker := time.NewTicker(period)
 			for range ticker.C {
 				for projectName := range data.Config.P {
-					report := PeriodicReport{
+					report := types.PeriodicReport{
 						Period:   period,
 						Recieved: aggregateRecordsRecievedMap[projectName],
 					}
@@ -143,5 +135,9 @@ func LogServerServe(data *storage.Data) {
 	} else {
 		portString = ":8080"
 	}
-	http.ListenAndServe(portString, nil)
+	err := http.ListenAndServe(portString, nil)
+	if err != nil {
+		data.CSendSync("Logserver errored.")
+		log.Panic(err)
+	}
 }

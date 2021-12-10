@@ -24,7 +24,7 @@ function _dc {
 # * General purpose local functions.
 
 function up {
-    export CTO_DATA_PATH=/home/barklan/dev/gitlab_workflow_bot/.cache
+    export CTO_DATA_PATH=/home/barklan/dev/cto/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
     export CONFIG_ENV=dev
