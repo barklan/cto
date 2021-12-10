@@ -42,7 +42,7 @@ function front {
 
 function upd {
     export DOCKER_BUILDKIT=1
-    docker-compose -f docker-compose.yml -f docker-compose.local.yml up --build backend
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml up --build
 }
 
 function build {
@@ -62,7 +62,6 @@ function proto {
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
     pkg/protos/main.proto
 }
-
 
 # ----------------------------------
 # * Non-local functions
