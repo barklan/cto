@@ -24,10 +24,12 @@ func handleErrorRecordInteractive(
 ) error {
 	sessData.KnownErrorsMutex.Lock()
 
+	recordStr := fmt.Sprint(record)
+
 	var maxSimilarity float64
 	var maxSimilarityIndex int
 	for i, knownError := range sessData.KnownErrors {
-		similarity := strutil.Similarity(knownError.LogStr, logData["log"], metrics.NewHamming())
+		similarity := strutil.Similarity(knownError.LogStr, recordStr, metrics.NewHamming())
 		if similarity > maxSimilarity {
 			maxSimilarity = similarity
 			maxSimilarityIndex = i
@@ -45,7 +47,7 @@ func handleErrorRecordInteractive(
 	// add error
 	newError := types.KnownError{
 		OriginBadgerKey: badgerKey,
-		LogStr:          logData["log"],
+		LogStr:          recordStr,
 		Counter:         1,
 		LastSeen:        time.Now(),
 	}
