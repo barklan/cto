@@ -14,9 +14,50 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func handleErrorRecordInteractive(
+func notifyAboutError(
 	data *storage.Data,
-	logData map[string]string,
+	projectName string,
+	logData *LogMetadata,
+	badgerKey string,
+) {
+	queryString := url.QueryEscape(badgerKey)
+	exactLogURL := fmt.Sprintf(
+		"%s/log/exact?key=%s",
+		data.Config.Internal.Log.ServiceHostname,
+		queryString,
+	)
+	selector := &tb.ReplyMarkup{}
+	btnURL := selector.URL("View Log", exactLogURL)
+	selector.Inline(
+		selector.Row(btnURL),
+	)
+
+	// Get elapsed tiem
+	timeStr := logData.Timestamp
+	var extraTimeStr string
+	fluentdTime, err := time.Parse("2006-01-02 15:04:05 -0700", timeStr)
+	if err == nil {
+		now := time.Now()
+		elapsed := now.Sub(fluentdTime).Round(time.Second)
+		extraTimeStr = fmt.Sprintf(" (%s ago)", elapsed)
+	}
+
+	upperFlag := strings.ToUpper(logData.Flag)
+	message := fmt.Sprintf(
+		"*%s* in %s (%s) at %s%s.",
+		upperFlag,
+		logData.Service,
+		logData.Hostname,
+		timeStr,
+		extraTimeStr,
+	)
+
+	data.PSend(projectName, message, tb.ModeMarkdown, selector)
+}
+
+func handleErrorRecord(
+	data *storage.Data,
+	logData *LogMetadata,
 	record RawLogRecord,
 	badgerKey string,
 	sessData *SessionData,
@@ -55,40 +96,7 @@ func handleErrorRecordInteractive(
 	log.Println("Added new Error!")
 	sessData.KnownErrorsMutex.Unlock()
 
-	// notify
-	queryString := url.QueryEscape(badgerKey)
-	exactLogURL := fmt.Sprintf(
-		"%s/log/exact?key=%s",
-		data.Config.Internal.Log.ServiceHostname,
-		queryString,
-	)
-	selector := &tb.ReplyMarkup{}
-	btnURL := selector.URL("View Log", exactLogURL)
-	selector.Inline(
-		selector.Row(btnURL),
-	)
-
-	// Get elapsed tiem
-	timeStr := logData["fluentd_time"]
-	var extraTimeStr string
-	fluentdTime, err := time.Parse("2006-01-02 15:04:05 -0700", timeStr)
-	if err == nil {
-		now := time.Now()
-		elapsed := now.Sub(fluentdTime).Round(time.Second)
-		extraTimeStr = fmt.Sprintf(" (%s ago)", elapsed)
-	}
-
-	upperFlag := strings.ToUpper(logData["flag"])
-	message := fmt.Sprintf(
-		"*%s* in %s (%s) at %s%s.",
-		upperFlag,
-		logData["service_name"],
-		logData["fluentd_hostname"],
-		timeStr,
-		extraTimeStr,
-	)
-
-	data.PSend(projectName, message, tb.ModeMarkdown, selector)
+	notifyAboutError(data, projectName, logData, badgerKey)
 
 	return nil
 }
