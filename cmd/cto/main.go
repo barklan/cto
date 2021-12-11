@@ -57,9 +57,6 @@ func main() {
 
 	config := config.ReadConfig()
 
-	// os.Setenv("GITLAB_PROJECT_ID", fmt.Sprint(config.Checks.GitLab.ProjectID))
-	// os.Setenv("GITLAB_API_TOKEN", config.Checks.GitLab.APIToken)
-
 	sysAdmin := config.Internal.TG.Boss
 	log.Println(sysAdmin)
 
@@ -158,16 +155,6 @@ func main() {
 			<-tokenRotationTicker.C
 		}
 	}()
-
-	// go func() {
-	// 	time.Sleep(2 * time.Minute)
-	// 	bot.BegForAdminRights(data)
-	// 	ticker := time.NewTicker(5 * time.Hour)
-	// 	for {
-	// 		<-ticker.C
-	// 		bot.BegForAdminRights(data)
-	// 	}
-	// }()
 
 	go func() {
 		if data.Config.Internal.TG.ClearOnRestart {
