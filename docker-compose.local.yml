@@ -15,7 +15,7 @@ services:
     environment:
       - CONFIG_ENV=devdocker
 
-  fluend:
+  fluentd:
     build:
       context: ./dockerfiles/fluentd_cto
       dockerfile: Dockerfile
@@ -25,6 +25,7 @@ services:
     environment:
       FLUENTD_HTTP_DUMP_ENDPOINT: 'http://cto:8080/api/log/input'
       FLUENTD_HOSTNAME: 'stag.nftgallerydev.online'
+      FLUENTD_CTO_PROJECT_TOKEN: 'NzVkMjZhMjY0YTgxNjk3N2NkNzQ1ZmYzZTI2YjQ4YWQwMzQzZDExMmRkY2UzNGY5'
     ports:
       - "24224:24224"
       - "24224:24224/udp"

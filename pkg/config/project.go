@@ -13,6 +13,7 @@ import (
 
 type ProjectConfig struct {
 	ProjectID string   `yaml:"project_id"`
+	SecretKey string   `yaml:"secret_key"`
 	Envs      []string `yaml:"envs"`
 	TG        struct {
 		ChatID int64 `yaml:"chat_id"`

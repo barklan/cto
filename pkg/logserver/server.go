@@ -1,6 +1,7 @@
 package logserver
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -27,6 +28,22 @@ type SessionData struct {
 	KnownErrors      []types.KnownError
 }
 
+func authorizeRequest(data *storage.Data, r *http.Request) (string, bool) {
+	_, password, ok := r.BasicAuth()
+	if !ok {
+		log.Println("error parsing basic auth")
+		return "", false
+	}
+
+	for projectName, config := range data.Config.P {
+		if subtle.ConstantTimeCompare([]byte(password), []byte(config.SecretKey)) == 1 {
+			return projectName, true
+		}
+	}
+
+	return "", false
+}
+
 func logOneRequest(
 	w http.ResponseWriter,
 	r *http.Request,
@@ -34,7 +51,15 @@ func logOneRequest(
 	sessDataMap map[string]*SessionData,
 	reportChan chan LogRecordReport,
 ) {
-	log.Println("recieved log dump")
+	projectName, ok := authorizeRequest(data, r)
+	if !ok {
+		log.Println("recieved unauthorized request")
+		w.WriteHeader(401)
+		return
+	}
+
+	log.Println(fmt.Sprintf("recieved log dump for project %q", projectName))
+
 	body, _ := io.ReadAll(r.Body)
 
 	go func([]byte) {
@@ -51,11 +76,9 @@ func logOneRequest(
 			return
 		}
 
-		// subset := GetSubset(multiLog, 5)
 		var wg sync.WaitGroup
 		wg.Add(len(multiLog))
-		// randomIndex := rand.Intn(recordsRecieved)
-		// pick := multiLog[randomIndex]
+
 		for _, pick := range multiLog {
 			go func(record RawLogRecord) {
 				defer wg.Done()
@@ -78,7 +101,7 @@ func LogServerServe(data *storage.Data) {
 	LogServerSessionDataMap = sessionDataMap
 
 	// TODO maybe use this for websocket watch mode?
-	reportChan := make(chan LogRecordReport, 20) // TODO maybe not enough
+	reportChan := make(chan LogRecordReport, 50) // TODO maybe not enough
 
 	// Save new reports every 5 minutes
 	go func() {
@@ -114,7 +137,6 @@ func LogServerServe(data *storage.Data) {
 		}
 	}()
 
-	// TODO should use basic auth
 	logInputHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logOneRequest(w, r, data, sessionDataMap, reportChan)
 	})
@@ -137,7 +159,7 @@ func LogServerServe(data *storage.Data) {
 	}
 	err := http.ListenAndServe(portString, nil)
 	if err != nil {
-		data.CSendSync("Logserver errored.")
+		_, _ = data.CSendSync("Logserver errored.")
 		log.Panic(err)
 	}
 }
