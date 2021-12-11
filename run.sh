@@ -66,6 +66,10 @@ function fluentd:push {
     cd dockerfiles/fluentd_cto
     docker build -t barklan/fluentd-cto:"$1" .
     docker image push barklan/fluentd-cto:"$1"
+
+    cd ../fluentd_cto_es
+    docker build -t barklan/fluentd-cto:"$1"es .
+    docker image push barklan/fluentd-cto:"$1"es
 }
 
 # -----------------------------------------------------------------------------

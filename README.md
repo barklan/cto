@@ -9,7 +9,6 @@ services:
   fluentd-cto:
     image: 'barklan/fluentd-cto:1.0.0'
     environment:
-      FLUENTD_CONF: 'fluent.conf'
       FLUENTD_HOSTNAME: 'example-env.com'
       FLUENTD_HTTP_DUMP_ENDPOINT: '...'
     ports:
