@@ -10,7 +10,6 @@ docker build -t "barklan/cto-explorer:rolling" ./frontend
 docker image push "barklan/cto-explorer:rolling"
 
 ssh -tt -o StrictHostKeyChecking=no "helper" "mkdir -p /home/docker/cto/.cache && mkdir -p /home/docker/cto/environment"
-scp -r .cache/media "helper:/home/docker/cto/.cache"
 scp .env "helper:/home/docker/cto"
 
 ssh -tt -o StrictHostKeyChecking=no "helper" \
