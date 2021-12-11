@@ -21,7 +21,6 @@ function _dc {
 }
 
 # ----------------------------------------------------------------------------
-# * General purpose local functions.
 
 function up {
     export CTO_DATA_PATH=/home/barklan/dev/cto/.cache
@@ -63,10 +62,11 @@ function proto {
     pkg/protos/main.proto
 }
 
-# ----------------------------------
-# * Non-local functions
-
-
+function fluentd:push {
+    cd dockerfiles/fluentd_cto
+    docker build -t barklan/fluentd-cto:"$1" .
+    docker image push barklan/fluentd-cto:"$1"
+}
 
 # -----------------------------------------------------------------------------
 
