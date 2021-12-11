@@ -1,0 +1,55 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["Admin <admin@example.com>"]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+fastapi = ">=0.54.1"
+passlib = {extras = ["bcrypt"], version = ">=1.7.2"}
+pydantic = ">=1.4"
+python-multipart = ">=0.0.5"
+requests = ">=2.23.0"
+uvicorn = ">=0.11.3"
+aiofiles = ">=0.7.0"
+ujson = ">=4.0.0"
+loguru = ">=0.5.3"
+responses = ">=0.13.4"
+
+[tool.poetry.dev-dependencies]
+autoflake = ">=1.3.1"
+black = ">=21.6b0"
+flake8 = ">=3.7.9"
+isort = ">=5.8.0"
+mypy = ">=0.910"
+pytest = ">=5.4.1"
+pytest-cov = ">=2.8.1"
+pytest-xdist = {extras = ["psutil"], version = ">=2.3.0"}
+pre-commit = ">=2.13.0"
+aiogram = ">=2.13"
+Faker = ">=8.8.1"
+codespell = ">=2.1.0"
+pydocstyle = ">=6.1.1"
+types-requests = ">=0.1.13"
+python-dotenv = ">=0.18.0"
+ipykernel = ">=5.5.5"
+types-redis = ">=3.5.4"
+types-aiofiles = ">=0.1.5"
+sqlalchemy2-stubs = ">=0.0.2a8"
+factory-boy = ">=3.2.0"
+pytest-asyncio = ">=0.15.1"
+hypothesis = ">=6.14.5"
+schemathesis = ">=3.9.7"
+commitizen = ">=2.17.13"
+bandit = ">=1.7.0"
+mccabe = ">=0.6.1"
+pep8-naming = ">=0.12.1"
+flake8-eradicate = ">=1.1.0"
+pytest-sugar = ">=0.9.4"
+pytest-deadfixtures = ">=2.2.1"
+jupyterlab = "^3.1.8"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

@@ -30,15 +30,26 @@ services:
       - "24224:24224/udp"
 
   flooder:
-    image: bash:alpine3.14
-    command: bash -c 'for i in {1..10}; do echo "Hey $i! ERROR"; sleep 1; done; exit 0'
+    entrypoint: ["bash", "/entrypoint.local.sh"]
+    ports:
+      - 8000:8000
+    environment:
+      - SERVER_NAME=stag.nftgallerydev.online
+      - SERVER_HOST=https://stag.nftgallerydev.online/
+      - LOCAL_SETUP=false
+    build:
+      context: ./test/backend
+      dockerfile: backend.dockerfile
+      args:
+        INSTALL_DEV: 'false'
+        BUILDKIT_INLINE_CACHE: 1
     networks:
       - shared
     logging:
       driver: fluentd
       options:
         fluentd-address: localhost:24224
-        tag: docker.stag.flooder-logger
+        tag: docker.efk.flooder-logger
         fluentd-async-connect: "true"
 
 

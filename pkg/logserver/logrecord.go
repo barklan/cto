@@ -45,7 +45,6 @@ func processLogRecord(
 		"service_name":     "",
 		"fluentd_hostname": "",
 		"fluentd_time":     "",
-		"log":              "",
 	}
 
 	for key := range logData {
@@ -70,14 +69,12 @@ func processLogRecord(
 		querying.SetKnownServices(data, logData["fluentd_hostname"], knownServices)
 	}
 
-	flag := assignFlag(logData["log"])
+	flag := assignFlag(fmt.Sprint(record))
 	logData["flag"] = flag
 
 	// Save log record
 	badgerKey, _ := constructBadgerKey(data, logData, projectName)
 	retentionDuration := time.Duration(data.Config.Internal.Log.RetentionHours) * time.Hour
-
-	delete(record, "log") // HACK - this should be done on fluentd side after it has parsed this to json
 
 	data.SetLog(badgerKey, record, retentionDuration)
 
