@@ -69,13 +69,18 @@ func handleErrorRecord(
 
 	var maxSimilarity float64
 	var maxSimilarityIndex int
-	for i, knownError := range sessData.KnownErrors {
-		similarity := strutil.Similarity(knownError.LogStr, recordStr, metrics.NewHamming())
+	for i, knownErr := range sessData.KnownErrors {
+		if knownErr.Hostname != logData.Hostname || knownErr.Service != logData.Service {
+			continue
+		}
+
+		similarity := strutil.Similarity(knownErr.LogStr, recordStr, metrics.NewHamming())
 		if similarity > maxSimilarity {
 			maxSimilarity = similarity
 			maxSimilarityIndex = i
 		}
 	}
+
 	if maxSimilarity > data.Config.Internal.Log.SimilarityThreshold {
 		sessData.KnownErrors[maxSimilarityIndex].Counter++
 		sessData.KnownErrors[maxSimilarityIndex].LastSeen = time.Now()
@@ -87,6 +92,8 @@ func handleErrorRecord(
 
 	// add error
 	newError := types.KnownError{
+		Hostname:        logData.Hostname,
+		Service:         logData.Service,
 		OriginBadgerKey: badgerKey,
 		LogStr:          recordStr,
 		Counter:         1,
