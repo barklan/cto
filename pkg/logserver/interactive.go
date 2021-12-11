@@ -55,18 +55,12 @@ func notifyAboutError(
 	data.PSend(projectName, message, tb.ModeMarkdown, selector)
 }
 
-func handleErrorRecord(
+func similarErrorExists(
 	data *storage.Data,
 	logData *LogMetadata,
-	record RawLogRecord,
-	badgerKey string,
 	sessData *SessionData,
-	projectName string,
-) error {
-	sessData.KnownErrorsMutex.Lock()
-
-	recordStr := fmt.Sprint(record)
-
+	recordStr string,
+) bool {
 	var maxSimilarity float64
 	var maxSimilarityIndex int
 	for i, knownErr := range sessData.KnownErrors {
@@ -84,13 +78,29 @@ func handleErrorRecord(
 	if maxSimilarity > data.Config.Internal.Log.SimilarityThreshold {
 		sessData.KnownErrors[maxSimilarityIndex].Counter++
 		sessData.KnownErrors[maxSimilarityIndex].LastSeen = time.Now()
-		sessData.KnownErrorsMutex.Unlock()
-		return nil
+		return true
 	}
 
-	// similar errors not found at this point
+	return false
+}
 
-	// add error
+func handleErrorRecord(
+	data *storage.Data,
+	logData *LogMetadata,
+	record RawLogRecord,
+	badgerKey string,
+	sessData *SessionData,
+	projectName string,
+) {
+	sessData.KnownErrorsMutex.Lock()
+
+	recordStr := fmt.Sprint(record)
+
+	if similarErrorExists(data, logData, sessData, recordStr) {
+		sessData.KnownErrorsMutex.Unlock()
+		return
+	}
+
 	newError := types.KnownError{
 		Hostname:        logData.Hostname,
 		Service:         logData.Service,
@@ -104,6 +114,4 @@ func handleErrorRecord(
 	sessData.KnownErrorsMutex.Unlock()
 
 	notifyAboutError(data, projectName, logData, badgerKey)
-
-	return nil
 }
