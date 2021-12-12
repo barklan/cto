@@ -97,12 +97,9 @@ func processLogRecord(
 
 	data.SetLog(badgerKey, record, retentionDuration)
 
-	// log.Printf("Log added with key: %q", badgerKey)
-
-	// Send message if error
 	if logData.Flag != flagNone {
 		projectSessData := sessDataMap[projectName]
-		_ = handleErrorRecord(data, logData, record, badgerKey, projectSessData, projectName)
+		handleErrorRecord(data, logData, record, badgerKey, projectSessData, projectName)
 	}
 
 	reportChan <- LogRecordReport{ProjectName: projectName}
@@ -152,7 +149,6 @@ func assignFlag(str string) string {
 	return flagNone
 }
 
-// Deprecated hack - do not use.
 func findTimeStringByRegex(str string) (string, bool) {
 	r, _ := regexp.Compile(`(?:\D|\b)((?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d))(?:\D|\b)`)
 	timeStr := r.FindStringSubmatch(str)

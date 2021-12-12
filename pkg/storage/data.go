@@ -2,11 +2,9 @@ package storage
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"reflect"
-	"strings"
 	"time"
 
 	"github.com/barklan/cto/pkg/config"
@@ -14,12 +12,13 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+var variableKeySymbol = "$"
+
 type Data struct {
 	B         *tb.Bot
 	Chat      *tb.Chat
 	SysAdmin  string
 	DB        *badger.DB
-	LogDB     *badger.DB
 	Config    config.Config
 	MediaPath string
 }
@@ -64,8 +63,10 @@ func (d *Data) CreateMediaDirIfNotExists(dirname string) string {
 
 var GData *Data
 
+// TODO remove this
 func (d *Data) GetStr(key string) string {
-	return string(Get(d.DB, key))
+	varKey := variableKeySymbol + key
+	return string(Get(d.DB, varKey))
 }
 
 // You do not need to marshal anything!
@@ -82,24 +83,19 @@ func (d *Data) SetObj(key string, obj interface{}, ttl time.Duration) {
 		}
 	}
 
-	if ttl > 0 {
-		SetWithTTL(d.DB, key, byteObj, ttl)
-	} else {
-		Set(d.DB, key, byteObj)
-	}
-}
+	varKey := variableKeySymbol + key
 
-func (d *Data) SetObjBytes(key string, obj []byte, ttl time.Duration) {
 	if ttl > 0 {
-		SetWithTTL(d.DB, key, obj, ttl)
+		SetWithTTL(d.DB, varKey, byteObj, ttl)
 	} else {
-		log.Panic("Setting object without TTL - what are you doing?")
+		Set(d.DB, varKey, byteObj)
 	}
 }
 
 // You need to unmarshal it yourself.
 func (d *Data) Get(key string) []byte {
-	return Get(d.DB, key)
+	varKey := variableKeySymbol + key
+	return Get(d.DB, varKey)
 }
 
 // Send sends a message and saves it to main storage.
@@ -110,8 +106,6 @@ func (d *Data) Send(to tb.Recipient, msg interface{}, options ...interface{}) (*
 		return nil, err
 	}
 	log.Printf("Send TG message %v\n", msg)
-	key := fmt.Sprintf("botMsg-%d", m.ID)
-	d.SetObj(key, m, 8*time.Hour)
 	return m, err
 }
 
@@ -158,28 +152,4 @@ func (d *Data) PSend(projectName string, msg interface{}, options ...interface{}
 	go func() {
 		d.Send(chat, msg, options...)
 	}()
-}
-
-func (d *Data) GetKeysByFirstField(prefix string) [][]byte {
-	var keys [][]byte
-	err := d.DB.View(func(txn *badger.Txn) error {
-		opts := badger.DefaultIteratorOptions
-		opts.PrefetchValues = false
-		it := txn.NewIterator(opts)
-		defer it.Close()
-		for it.Rewind(); it.Valid(); it.Next() {
-			item := it.Item()
-			k := item.Key()
-			keyCopy := append([]byte{}, k...)
-			firstField := strings.SplitN(string(keyCopy), " ", 2)[0]
-			if firstField == prefix {
-				keys = append(keys, keyCopy)
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		log.Println("ERROR iterating")
-	}
-	return keys
 }

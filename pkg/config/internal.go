@@ -12,9 +12,8 @@ import (
 
 type InternalConfig struct {
 	TG struct {
-		BotToken       string `yaml:"bot_token"`
-		Boss           string `yaml:"boss"`
-		ClearOnRestart bool   `yaml:"clear_on_restart"`
+		BotToken string `yaml:"bot_token"`
+		Boss     string `yaml:"boss"`
 	} `yaml:"tg"`
 	DataPath      string `yaml:"data_path"`
 	JWTExpHours   int    `yaml:"jwt_exp_hours"`

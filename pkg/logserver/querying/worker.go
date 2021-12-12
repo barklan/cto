@@ -42,7 +42,7 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 		}
 
 		filteredValues := make([]map[string]interface{}, 0)
-		err := data.LogDB.View(func(txn *badger.Txn) error {
+		err := data.DB.View(func(txn *badger.Txn) error {
 			opts := badger.DefaultIteratorOptions
 			opts.Reverse = true
 			it := txn.NewIterator(opts)
@@ -88,8 +88,6 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 			jobFailed(data, queryJob.ID, workerChan)
 			continue
 		}
-
-		// data.SetObjBytes(queryJob.ID, values, 5*time.Minute)
 
 		if len(filteredValues) == 0 {
 			data.SetObj(queryJob.ID, "none", 1*time.Hour)
@@ -186,7 +184,7 @@ func filterKeys(
 		}
 		cutOffHourOptimStr = fmt.Sprintf(" %s:", cutOffHourOptimStr)
 	}
-	err := data.LogDB.View(func(txn *badger.Txn) error {
+	err := data.DB.View(func(txn *badger.Txn) error {
 		opts := badger.DefaultIteratorOptions
 		opts.PrefetchValues = false
 		opts.Reverse = reverse

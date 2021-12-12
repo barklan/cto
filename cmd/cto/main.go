@@ -40,7 +40,6 @@ func handleSysSignals(data *storage.Data) {
 	data.CSendSync(fmt.Sprintf("@%s, I received %s. Exiting now!", data.SysAdmin, sigID))
 	time.Sleep(200 * time.Millisecond)
 	data.DB.Close()
-	data.LogDB.Close()
 	data.B.Close()
 	os.Exit(0)
 }
@@ -62,8 +61,6 @@ func main() {
 
 	db := storage.OpenDB("", "/main")
 	defer db.Close()
-	logDb := storage.OpenDB("", "/log")
-	defer logDb.Close()
 
 	b := bot.Bot(config.Internal.TG.BotToken)
 
@@ -77,7 +74,6 @@ func main() {
 	// TODO this should go into internal config as a BossChat eventually
 	data.Chat = mainChat
 	data.DB = db
-	data.LogDB = logDb
 	data.Config = config
 
 	defer CrashExit(data, "Deferred in main.")
@@ -153,16 +149,6 @@ func main() {
 				data.SetObj(fmt.Sprintf("authToken-%s", projectName), ss, jwtExp)
 			}
 			<-tokenRotationTicker.C
-		}
-	}()
-
-	go func() {
-		if data.Config.Internal.TG.ClearOnRestart {
-			data.CSend("ClearOnRestart is set to true. " +
-				"Cleaning up in 10 seconds.")
-			time.Sleep(10 * time.Second)
-			data.CSendSync("Cleaning up...")
-			bot.CleanUp(data)
 		}
 	}()
 

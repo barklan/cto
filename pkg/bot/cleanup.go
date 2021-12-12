@@ -11,6 +11,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
+// FIXME THIS IS DEPRECATED - do not use!
 func CleanUp(data *storage.Data) {
 	keysToDelete := make([][]byte, 0)
 	tgMessagesToDelete := make([]tb.Message, 0)

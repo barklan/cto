@@ -25,19 +25,6 @@ Your user ID is %s.
 		}()
 	})
 
-	b.Handle("/clear", func(m *tb.Message) {
-		if m.Sender.Username != data.SysAdmin {
-			data.Send(data.Chat, fmt.Sprintf("@%s, help! Someone is trying to take my stuff!", data.SysAdmin))
-			return
-		}
-
-		go func() {
-			data.CSendSync("Started cleaning...")
-			b.Delete(m)
-			CleanUp(data)
-		}()
-	})
-
 	b.Handle("/mute", func(m *tb.Message) {
 		if m.Sender.Username != data.SysAdmin {
 			data.Send(data.Chat, fmt.Sprintf("@%s, help! Someone is trying to shut me up!", data.SysAdmin))

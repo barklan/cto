@@ -22,7 +22,7 @@ func (d *Data) SetLog(key string, obj interface{}, ttl time.Duration) {
 	}
 
 	if ttl > 0 {
-		SetWithTTL(d.LogDB, key, byteObj, ttl)
+		SetWithTTL(d.DB, key, byteObj, ttl)
 	} else {
 		log.Panic("WTF. Logs should have ttl")
 	}
@@ -30,9 +30,9 @@ func (d *Data) SetLog(key string, obj interface{}, ttl time.Duration) {
 
 // You need to unmarshal it yourself.
 func (d *Data) GetLog(key string) []byte {
-	return Get(d.LogDB, key)
+	return Get(d.DB, key)
 }
 
 func (d *Data) GetLogRaw(key []byte) []byte {
-	return GetRaw(d.LogDB, key)
+	return GetRaw(d.DB, key)
 }
