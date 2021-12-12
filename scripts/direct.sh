@@ -5,8 +5,8 @@ set -e
 export DOCKER_BUILDKIT=1
 export SSH_SERVER_NAME=cto
 
-docker build -t "barklan/gitlab-workflow-bot:rolling" .
-docker image push "barklan/gitlab-workflow-bot:rolling"
+docker build -t "barklan/cto-core:rolling" .
+docker image push "barklan/cto-core:rolling"
 docker build -t "barklan/cto-explorer:rolling" ./frontend
 docker image push "barklan/cto-explorer:rolling"
 
@@ -22,6 +22,6 @@ ssh -tt -o StrictHostKeyChecking=no "${SSH_SERVER_NAME}" \
 "cd /home/docker/cto && \
 docker volume create cto-data && \
 docker volume create cto-media && \
-docker image rm barklan/gitlab-workflow-bot:rolling || true && \
+docker image rm barklan/cto-core:rolling || true && \
 docker image rm barklan/cto-explorer:rolling || true && \
 docker-compose up -d"

@@ -44,14 +44,6 @@ function upd {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml up --build
 }
 
-function build {
-    docker build -t "barklan/gitlab-workflow-bot:$1" .
-}
-
-function push {
-    docker image push "barklan/gitlab-workflow-bot:$1"
-}
-
 function direct {
     bash scripts/direct.sh
 }

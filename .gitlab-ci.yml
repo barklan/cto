@@ -50,14 +50,14 @@ tests:
 #   before_script:
 #     - docker login -u barklan -p ${DOCKERHUB_TOKEN}
 #   script:
-#     # - current=$(curl -s -S "https://registry.hub.docker.com/v2/repositories/barklan/gitlab-workflow-bot/tags/" | jq '."results"[]["name"]' | sed -n 1p | tr -d '"')
+#     # - current=$(curl -s -S "https://registry.hub.docker.com/v2/repositories/barklan/cto-core/tags/" | jq '."results"[]["name"]' | sed -n 1p | tr -d '"')
 #     # - IFS=. read major minor patch <<< "${current}"
 #     # - ((minor++)) || true
 #     # - final="${major}.${minor}.0"
-#     # - docker build -t "barklan/gitlab-workflow-bot:${final}" .
-#     # - docker image push "barklan/gitlab-workflow-bot:${final}"
-#     - docker build -t "barklan/gitlab-workflow-bot:rolling" .
-#     - docker image push "barklan/gitlab-workflow-bot:rolling"
+#     # - docker build -t "barklan/cto-core:${final}" .
+#     # - docker image push "barklan/cto-core:${final}"
+#     - docker build -t "barklan/cto-core:rolling" .
+#     - docker image push "barklan/cto-core:rolling"
 #     - >
 #       IP_ADDRESS=${IP_ADDRESS}
 #       ACCESS_KEY=${ACCESS_KEY}

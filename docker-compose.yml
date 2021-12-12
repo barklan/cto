@@ -78,7 +78,7 @@ services:
       - traefik.http.routers.frontend-https.tls.certresolver=le
 
   backend:
-    image: barklan/gitlab-workflow-bot:rolling
+    image: barklan/cto-core:rolling
     # env_file:
     # - ./environment/.env
     restart: on-failure
