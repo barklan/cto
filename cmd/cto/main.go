@@ -37,7 +37,7 @@ func handleSysSignals(data *storage.Data) {
 	default:
 		sigID = "UNKNOWN"
 	}
-	data.CSendSync(fmt.Sprintf("@%s, I received %s. Exiting now!", data.SysAdmin, sigID))
+	data.CSendSync(fmt.Sprintf("I received %s. Exiting now!", sigID))
 	time.Sleep(200 * time.Millisecond)
 	data.DB.Close()
 	data.B.Close()
@@ -45,7 +45,7 @@ func handleSysSignals(data *storage.Data) {
 }
 
 func CrashExit(data *storage.Data, info string) {
-	data.CSendSync(fmt.Sprintf("@%s help! I crashed! %s", data.SysAdmin, info))
+	data.CSendSync(fmt.Sprintf("Help! I crashed! %s", info))
 	data.DB.Close()
 	data.B.Close()
 	os.Exit(1)
@@ -56,25 +56,23 @@ func main() {
 
 	config := config.ReadConfig()
 
-	sysAdmin := config.Internal.TG.Boss
-	log.Println(sysAdmin)
+	data := storage.InitData()
+
+	data.Config = config
 
 	db := storage.OpenDB("", "/main")
+	data.DB = db
 	defer db.Close()
 
 	b := bot.Bot(config.Internal.TG.BotToken)
-
-	// TODO the fuck is this hardcoded
-	mainChat := bot.GetBoss(342621688)
-	data := storage.InitData()
-	storage.GData = data
-	data.SysAdmin = sysAdmin
 	data.B = b
 
+	data.Chat = bot.GetBoss(data)
+
+	// TODO get rid of this after getting rid of grpc server
+	storage.GData = data
+
 	// TODO this should go into internal config as a BossChat eventually
-	data.Chat = mainChat
-	data.DB = db
-	data.Config = config
 
 	defer CrashExit(data, "Deferred in main.")
 

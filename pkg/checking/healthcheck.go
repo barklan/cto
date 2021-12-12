@@ -32,12 +32,12 @@ func CheckByExternalRequest(b *tb.Bot, data *storage.Data, args ...interface{}) 
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		if try == 0 && isHalted == false {
+		if try == 0 && !isHalted {
 			time.Sleep(30 * time.Second)
 			CheckByExternalRequest(b, data, projectName, url, try+1)
 			return
 		}
-		if isHalted == false {
+		if !isHalted {
 			data.PSend(projectName, fmt.Sprintf("Cannot reach:\n%s.", url))
 			data.SetObj(badgerKey, "true", 45*time.Minute)
 		}
@@ -45,19 +45,19 @@ func CheckByExternalRequest(b *tb.Bot, data *storage.Data, args ...interface{}) 
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		if try == 0 && isHalted == false {
+		if try == 0 && !isHalted {
 			time.Sleep(30 * time.Second)
 			CheckByExternalRequest(b, data, projectName, url, try+1)
 			return
 		}
-		if isHalted == false {
+		if !isHalted {
 			msg := fmt.Sprintf("Code %d:\n%s", resp.StatusCode, url)
 			data.PSend(projectName, msg)
 			data.SetObj(badgerKey, "true", 45*time.Minute)
 		}
 		return
 	}
-	if isHalted == true {
+	if isHalted {
 		data.SetObj(badgerKey, "false", 5*time.Minute)
 		data.PSend(projectName, fmt.Sprintf("%s is up again!", url))
 	}

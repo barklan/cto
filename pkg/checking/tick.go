@@ -38,7 +38,7 @@ func GoCheck(
 ) {
 	go func() {
 		defer func() {
-			data.CSend(fmt.Sprintf("%s crashed. @%s.", checkTitle, data.SysAdmin))
+			data.CSend(fmt.Sprintf("%s crashed.", checkTitle))
 			wg.Done()
 		}()
 

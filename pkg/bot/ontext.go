@@ -1,7 +1,6 @@
 package bot
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 
@@ -12,8 +11,7 @@ import (
 func registerOnTextHanler(b *tb.Bot, data *storage.Data) {
 	b.Handle(tb.OnText, func(m *tb.Message) {
 		// TODO boss only
-		if m.Sender.Username != data.SysAdmin {
-			data.Send(data.Chat, fmt.Sprintf("@%s, help! Someone is trying to mess with me!", data.SysAdmin))
+		if m.Chat.ID != data.Config.Internal.TG.BossChatID {
 			return
 		}
 

@@ -30,7 +30,7 @@ func LaunchChecks(b *tb.Bot, data *storage.Data, projectName string) {
 		)
 	}
 
-	if data.Config.P[projectName].Checks.GitLab.FailedPipelinesMain == true {
+	if data.Config.P[projectName].Checks.GitLab.FailedPipelinesMain {
 		title := "Main pipelines healthcheck"
 		interval := 5 * time.Minute
 		branch := "main"

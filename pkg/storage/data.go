@@ -17,7 +17,6 @@ var variableKeySymbol = "$"
 type Data struct {
 	B         *tb.Bot
 	Chat      *tb.Chat
-	SysAdmin  string
 	DB        *badger.DB
 	Config    config.Config
 	MediaPath string

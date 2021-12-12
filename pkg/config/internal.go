@@ -12,10 +12,9 @@ import (
 
 type InternalConfig struct {
 	TG struct {
-		BotToken string `yaml:"bot_token"`
-		Boss     string `yaml:"boss"`
+		BotToken   string `yaml:"bot_token"`
+		BossChatID int64  `yaml:"boss_chat_id"`
 	} `yaml:"tg"`
-	DataPath      string `yaml:"data_path"`
 	JWTExpHours   int    `yaml:"jwt_exp_hours"`
 	MagicJWTToken string `yaml:"magic_jwt_token"`
 	Log           struct {
