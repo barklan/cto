@@ -100,8 +100,7 @@ func LogServerServe(data *storage.Data) {
 	sessionDataMap := openSession(data)
 	LogServerSessionDataMap = sessionDataMap
 
-	// TODO maybe use this for websocket watch mode?
-	reportChan := make(chan LogRecordReport, 50) // TODO maybe not enough
+	reportChan := make(chan LogRecordReport, 50)
 
 	// Save new reports every 5 minutes
 	go func() {

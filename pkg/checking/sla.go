@@ -23,7 +23,6 @@ func makeRequest(url string) error {
 }
 
 func SLAAggregator(data *storage.Data, projectName string) {
-	// TODO Should be safe checked if key exists in map
 	if url := data.Config.P[projectName].Checks.SLA; url != "" {
 
 		ticker := time.NewTicker(3 * time.Second)

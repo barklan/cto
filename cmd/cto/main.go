@@ -72,8 +72,6 @@ func main() {
 	// TODO get rid of this after getting rid of grpc server
 	storage.GData = data
 
-	// TODO this should go into internal config as a BossChat eventually
-
 	defer CrashExit(data, "Deferred in main.")
 
 	var wg sync.WaitGroup
@@ -167,10 +165,6 @@ func main() {
 
 		wgSLA.Wait()
 	}()
-
-	// TODO purge it
-	// go dbbackups.PeriodicDBBackupsAllProjects(data)
-	// go dbbackups.ContinuousDBBackupsAllProjects(data)
 
 	go func() {
 		handleSysSignals(data)

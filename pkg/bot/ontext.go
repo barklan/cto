@@ -10,7 +10,6 @@ import (
 
 func registerOnTextHanler(b *tb.Bot, data *storage.Data) {
 	b.Handle(tb.OnText, func(m *tb.Message) {
-		// TODO boss only
 		if m.Chat.ID != data.Config.Internal.TG.BossChatID {
 			return
 		}

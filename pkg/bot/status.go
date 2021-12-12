@@ -133,7 +133,6 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 
 		msg += getSLAinfo(data, projectName)
 
-		// TODO delete this later
 		msg += fmt.Sprintf("%s.", projectName)
 
 		// TODO badger keys like this should not be magic strings

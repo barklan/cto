@@ -74,7 +74,6 @@ func GetRaw(db *badger.DB, key []byte) []byte {
 		return nil
 	})
 	if err != nil {
-		// TODO better error handling
 		return []byte("")
 	}
 

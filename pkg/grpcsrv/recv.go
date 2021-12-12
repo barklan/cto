@@ -26,7 +26,6 @@ func (s *server) Report(ctx context.Context, in *pb.ReportRequest) (*pb.ReportRe
 	return &pb.ReportReply{Message: "ok"}, nil
 }
 
-// TODO authentication!
 func Serve(data *storage.Data) {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {

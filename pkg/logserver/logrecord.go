@@ -23,8 +23,6 @@ const (
 
 type RawLogRecord map[string]interface{}
 
-// TODO add more fields (may be specific to service - handle default values gracefully)
-// TODO is this used anywhere?
 type LogMetadata struct {
 	Hostname  string `json:"fluentd_hostname"`
 	Service   string `json:"service_name"`
@@ -65,7 +63,6 @@ func constructMetadata(record RawLogRecord) *LogMetadata {
 	return &logMetadata
 }
 
-// TODO benchmark this.
 func processLogRecord(
 	data *storage.Data,
 	record RawLogRecord,
@@ -127,8 +124,6 @@ func constructBadgerKey(
 	return badgerKey, nil
 }
 
-// TODO more flags!
-// TODO flags for traefik
 func assignFlag(str string) string {
 	if strings.Contains(str, "ERROR") || strings.Contains(str, " [error] ") {
 		return flagError
