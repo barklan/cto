@@ -14,9 +14,6 @@ func authorize(data *storage.Data, tokenQ string) (string, int, bool) {
 		log.Println("No token provided for query.")
 		return "", http.StatusUnauthorized, false
 	}
-	if tokenQ == data.Config.Internal.MagicJWTToken {
-		return "nftg", http.StatusOK, true // HACK
-	}
 	tokenParsed, err := jwt.Parse(tokenQ, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])

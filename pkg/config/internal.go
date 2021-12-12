@@ -15,7 +15,6 @@ type InternalConfig struct {
 		BossChatID int64  `yaml:"boss_chat_id"`
 	} `yaml:"tg"`
 	JWTExpHours   int    `yaml:"jwt_exp_hours"`
-	MagicJWTToken string `yaml:"magic_jwt_token"`
 	Log           struct {
 		ClearOnRestart      bool    `yaml:"clear_on_restart"`
 		ServiceHostname     string  `yaml:"service_hostname"`
