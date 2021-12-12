@@ -22,7 +22,6 @@ Your user ID is %s.
 		}()
 	})
 
-	// FIXME mutes everything - should be project specific
 	b.Handle("/mute", func(m *tb.Message) {
 		project, ok := VerifySender(data, m)
 		if !ok {
@@ -41,7 +40,8 @@ Your user ID is %s.
 		data.CSend("Unmuted.")
 	})
 
-	registerOnTextHanler(b, data)
+	// TODO
+	// registerOnTextHanler(b, data)
 
 	registerProjectManagementHandlers(b, data)
 }

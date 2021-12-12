@@ -72,11 +72,13 @@ func TimeQueryBeaconToSeek(timeQuery string) string {
 	return result
 }
 
-func GetFullEnv(data *storage.Data, projectName, envQ string) (string, bool) {
+func GetFullEnv(data *storage.Data, project, envQ string) (string, bool) {
 	numberOfMatches := 0
 	var lastMatch string
-	for k, v := range data.Config.EnvToProjectName {
-		if strings.Contains(k, envQ) && v == projectName {
+
+	knownEnvs := GetKnownEnvs(data, project)
+	for k := range knownEnvs {
+		if strings.Contains(k, envQ) {
 			numberOfMatches++
 			lastMatch = k
 		}
@@ -88,11 +90,11 @@ func GetFullEnv(data *storage.Data, projectName, envQ string) (string, bool) {
 	return lastMatch, true
 }
 
-func GetFullService(data *storage.Data, environment, serviceQ string) (string, bool) {
+func GetFullService(data *storage.Data, project, environment, serviceQ string) (string, bool) {
 	numberOfMatches := 0
 	var lastMatch string
 
-	knownServices := GetKnownServices(data, environment)
+	knownServices := GetKnownServices(data, project, environment)
 	for k := range knownServices {
 		if strings.Contains(k, serviceQ) {
 			numberOfMatches++
@@ -140,7 +142,7 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 	}
 
 	serviceQ := querySet[1]
-	service, ok := GetFullService(data, environment, serviceQ)
+	service, ok := GetFullService(data, projectName, environment, serviceQ)
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -291,5 +293,4 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 
 	w.WriteHeader(http.StatusAccepted)
 	w.Write(resp)
-	return
 }

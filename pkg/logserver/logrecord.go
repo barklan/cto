@@ -65,24 +65,27 @@ func constructMetadata(record RawLogRecord) *LogMetadata {
 
 func processLogRecord(
 	data *storage.Data,
+	projectName string,
 	record RawLogRecord,
 	sessDataMap map[string]*SessionData,
-	// TODO google: passing one-way channels to functions
+	// TODO google: passing one-way channels to functions.
 	reportChan chan LogRecordReport,
 ) {
 	logData := constructMetadata(record)
 
-	projectName, ok := data.Config.EnvToProjectName[logData.Hostname]
-	if !ok {
-		log.Println("Did not find project associated with", logData.Hostname)
-		return
+	// TODO maybe send environment with fluentd in headers or query params.
+	knownEnvs := querying.GetKnownEnvs(data, projectName)
+	if _, ok := knownEnvs[logData.Hostname]; !ok {
+		knownEnvs[logData.Hostname] = struct{}{}
+		querying.SetKnownEnvs(data, projectName, knownEnvs)
 	}
 
-	// TODO it is heavy to do it on every log record - should decide randomly instead
-	knownServices := querying.GetKnownServices(data, logData.Hostname)
-	if _, ok := knownServices[logData.Hostname]; !ok {
+	// This is for querying purposes.
+	// TODO it is heavy to do it on every log record - should decide randomly instead.
+	knownServices := querying.GetKnownServices(data, projectName, logData.Hostname)
+	if _, ok := knownServices[logData.Service]; !ok {
 		knownServices[logData.Service] = struct{}{}
-		querying.SetKnownServices(data, logData.Hostname, knownServices)
+		querying.SetKnownServices(data, projectName, logData.Hostname, knownServices)
 	}
 
 	flag := assignFlag(fmt.Sprint(record))

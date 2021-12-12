@@ -32,8 +32,4 @@ func ServeLogExact(w http.ResponseWriter, r *http.Request, data *storage.Data) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(value)
-	return
-}
-
-func constructRegexpFromQuery(query string) {
 }

@@ -1,7 +1,6 @@
 package bot
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/barklan/cto/pkg/config"
@@ -30,14 +29,5 @@ func registerProjectManagementHandlers(b *tb.Bot, data *storage.Data) {
 			data.Config = config
 			data.CSend("Successfully reloaded configurations!")
 		}
-	})
-
-	b.Handle("/projects", func(m *tb.Message) {
-		if m.Chat.ID != data.Config.Internal.TG.BossChatID {
-			data.Send(data.Chat, "Help! Someone is trying to mess with me!")
-			return
-		}
-
-		data.CSend(fmt.Sprint(data.Config.EnvToProjectName))
 	})
 }

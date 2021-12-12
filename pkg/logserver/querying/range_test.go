@@ -1,7 +1,6 @@
 package querying
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -36,7 +35,7 @@ func TestBeaconToSeek(t *testing.T) {
 		}
 
 		got := rq.BeaconToSeek()
-		want := fmt.Sprintf("nftg futurearts.ru celerybeat-logger 2021-11-03 24:00:00")
+		want := "nftg futurearts.ru celerybeat-logger 2021-11-03 24:00:00"
 
 		gotEqWant(t, got, want)
 	})

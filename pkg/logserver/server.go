@@ -82,7 +82,7 @@ func logOneRequest(
 		for _, pick := range multiLog {
 			go func(record RawLogRecord) {
 				defer wg.Done()
-				processLogRecord(data, record, sessDataMap, reportChan)
+				processLogRecord(data, projectName, record, sessDataMap, reportChan)
 			}(pick)
 		}
 
