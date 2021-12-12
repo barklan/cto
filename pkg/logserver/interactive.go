@@ -68,12 +68,15 @@ func similarErrorExists(
 			continue
 		}
 
-		similarity := strutil.Similarity(knownErr.LogStr, recordStr, metrics.NewHamming())
+		jacMetic := metrics.NewJaccard()
+		similarity := strutil.Similarity(knownErr.LogStr, recordStr, jacMetic)
 		if similarity > maxSimilarity {
 			maxSimilarity = similarity
 			maxSimilarityIndex = i
 		}
 	}
+
+	log.Println("max similarity with previous error:", maxSimilarity)
 
 	if maxSimilarity > data.Config.Internal.Log.SimilarityThreshold {
 		sessData.KnownErrors[maxSimilarityIndex].Counter++
