@@ -19,19 +19,25 @@ Your user ID is %s.
 			fmt.Sprint(m.Chat.ID), fmt.Sprint(m.Sender.ID))
 		go func() {
 			data.Send(m.Chat, message)
-			b.Delete(m)
 		}()
 	})
 
 	// FIXME mutes everything - should be project specific
 	b.Handle("/mute", func(m *tb.Message) {
-		data.CSend("Muted for 4 hours.")
-		data.SetObj("muted", "true", 4*time.Hour)
+		project, ok := VerifySender(data, m)
+		if !ok {
+			return
+		}
+		data.PSend(project, "Muted for 4 hours.")
+		data.SetVar(project, "muted", "flag", 4*time.Hour)
 	})
 
 	b.Handle("/unmute", func(m *tb.Message) {
-		data.SetObj("muted", "false", 5*time.Minute)
-		_ = b.Delete(m)
+		project, ok := VerifySender(data, m)
+		if !ok {
+			return
+		}
+		data.DeleteVar(project, "muted")
 		data.CSend("Unmuted.")
 	})
 

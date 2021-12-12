@@ -62,13 +62,65 @@ func (d *Data) CreateMediaDirIfNotExists(dirname string) string {
 
 var GData *Data
 
-// TODO remove this
+// TODO deprecate this
 func (d *Data) GetStr(key string) string {
 	varKey := variableKeySymbol + key
 	return string(Get(d.DB, varKey))
 }
 
-// You do not need to marshal anything!
+func (d *Data) SetVar(projectName, key string, obj interface{}, ttl time.Duration) {
+	var byteObj []byte
+	val := reflect.ValueOf(obj)
+	if val.Kind() == reflect.String {
+		byteObj = []byte(obj.(string))
+	} else {
+		var err error
+		byteObj, err = json.Marshal(obj)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+
+	varKey := projectName + variableKeySymbol + key
+	if ttl > 0 {
+		SetWithTTL(d.DB, varKey, byteObj, ttl)
+	} else {
+		Set(d.DB, varKey, byteObj)
+	}
+}
+
+func (d *Data) GetVar(projectName, key string) []byte {
+	varKey := projectName + variableKeySymbol + key
+	return Get(d.DB, varKey)
+}
+
+func (d *Data) VarExists(projectName, key string) bool {
+	err := d.DB.View(func(txn *badger.Txn) error {
+		_, err := txn.Get([]byte(key))
+		return err
+	})
+	switch err {
+	case badger.ErrKeyNotFound:
+		return false
+	case nil:
+		return true
+	default:
+		log.Panicln("panicing in VarExists function", err)
+		return false
+	}
+}
+
+func (d *Data) DeleteVar(projectName, key string) {
+	err := d.DB.Update(func(txn *badger.Txn) error {
+		err := txn.Delete([]byte(key))
+		return err
+	})
+	if err != nil {
+		log.Panicln("panicing in DeleteVar function", err)
+	}
+}
+
+// TODO deprecate this
 func (d *Data) SetObj(key string, obj interface{}, ttl time.Duration) {
 	var byteObj []byte
 	val := reflect.ValueOf(obj)
@@ -91,7 +143,7 @@ func (d *Data) SetObj(key string, obj interface{}, ttl time.Duration) {
 	}
 }
 
-// You need to unmarshal it yourself.
+// TODO deprecate this
 func (d *Data) Get(key string) []byte {
 	varKey := variableKeySymbol + key
 	return Get(d.DB, varKey)
@@ -110,38 +162,26 @@ func (d *Data) Send(to tb.Recipient, msg interface{}, options ...interface{}) (*
 
 func (d *Data) JustSend(to tb.Recipient, msg interface{}, options ...interface{}) {
 	go func() {
-		d.Send(to, msg, options...)
+		_, _ = d.Send(to, msg, options...)
 	}()
 }
 
 // CSendSync sends to barklan with sync
 func (d *Data) CSendSync(msg interface{}, options ...interface{}) (*tb.Message, error) {
-	muted := d.GetStr("muted")
-	if muted == "true" {
-		log.Println("I am muted!")
-		return nil, nil
-	}
-
 	return d.Send(d.Chat, msg, options...)
 }
 
 // CSend sends to barklan
 func (d *Data) CSend(msg interface{}, options ...interface{}) {
-	muted := d.GetStr("muted")
-	if muted == "true" {
-		log.Println("I am muted!")
-		return
-	}
-
 	go func() {
-		d.Send(d.Chat, msg, options...)
+		_, _ = d.Send(d.Chat, msg, options...)
 	}()
 }
 
 func (d *Data) PSend(projectName string, msg interface{}, options ...interface{}) {
 	// TODO recovery for mute operation like in CSend or maybe fuck it?
-	muted := d.GetStr("muted")
-	if muted == "true" {
+	muted := d.VarExists(projectName, "muted")
+	if muted {
 		log.Println("I am muted!")
 		return
 	}
@@ -149,6 +189,6 @@ func (d *Data) PSend(projectName string, msg interface{}, options ...interface{}
 	chatID := d.Config.P[projectName].TG.ChatID
 	chat := &tb.Chat{ID: chatID}
 	go func() {
-		d.Send(chat, msg, options...)
+		_, _ = d.Send(chat, msg, options...)
 	}()
 }
