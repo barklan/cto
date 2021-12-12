@@ -125,6 +125,7 @@ func ProcessOneValue(
 
 	filteredRawLogRecord := map[string]interface{}{}
 
+	// TODO gojsonq is not maintained - write your own implementation
 	jqObj := gojsonq.New().FromInterface(logrecord)
 
 	if regexQ != "" {

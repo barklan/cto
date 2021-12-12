@@ -64,6 +64,7 @@ func main() {
 	data.DB = db
 	defer db.Close()
 
+	// TODO telebot migrating to v3 soon
 	b := bot.Bot(config.Internal.TG.BotToken)
 	data.B = b
 

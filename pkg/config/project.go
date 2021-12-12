@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/kr/pretty"
 	"gopkg.in/yaml.v3"
 )
 
@@ -64,8 +63,6 @@ func ReadProjectConfig(path string) (ProjectConfig, error) {
 	if err != nil {
 		return config, fmt.Errorf("Failed to parse config file. %v", err)
 	}
-
-	fmt.Printf("ReadConfig: %# v", pretty.Formatter(config))
 
 	return config, nil
 }

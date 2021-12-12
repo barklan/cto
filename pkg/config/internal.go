@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/kr/pretty"
 	"gopkg.in/yaml.v3"
 )
 
@@ -60,7 +59,7 @@ func ReadInternalConfig(path string) (InternalConfig, error) {
 		return config, fmt.Errorf("Failed to parse config file. %v", err)
 	}
 
-	fmt.Printf("ReadConfig: %# v", pretty.Formatter(config))
+	fmt.Printf("ReadConfig: %# v", fmt.Sprint(config))
 
 	return config, nil
 }
