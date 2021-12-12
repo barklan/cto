@@ -12,7 +12,6 @@ import (
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/barklan/cto/pkg/checking"
 	"github.com/barklan/cto/pkg/config"
-	"github.com/barklan/cto/pkg/grpcsrv"
 	"github.com/barklan/cto/pkg/logserver"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/golang-jwt/jwt/v4"
@@ -107,16 +106,6 @@ func main() {
 			wg.Done()
 		}()
 		logserver.LogServerServe(data)
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer func() {
-			data.CSend("grpc server deferred called")
-			wg.Done()
-		}()
-
-		grpcsrv.Serve(data)
 	}()
 
 	tokenRotationTicker := time.NewTicker(4 * time.Hour)

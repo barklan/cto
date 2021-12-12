@@ -48,12 +48,6 @@ function direct {
     bash scripts/direct.sh
 }
 
-function proto {
-    protoc --go_out=. --go_opt=paths=source_relative \
-    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-    pkg/protos/main.proto
-}
-
 function fluentd:push {
     cd dockerfiles/fluentd_cto
     docker build -t barklan/fluentd-cto:"$1" .
