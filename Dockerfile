@@ -10,12 +10,6 @@ ARG BUILDKIT_INLINE_CACHE=1
 # Ca-certificates is required to call HTTPS endpoints.
 RUN apk update && apk add --no-cache git ca-certificates tzdata && update-ca-certificates
 
-# Get docker binary.
-RUN mkdir -p /app/media
-WORKDIR /app/media
-RUN wget https://download.docker.com/linux/static/stable/x86_64/docker-20.10.9.tgz
-RUN tar xzvf docker-20.10.9.tgz
-
 # Create appuser
 ENV USER=appuser
 ENV UID=10001
@@ -55,8 +49,6 @@ COPY --from=builder /usr/share/zoneinfo /usr/share/zoneinfo
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /etc/group /etc/group
-
-COPY --from=builder /app/media/docker/docker /usr/bin/docker
 
 # Copy our static executable
 COPY --from=builder /go/bin/hello /go/bin/hello

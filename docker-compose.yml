@@ -79,8 +79,6 @@ services:
 
   backend:
     image: barklan/cto-core:rolling
-    # env_file:
-    # - ./environment/.env
     restart: on-failure
     ports:
       - 8080:8080
@@ -110,20 +108,6 @@ services:
       - traefik.http.routers.backend-https.tls=true
       - traefik.http.routers.backend-https.tls.certresolver=le
       - traefik.http.services.backend.loadbalancer.server.port=8080
-      # Docs
-      - traefik.http.routers.backend-docs-http.rule=Host(`${DOMAIN?Variable not
-        set}`) && PathPrefix(`/docs`) || PathPrefix(`/redoc`) ||
-        PathPrefix(`/api/v1/openapi.json`)
-      - traefik.http.routers.backend-docs-http.entrypoints=http
-      - traefik.http.routers.backend-docs-http.middlewares=https-redirect
-      - traefik.http.routers.backend-docs-https.rule=Host(`${DOMAIN?Variable not
-        set}`) && PathPrefix(`/docs`) || PathPrefix(`/redoc`) ||
-        PathPrefix(`/api/v1/openapi.json`)
-      - traefik.http.routers.backend-docs-https.entrypoints=https
-      - traefik.http.routers.backend-docs-https.tls=true
-      - traefik.http.routers.backend-docs-https.tls.certresolver=le
-      - traefik.http.routers.backend-docs-http.middlewares=docsauth
-      - traefik.http.routers.backend-docs-https.middlewares=docsauth
 
 volumes:
   traefik-public-certificates: null
