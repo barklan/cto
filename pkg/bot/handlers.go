@@ -101,9 +101,7 @@ func RegisterHandlers(b *tb.Bot, data *storage.Data) {
 
 		data.PSend(project, fmt.Sprintf(
 			`Project: <code>%s</code>; secret: <code>%s</code>; owner: <code>%s</code>;
-
 Your projects: %s
-
 Participating in: %s`,
 			project,
 			secret,
