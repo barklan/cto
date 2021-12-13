@@ -17,6 +17,7 @@ func RegisterHandlers(b *tb.Bot, data *storage.Data) {
 
 	b.Handle("/start", func(m *tb.Message) {
 		if m.Sender.Username != "barklan" { // TODO external auth service
+			data.JustSend(m.Chat, "You are not authorized to register projects.")
 			return
 		}
 
@@ -75,7 +76,41 @@ func RegisterHandlers(b *tb.Bot, data *storage.Data) {
 		if !ok {
 			return
 		}
-		data.PSend(project, "Hey all! Someone help this guy.")
+
+		secret := data.GetVar(project, vars.SecretKey)
+		owner := data.GetVar(project, vars.Owner)
+
+		yourProjects := []string{}
+		participatingIn := []string{}
+		for p, cid := range data.Config.P {
+			projectOwner := string(data.GetVar(p, vars.Owner))
+			if projectOwner == m.Sender.Username {
+				yourProjects = append(yourProjects, p)
+			}
+
+			cidChat, err := b.ChatByID(fmt.Sprint(cid))
+			if err != nil {
+				data.CSend(fmt.Sprintf("Something wrong with project %q", p))
+			}
+
+			_, err = b.ChatMemberOf(cidChat, m.Sender)
+			if err == nil {
+				participatingIn = append(participatingIn, p)
+			}
+		}
+
+		data.PSend(project, fmt.Sprintf(
+			`Project: <code>%s</code>; secret: <code>%s</code>; owner: <code>%s</code>;
+
+Your projects: %s
+
+Participating in: %s`,
+			project,
+			secret,
+			owner,
+			yourProjects,
+			participatingIn,
+		), tb.ModeHTML)
 	})
 
 	// TODO
@@ -89,6 +124,6 @@ func VerifySender(data *storage.Data, m *tb.Message) (string, bool) {
 			return project, true
 		}
 	}
-	data.JustSend(m.Chat, "I am not registered for this chat.")
+	data.JustSend(m.Chat, "No project is registered for this chat.")
 	return "", false
 }
