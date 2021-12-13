@@ -12,6 +12,7 @@ import (
 
 func RegisterHandlers(b *tb.Bot, data *storage.Data) {
 	registerStatusHandler(b, data)
+	registerHelpHandler(data, b)
 	registerManagementHandlers(data, b)
 	registerOnTextHanler(data, b)
 
@@ -70,46 +71,6 @@ func RegisterHandlers(b *tb.Bot, data *storage.Data) {
 		data.CSend("Unmuted.")
 	})
 
-	b.Handle("/help", func(m *tb.Message) {
-		// TODO should return project name, owner and secret.
-		project, ok := VerifySender(data, m)
-		if !ok {
-			return
-		}
-
-		secret := data.GetVar(project, vars.SecretKey)
-		owner := data.GetVar(project, vars.Owner)
-
-		yourProjects := []string{}
-		participatingIn := []string{}
-		for p, cid := range data.Config.P {
-			projectOwner := string(data.GetVar(p, vars.Owner))
-			if projectOwner == m.Sender.Username {
-				yourProjects = append(yourProjects, p)
-			}
-
-			cidChat, err := b.ChatByID(fmt.Sprint(cid))
-			if err != nil {
-				data.CSend(fmt.Sprintf("Something wrong with project %q", p))
-			}
-
-			_, err = b.ChatMemberOf(cidChat, m.Sender)
-			if err == nil {
-				participatingIn = append(participatingIn, p)
-			}
-		}
-
-		data.PSend(project, fmt.Sprintf(
-			`Project: <code>%s</code>; secret: <code>%s</code>; owner: <code>%s</code>;
-Your projects: %s
-Participating in: %s`,
-			project,
-			secret,
-			owner,
-			yourProjects,
-			participatingIn,
-		), tb.ModeHTML)
-	})
 
 	// TODO
 	// registerOnTextHanler(b, data)
