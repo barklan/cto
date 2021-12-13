@@ -1,4 +1,4 @@
-package config
+package storage
 
 import (
 	"fmt"
@@ -9,13 +9,15 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var IChatState = "IChatState"
+
 type InternalConfig struct {
 	TG struct {
 		BotToken   string `yaml:"bot_token"`
 		BossChatID int64  `yaml:"boss_chat_id"`
 	} `yaml:"tg"`
-	JWTExpHours   int    `yaml:"jwt_exp_hours"`
-	Log           struct {
+	JWTExpHours int `yaml:"jwt_exp_hours"`
+	Log         struct {
 		ClearOnRestart      bool    `yaml:"clear_on_restart"`
 		ServiceHostname     string  `yaml:"service_hostname"`
 		RetentionHours      int     `yaml:"retention_hours"`

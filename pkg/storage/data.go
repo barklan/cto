@@ -7,18 +7,21 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/barklan/cto/pkg/config"
 	"github.com/dgraph-io/badger/v3"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-var variableKeySymbol = "$"
+var (
+	Internal          = "Internal" // Reserved internal project - not listed in projects.
+	internalKeySymbol = "!"
+	variableKeySymbol = "$"
+)
 
 type Data struct {
 	B         *tb.Bot
 	Chat      *tb.Chat
 	DB        *badger.DB
-	Config    config.Config
+	Config    *Config
 	MediaPath string
 }
 
@@ -59,8 +62,6 @@ func (d *Data) CreateMediaDirIfNotExists(dirname string) string {
 
 	return fullDirname
 }
-
-var GData *Data
 
 // TODO deprecate this
 func (d *Data) GetStr(key string) string {
@@ -186,7 +187,7 @@ func (d *Data) PSend(projectName string, msg interface{}, options ...interface{}
 		return
 	}
 
-	chatID := d.Config.P[projectName].TG.ChatID
+	chatID := d.Config.P[projectName]
 	chat := &tb.Chat{ID: chatID}
 	go func() {
 		_, _ = d.Send(chat, msg, options...)

@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/barklan/cto/pkg/gitlab"
 	logservertypes "github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -47,16 +46,6 @@ func getSLAinfo(data *storage.Data, projectName string) string {
 		totalRunningTime.Round(time.Second),
 		totalDownTime.Round(time.Second),
 	)
-}
-
-func gitlabRunnersInfo(data *storage.Data, projectName string) string {
-	gitlabProjectId := fmt.Sprint(data.Config.P[projectName].Checks.GitLab.ProjectID)
-	gitlabToken := data.Config.P[projectName].Checks.GitLab.APIToken
-	runners, err := gitlab.GetActiveGroupRunners(gitlabProjectId, gitlabToken)
-	if err != nil {
-		return "Failed to get GitLab runners info. "
-	}
-	return fmt.Sprintf("%d active GitLab runners. ", len(runners))
 }
 
 func registerStatusHandler(b *tb.Bot, data *storage.Data) {
@@ -129,8 +118,6 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 
 		msg += fmt.Sprintf("Logs are retained for %d hours. ", data.Config.Internal.Log.RetentionHours)
 
-		msg += gitlabRunnersInfo(data, projectName)
-
 		msg += getSLAinfo(data, projectName)
 
 		msg += fmt.Sprintf("%s.", projectName)
@@ -152,6 +139,6 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 		)
 
 		data.PSend(projectName, msg, tb.ModeMarkdown, selector)
-		b.Delete(m)
+		_ = b.Delete(m)
 	})
 }

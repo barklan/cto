@@ -10,8 +10,6 @@ import (
 	"time"
 
 	"github.com/barklan/cto/pkg/bot"
-	"github.com/barklan/cto/pkg/checking"
-	"github.com/barklan/cto/pkg/config"
 	"github.com/barklan/cto/pkg/logserver"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/golang-jwt/jwt/v4"
@@ -53,24 +51,20 @@ func CrashExit(data *storage.Data, info string) {
 func main() {
 	log.Println("Starting...")
 
-	config := config.ReadConfig()
-
 	data := storage.InitData()
-
-	data.Config = config
 
 	db := storage.OpenDB("", "/main")
 	data.DB = db
 	defer db.Close()
+
+	config := storage.ReadConfig(data)
+	data.Config = config
 
 	// TODO telebot migrating to v3 soon
 	b := bot.Bot(config.Internal.TG.BotToken)
 	data.B = b
 
 	data.Chat = bot.GetBoss(data)
-
-	// TODO get rid of this after getting rid of grpc server
-	storage.GData = data
 
 	defer CrashExit(data, "Deferred in main.")
 
@@ -87,17 +81,18 @@ func main() {
 		b.Start()
 	}()
 
-	wg.Add(1)
-	go func() {
-		defer func() {
-			CrashExit(data, "All checks exited.")
-			wg.Done()
-		}()
-		for projectName := range data.Config.P {
-			time.Sleep(2 * time.Second) // we want some interval between outgoing requests
-			checking.LaunchChecks(b, data, projectName)
-		}
-	}()
+	// TODO recovery from v4
+	// wg.Add(1)
+	// go func() {
+	// 	defer func() {
+	// 		CrashExit(data, "All checks exited.")
+	// 		wg.Done()
+	// 	}()
+	// 	for projectName := range data.Config.P {
+	// 		time.Sleep(2 * time.Second) // we want some interval between outgoing requests
+	// 		checking.LaunchChecks(b, data, projectName)
+	// 	}
+	// }()
 
 	wg.Add(1)
 	go func() {
@@ -138,23 +133,24 @@ func main() {
 		}
 	}()
 
-	go func() {
-		defer data.CSend("All SLA checks exited.")
-		wgSLA := new(sync.WaitGroup)
-		wgSLA.Add(len(data.Config.P))
+	// TODO recovery from v4
+	// go func() {
+	// 	defer data.CSend("All SLA checks exited.")
+	// 	wgSLA := new(sync.WaitGroup)
+	// 	wgSLA.Add(len(data.Config.P))
 
-		for projectName := range data.Config.P {
-			go func(pName string) {
-				defer func() {
-					data.CSend(fmt.Sprintf("SLA exited for project %s.", pName))
-					wgSLA.Done()
-				}()
-				checking.SLAAggregator(data, pName)
-			}(projectName)
-		}
+	// 	for projectName := range data.Config.P {
+	// 		go func(pName string) {
+	// 			defer func() {
+	// 				data.CSend(fmt.Sprintf("SLA exited for project %s.", pName))
+	// 				wgSLA.Done()
+	// 			}()
+	// 			checking.SLAAggregator(data, pName)
+	// 		}(projectName)
+	// 	}
 
-		wgSLA.Wait()
-	}()
+	// 	wgSLA.Wait()
+	// }()
 
 	go func() {
 		handleSysSignals(data)

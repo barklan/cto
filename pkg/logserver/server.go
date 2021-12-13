@@ -15,6 +15,7 @@ import (
 	"github.com/barklan/cto/pkg/logserver/querying"
 	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
+	"github.com/barklan/cto/pkg/storage/vars"
 )
 
 var LogServerSessionDataMap map[string]*SessionData
@@ -29,16 +30,17 @@ type SessionData struct {
 }
 
 func authorizeRequest(data *storage.Data, r *http.Request) (string, bool) {
-	_, password, ok := r.BasicAuth()
+	project, password, ok := r.BasicAuth()
 	if !ok {
 		log.Println("error parsing basic auth")
 		return "", false
 	}
 
-	for projectName, config := range data.Config.P {
-		if subtle.ConstantTimeCompare([]byte(password), []byte(config.SecretKey)) == 1 {
-			return projectName, true
-		}
+	// TODO magic string
+	secret := data.GetVar(project, vars.SecretKey)
+
+	if subtle.ConstantTimeCompare([]byte(password), secret) == 1 {
+		return project, true
 	}
 
 	return "", false
