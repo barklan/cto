@@ -41,7 +41,7 @@ func getSLAinfo(data *storage.Data, projectName string) string {
 	invertedSLA := float64(totalDownTime) / float64(totalRunningTime) * 100
 	sla := 100.0 - invertedSLA
 	return fmt.Sprintf(
-		"Uptime: %.10f%% (total: %s, down: %s). ",
+		`Uptime: %.10f%% \(total: %s, down: %s\). `,
 		sla,
 		totalRunningTime.Round(time.Second),
 		totalDownTime.Round(time.Second),
@@ -69,7 +69,7 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 			msg += "No known issues."
 		} else {
 			msg += fmt.Sprintf(
-				"Recent issues (similarity threshold is set to %.2f):\n",
+				`Recent issues \(similarity threshold is set to %.2f\):\n`,
 				data.Config.Internal.Log.SimilarityThreshold,
 			)
 			for index, knownError := range knownErrors {
@@ -84,7 +84,7 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 				upperFlag := strings.ToUpper(badgerKeyArr[5])
 
 				msg += fmt.Sprintf(
-					" *%d. %s origin:* %s ([link to log](%s))\n    *last seen:* %s ago (%s)\n    *total count:* %d\n",
+					`*%d\. %s origin:* %s \- [__log__](%s)\n- last seen:* %s ago \(%s\)\n-n*total count:* %d\n`,
 					index+1,
 					upperFlag,
 					prettyOrigin,
@@ -138,7 +138,9 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 			selector.Row(btnURL),
 		)
 
-		data.PSend(projectName, msg, tb.ModeMarkdown, selector)
+		msg = strings.Replace(msg, ".", `\.`, -1)
+
+		data.PSend(projectName, msg, tb.ModeMarkdownV2, selector)
 		_ = b.Delete(m)
 	})
 }
