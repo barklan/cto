@@ -90,15 +90,15 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 
 				msg += fmt.Sprintf(
 					`*%d\. %s:* [%s](%s)
-\- *last:* %s ago \| *total:* %d
+\- *total:* %d \| *last:* %s ago
 `,
 					index+1,
 					upperFlag,
 					prettyOrigin,
 					exactLogURL,
-					time.Since(knownError.LastSeen).Round(time.Second),
 					// knownError.LastSeen.Format("3:04PM MST"),
 					knownError.Counter,
+					time.Since(knownError.LastSeen).Round(time.Second),
 				)
 			}
 		}
