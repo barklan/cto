@@ -1,6 +1,7 @@
 package querying
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -47,11 +48,27 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 			opts.Reverse = true
 			it := txn.NewIterator(opts)
 			defer it.Close()
+
+			northStarKey := []byte{}
+			if queryJob.NorthStar != "" {
+				it.Seek([]byte(queryJob.NorthStar))
+				if it.Valid() {
+					northStarKey = it.Item().KeyCopy(northStarKey)
+					log.Println("northStarKey:", string(northStarKey))
+				} else {
+					log.Printf("Iteration is not valid")
+					northStarKey = []byte{}
+				}
+				it.Rewind()
+			}
+
 			prefix := []byte(queryJob.ValidPrefix)
 			beacon := []byte(queryJob.Beacon)
 			for it.Seek(beacon); it.ValidForPrefix(prefix); it.Next() {
 				item := it.Item()
-				// k := item.Key()
+				if bytes.Equal(item.Key(), northStarKey) {
+					break
+				}
 				var valCopy []byte
 				err := item.Value(func(val []byte) error {
 					valCopy = append([]byte{}, val...)

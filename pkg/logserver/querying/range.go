@@ -14,6 +14,14 @@ import (
 	"github.com/barklan/cto/pkg/storage"
 )
 
+type timeSyntax int
+
+const (
+	prefixSyntax timeSyntax = iota
+	lastMinutesSyntax
+	intervalSyntax
+)
+
 type RequestQuery struct {
 	ProjectName string
 	Env         string
@@ -22,8 +30,16 @@ type RequestQuery struct {
 	TimeQuery   string
 }
 
-func (rq RequestQuery) BeaconToSeek() string {
-	timeQueryBeacon := TimeQueryBeaconToSeek(rq.TimeQuery)
+func (rq RequestQuery) BeaconToSeek(syntax timeSyntax) (string, error) {
+	var timeQueryBeacon string
+	if syntax == lastMinutesSyntax {
+		timeQueryBeacon = time.Now().Add(1 * time.Minute).UTC().Format("15:04:05")
+	} else {
+		timeQueryBeacon = TimeQueryBeaconToSeek(rq.TimeQuery)
+	}
+
+	log.Println("beacon", timeQueryBeacon)
+
 	beacon := strings.Join([]string{
 		rq.ProjectName,
 		rq.Env,
@@ -31,17 +47,41 @@ func (rq RequestQuery) BeaconToSeek() string {
 		rq.Date,
 		timeQueryBeacon,
 	}, " ")
-	return beacon
+	return beacon, nil
 }
 
-func (rq RequestQuery) ValidPrefix() string {
-	return strings.Join([]string{
+func (rq RequestQuery) ValidPrefix(syntax timeSyntax) string {
+	prefix := strings.Join([]string{
 		rq.ProjectName,
 		rq.Env,
 		rq.Service,
-		rq.Date,
-		rq.TimeQuery,
 	}, " ")
+	if syntax == prefixSyntax {
+		prefix += " " + rq.Date + " " + rq.TimeQuery
+	}
+	return prefix
+}
+
+func (rq RequestQuery) NorthStar(syntax timeSyntax, now time.Time) (string, error) {
+	// TODO should do it once and not in every function
+	if syntax == lastMinutesSyntax {
+		minutes, err := strconv.ParseInt(rq.TimeQuery[:len(rq.TimeQuery)-1], 10, 64)
+		if err != nil {
+			return "", err
+		}
+		minutesAgo := now.Add(time.Duration(-minutes) * time.Minute)
+		minutesAgoStr := minutesAgo.Format("2006-01-02 15:04:05")
+		northStar := strings.Join([]string{
+			rq.ProjectName,
+			rq.Env,
+			rq.Service,
+			minutesAgoStr,
+		}, " ")
+
+		log.Println("north star string: ", northStar)
+		return northStar, nil
+	}
+	return "", nil
 }
 
 func TimeQueryBeaconToSeek(timeQuery string) string {
@@ -165,15 +205,22 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 	date := fmt.Sprintf("%s-%s", yearAndMonthStr, day)
 
 	var timeQuery string
+	var tSyntax timeSyntax
+	tSyntax = prefixSyntax
 	switch queryLen {
 	case 3:
 		timeQuery = ""
 	case 4:
 		timeQuery = querySet[3]
-		if len(timeQuery) == 1 {
-			timeQuery = "0" + timeQuery
-		} else if string(timeQuery[1]) == ":" {
-			timeQuery = "0" + timeQuery
+		if string(timeQuery[len(timeQuery)-1]) != "m" {
+			// TODO this should only be available when t (today) is used as a day
+			if len(timeQuery) == 1 {
+				timeQuery = "0" + timeQuery
+			} else if string(timeQuery[1]) == ":" {
+				timeQuery = "0" + timeQuery
+			}
+		} else {
+			tSyntax = lastMinutesSyntax
 		}
 	}
 
@@ -184,57 +231,23 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 		Date:        date,
 		TimeQuery:   timeQuery,
 	}
-	beacon := requestQuery.BeaconToSeek()
-	validPrefix := requestQuery.ValidPrefix()
 
-	// var cutOffOptimHour int64 = -1
-	// if string(timeQuery[len(timeQuery)-1]) == "m" {
-	// 	match, _ := regexp.MatchString(`^\d+m$`, timeQuery)
-	// 	if match == true {
-	// 		minutes, err := strconv.ParseInt(timeQuery[:len(timeQuery)-1], 10, 64)
-	// 		if err != nil {
-	// 			log.Println("Failed to parse minutes.")
-	// 			w.WriteHeader(http.StatusInternalServerError)
-	// 			return
-	// 		}
-	// 		now := time.Now()
-	// 		if minutes < 180 {
-	// 			combinedTimeArr := make([]string, minutes+1)
-	// 			for i := int64(0); i <= minutes; i++ {
-	// 				time := now.Add(time.Duration(-i) * time.Minute)
-	// 				paddedTime := fmt.Sprintf("(%s)", time.Format("15:04"))
-	// 				combinedTimeArr[i] = paddedTime
-	// 			}
-	// 			combinedTimeStr := strings.Join(combinedTimeArr, "|")
-	// 			timeQuery = fmt.Sprintf("(%s)", combinedTimeStr)
-	// 		} else {
-	// 			hours := int64(math.Ceil(float64(minutes) / 60.0))
-	// 			combinedTimeArr := make([]string, hours)
-	// 			for i := int64(0); i < hours; i++ {
-	// 				time := now.Add(time.Duration(-i) * time.Hour)
-	// 				paddedTime := fmt.Sprintf("(%s:)", time.Format("15"))
-	// 				combinedTimeArr[i] = paddedTime
-	// 			}
-	// 			combinedTimeStr := strings.Join(combinedTimeArr, "|")
-	// 			timeQuery = fmt.Sprintf("(%s)", combinedTimeStr)
-	// 		}
+	now := time.Now()
 
-	// 		cutOffOptim := now.Add(time.Duration(-minutes) * time.Minute)
-	// 		if cutOffOptim.Day() == now.Day() {
-	// 			cutOffOptimHour = int64(cutOffOptim.Hour()) - 1
-	// 		}
-	// 	} else {
-	// 		w.WriteHeader(http.StatusBadRequest)
-	// 		return
-	// 	}
-	// } else {
-	// 	requestedHour, err := strconv.ParseInt(strings.Split(querySet[1], ":")[0], 10, 64)
-	// 	if err != nil {
-	// 		cutOffOptimHour = -1
-	// 	} else {
-	// 		cutOffOptimHour = requestedHour - 1
-	// 	}
-	// }
+	beacon, err := requestQuery.BeaconToSeek(tSyntax)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	validPrefix := requestQuery.ValidPrefix(tSyntax)
+
+	northStar, err := requestQuery.NorthStar(tSyntax, now)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+
+	// Extra options below
 
 	fieldsQ := rawQuery.Get("fields")
 	regexQRaw := rawQuery.Get("regex")
@@ -274,6 +287,7 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 		IsSimpleQuery:   isSimpleQuery,
 		Beacon:          beacon,
 		ValidPrefix:     validPrefix,
+		NorthStar:       northStar,
 		FieldsQ:         fieldsQ,
 		RegexQ:          regexQ,
 		RegexQField:     regexQField,

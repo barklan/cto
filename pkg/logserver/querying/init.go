@@ -11,6 +11,7 @@ type QueryJob struct {
 	IsSimpleQuery   bool
 	Beacon          string
 	ValidPrefix     string
+	NorthStar       string
 	FieldsQ         string
 	RegexQ          string
 	RegexQField     string

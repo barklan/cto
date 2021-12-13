@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime"
 	"sync"
 	"syscall"
 	"time"
@@ -50,6 +51,9 @@ func CrashExit(data *storage.Data, info string) {
 
 func main() {
 	log.Println("Starting...")
+
+	// https://dgraph.io/docs/badger/faq/#are-there-any-go-specific-settings-that-i-should-use
+	runtime.GOMAXPROCS(128)
 
 	data := storage.InitData()
 

@@ -2,6 +2,7 @@ package querying
 
 import (
 	"testing"
+	"time"
 )
 
 func gotEqWant(t *testing.T, got, want string) {
@@ -19,7 +20,7 @@ func TestValidPrefix(t *testing.T) {
 		Date:        "2021-11-03",
 		TimeQuery:   "13:42:",
 	}
-	got := rq.ValidPrefix()
+	got := rq.ValidPrefix(prefixSyntax)
 	want := "nftg futurearts.ru celerybeat-logger 2021-11-03 13:42:"
 	gotEqWant(t, got, want)
 }
@@ -34,7 +35,7 @@ func TestBeaconToSeek(t *testing.T) {
 			TimeQuery:   "",
 		}
 
-		got := rq.BeaconToSeek()
+		got, _ := rq.BeaconToSeek(prefixSyntax)
 		want := "nftg futurearts.ru celerybeat-logger 2021-11-03 24:00:00"
 
 		gotEqWant(t, got, want)
@@ -97,6 +98,69 @@ func TestTimeQueryBeaconToSeek(t *testing.T) {
 		t.Run(tC.desc, func(t *testing.T) {
 			got := TimeQueryBeaconToSeek(tC.input)
 			gotEqWant(t, got, tC.want)
+		})
+	}
+}
+
+func TestRequestQuery_NorthStar(t *testing.T) {
+	type fields struct {
+		ProjectName string
+		Env         string
+		Service     string
+		Date        string
+		TimeQuery   string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		syntax timeSyntax
+		nowStr string
+		want   string
+	}{
+		{
+			"Last minute syntax simple",
+			fields{
+				ProjectName: "nftg",
+				Env:         "futurearts.ru",
+				Service:     "celerybeat-logger",
+				Date:        "2021-11-03",
+				TimeQuery:   "10m",
+			},
+			lastMinutesSyntax,
+			"2021-11-03 15:04:05",
+			"nftg futurearts.ru celerybeat-logger 2021-11-03 14:54:05",
+		},
+		{
+			"Jump through day",
+			fields{
+				ProjectName: "nftg",
+				Env:         "futurearts.ru",
+				Service:     "celerybeat-logger",
+				Date:        "2021-11-03",
+				TimeQuery:   "15m",
+			},
+			lastMinutesSyntax,
+			"2021-11-03 00:03:13",
+			"nftg futurearts.ru celerybeat-logger 2021-11-02 23:48:13",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rq := RequestQuery{
+				ProjectName: tt.fields.ProjectName,
+				Env:         tt.fields.Env,
+				Service:     tt.fields.Service,
+				Date:        tt.fields.Date,
+				TimeQuery:   tt.fields.TimeQuery,
+			}
+			now, err := time.Parse("2006-01-02 15:04:05", tt.nowStr)
+			if err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+
+			if got, _ := rq.NorthStar(tt.syntax, now); got != tt.want {
+				t.Errorf("RequestQuery.NorthStar() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
