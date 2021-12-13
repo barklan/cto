@@ -116,7 +116,7 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 			}
 
 			msg += fmt.Sprintf(
-				`Last %s: recieved %d events\.`,
+				`Last %s: recieved %d events\. `,
 				periodicReport.Period,
 				periodicReport.Recieved,
 			)
