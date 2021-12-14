@@ -19,11 +19,25 @@ tags:
     description: Users
 
 paths:
-  $ref: './resources/_index.yaml'
+  /users/followers/:
+    get:
+      tags:
+        - users
+      summary: List followers of user
+      security:
+        - TokenAuth: [Client]
+      responses:
+        '200':
+          description: 'OK'
+        '400':
+          description: 'Bad Request'
+        '401':
+          description: 'Not Authorized'
+        '403':
+          description: 'Forbidden'
 
-components:
-  responses:
-    $ref: './responses/_index.yaml'
+
+  components:
   securitySchemes:
     TokenAuth:
       type: apiKey
