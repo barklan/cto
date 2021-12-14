@@ -45,7 +45,7 @@ function upd {
 }
 
 function direct {
-    bash scripts/direct.sh
+    bash scripts/directswarm.sh
 }
 
 function fluentd:push {

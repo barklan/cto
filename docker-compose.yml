@@ -2,7 +2,7 @@ version: "3.7"
 services:
 
   traefik:
-    image: traefik:2.5.3
+    image: traefik:2.5.5
     restart: always
     ports:
       - '80:80'
@@ -18,7 +18,7 @@ services:
       - --providers.docker.constraints=Label(`traefik.constraint-label`,
         `traefik-public`)
       - --providers.docker.exposedbydefault=false
-      # - --providers.docker.swarmmode
+      - --providers.docker.swarmmode
       - --entrypoints.http.address=:80
       # TLS
       - --entrypoints.https.address=:443
@@ -30,29 +30,29 @@ services:
       - --api
     env_file:
       - .env
-    # deploy:
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
-      - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
-      - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
-      - traefik.http.routers.traefik-public-http.rule=Host(`traefik.${DOMAIN?Variable
-        not set}`)
-      - traefik.http.routers.traefik-public-http.entrypoints=http
-      - traefik.http.routers.traefik-public-http.middlewares=https-redirect
-      - traefik.http.routers.traefik-public-https.rule=Host(`traefik.${DOMAIN?Variable
-        not set}`)
-      - traefik.http.routers.traefik-public-https.entrypoints=https
-      - traefik.http.routers.traefik-public-https.tls=true
-      - traefik.http.routers.traefik-public-https.service=api@internal
-      - traefik.http.routers.traefik-public-https.tls.certresolver=le
-      - traefik.http.services.traefik-public.loadbalancer.server.port=8080
-      # Auth
-      - traefik.http.middlewares.docsauth.basicauth.usersfile=basicauth/docs
-      - traefik.http.middlewares.adminauth.basicauth.usersfile=basicauth/admin
-      - traefik.http.routers.traefik-public-http.middlewares=adminauth
-      - traefik.http.routers.traefik-public-https.middlewares=adminauth
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
+        - traefik.http.middlewares.https-redirect.redirectscheme.permanent=true
+        - traefik.http.routers.traefik-public-http.rule=Host(`traefik.${DOMAIN?Variable
+          not set}`)
+        - traefik.http.routers.traefik-public-http.entrypoints=http
+        - traefik.http.routers.traefik-public-http.middlewares=https-redirect
+        - traefik.http.routers.traefik-public-https.rule=Host(`traefik.${DOMAIN?Variable
+          not set}`)
+        - traefik.http.routers.traefik-public-https.entrypoints=https
+        - traefik.http.routers.traefik-public-https.tls=true
+        - traefik.http.routers.traefik-public-https.service=api@internal
+        - traefik.http.routers.traefik-public-https.tls.certresolver=le
+        - traefik.http.services.traefik-public.loadbalancer.server.port=8080
+        # Auth
+        - traefik.http.middlewares.docsauth.basicauth.usersfile=basicauth/docs
+        - traefik.http.middlewares.adminauth.basicauth.usersfile=basicauth/admin
+        - traefik.http.routers.traefik-public-http.middlewares=adminauth
+        - traefik.http.routers.traefik-public-https.middlewares=adminauth
 
   frontend:
     image: barklan/cto-explorer:rolling
@@ -60,22 +60,22 @@ services:
       - 3333:3333
     networks:
       - traefik-public
-    # deploy:
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
-      - traefik.http.routers.frontend-http.rule=Host(`${DOMAIN?Variable not
-        set}`) && PathPrefix(`/`) && !PathPrefix(`/api/`)
-      - traefik.http.routers.frontend-http.entrypoints=http
-      - traefik.http.services.frontend.loadbalancer.server.port=80
-      # TLS
-      - traefik.http.routers.frontend-http.middlewares=https-redirect
-      - traefik.http.routers.frontend-https.rule=Host(`${DOMAIN?Variable not
-        set}`) && PathPrefix(`/`) && !PathPrefix(`/api/`)
-      - traefik.http.routers.frontend-https.entrypoints=https
-      - traefik.http.routers.frontend-https.tls=true
-      - traefik.http.routers.frontend-https.tls.certresolver=le
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.frontend-http.rule=Host(`${DOMAIN?Variable not
+          set}`) && PathPrefix(`/`) && !PathPrefix(`/api/`)
+        - traefik.http.routers.frontend-http.entrypoints=http
+        - traefik.http.services.frontend.loadbalancer.server.port=80
+        # TLS
+        - traefik.http.routers.frontend-http.middlewares=https-redirect
+        - traefik.http.routers.frontend-https.rule=Host(`${DOMAIN?Variable not
+          set}`) && PathPrefix(`/`) && !PathPrefix(`/api/`)
+        - traefik.http.routers.frontend-https.entrypoints=https
+        - traefik.http.routers.frontend-https.tls=true
+        - traefik.http.routers.frontend-https.tls.certresolver=le
 
   backend:
     image: barklan/cto-core:rolling
@@ -88,26 +88,26 @@ services:
     volumes:
       - cto-data:/app/data
       - cto-media:/app/media
-      - ./environment:/app/config
+      - '${PROJECT_PATH-.}/environment:/app/config'
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       # CONFIG_ENV should be one of "dev", "devdocker", "prod"
       - CONFIG_ENV=prod
-    # deploy:
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=traefik-public
-      - traefik.constraint-label=traefik-public
-      - traefik.http.routers.backend-http.rule=Host(`${DOMAIN?Variable not
-        set}`) && (PathPrefix(`/api/`))
-      - traefik.http.routers.backend-http.entrypoints=http
-      - traefik.http.routers.backend-http.middlewares=https-redirect
-      - traefik.http.routers.backend-https.rule=Host(`${DOMAIN?Variable not
-        set}`) && (PathPrefix(`/api/`))
-      - traefik.http.routers.backend-https.entrypoints=https
-      - traefik.http.routers.backend-https.tls=true
-      - traefik.http.routers.backend-https.tls.certresolver=le
-      - traefik.http.services.backend.loadbalancer.server.port=8080
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.backend-http.rule=Host(`${DOMAIN?Variable not
+          set}`) && (PathPrefix(`/api/`))
+        - traefik.http.routers.backend-http.entrypoints=http
+        - traefik.http.routers.backend-http.middlewares=https-redirect
+        - traefik.http.routers.backend-https.rule=Host(`${DOMAIN?Variable not
+          set}`) && (PathPrefix(`/api/`))
+        - traefik.http.routers.backend-https.entrypoints=https
+        - traefik.http.routers.backend-https.tls=true
+        - traefik.http.routers.backend-https.tls.certresolver=le
+        - traefik.http.services.backend.loadbalancer.server.port=8080
 
 volumes:
   traefik-public-certificates: null
@@ -116,5 +116,7 @@ volumes:
   cto-media:
     external: true
 
+# docker network create --driver=overlay traefik-public
 networks:
-  traefik-public: null # external: true
+  traefik-public:
+    external: true

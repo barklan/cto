@@ -27,3 +27,5 @@ vendor/
 
 environment/*.yml
 environment/*.pem
+
+docker-stack.yml

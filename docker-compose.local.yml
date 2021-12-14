@@ -10,7 +10,7 @@ services:
   backend:
     container_name: cto
     networks:
-      - shared
+      - traefik-public
     build: .
     environment:
       - CONFIG_ENV=devdocker
@@ -21,7 +21,7 @@ services:
       dockerfile: Dockerfile
     container_name: fluend-cto
     networks:
-      - shared
+      - traefik-public
     environment:
       FLUENTD_HTTP_DUMP_ENDPOINT: 'http://cto:8080/api/log/input'
       FLUENTD_HOSTNAME: 'stag.nftgallerydev.online'
@@ -46,7 +46,7 @@ services:
         INSTALL_DEV: 'false'
         BUILDKIT_INLINE_CACHE: 1
     networks:
-      - shared
+      - traefik-public
     logging:
       driver: fluentd
       options:
@@ -58,7 +58,3 @@ services:
 volumes:
   cto-data:
     external: false
-
-networks:
-  shared:
-    external: true
