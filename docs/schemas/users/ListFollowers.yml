@@ -1,0 +1,21 @@
+type: array
+items:
+  type: object
+  properties:
+    id:
+      type: string
+      format: uuid
+      readOnly: true
+    display_name:
+      type: string
+    position:
+      type: string
+    points:
+      type: integer
+    tasks:
+      type: object
+      properties:
+        new:
+          type: integer
+        current:
+          type: integer

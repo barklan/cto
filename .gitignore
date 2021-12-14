@@ -29,3 +29,5 @@ environment/*.yml
 environment/*.pem
 
 docker-stack.yml
+
+node_modules

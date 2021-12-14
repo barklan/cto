@@ -58,6 +58,16 @@ function fluentd:push {
     docker image push barklan/fluentd-cto:"$1"es
 }
 
+function docs:dev {
+    docker run -it --rm -p 80:80 \
+    -v "$(pwd)"/docs:/usr/share/nginx/html/swagger/ \
+    -e SPEC_URL=swagger/openapi.yml redocly/redoc:v2.0.0-rc.59
+}
+
+function docs:bundle {
+    cd docs && npx redoc-cli bundle openapi.yml && mv redoc-static.html index.html
+}
+
 # -----------------------------------------------------------------------------
 
 function help {
