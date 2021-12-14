@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  redoc:
+    image: "redocly/redoc:v2.0.0-rc.59"
+    restart: always
+    environment:
+      - SPEC_URL=swagger/swagger.yaml
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+        - traefik.constraint-label=${TRAEFIK_PUBLIC_TAG?Variable not set}
+        - traefik.http.routers.docs-http.rule=Host(`docs.${DOMAIN?Variable not set}`)
+        - traefik.http.routers.docs-http.entrypoints=http
+        - traefik.http.routers.docs-http.middlewares=https-redirect
+        - traefik.http.routers.docs-https.rule=Host(`docs.${DOMAIN?Variable not set}`)
+        - traefik.http.routers.docs-https.entrypoints=https
+        - traefik.http.routers.docs-https.tls=true
+        - traefik.http.routers.docs-https.tls.certresolver=le
+        - traefik.http.services.docs.loadbalancer.server.port=4007
+        # Auth
+        - traefik.http.routers.docs-http.middlewares=adminauth
+        - traefik.http.routers.docs-https.middlewares=adminauth
