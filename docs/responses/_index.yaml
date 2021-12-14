@@ -1,0 +1,4 @@
+BadRequestResponse:
+  $ref: './BadRequestResponse.yaml'
+SuccessResponse:
+  $ref: './SuccessResponse.yaml'

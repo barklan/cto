@@ -1,0 +1,34 @@
+openapi: 3.0.2
+info:
+  title: CTO
+  description: f
+  version: '1.0.1'
+  contact:
+    name: API Support
+    email: example@example.com
+
+servers:
+  - url: https://ctopanel.com/api/
+
+tags:
+  - name: auth
+    description: Authentication
+  - name: input
+    description: Input
+  - name: users
+    description: Users
+
+paths:
+  $ref: './resources/_index.yaml'
+
+components:
+  responses:
+    $ref: './responses/_index.yaml'
+  schemas:
+    $ref: './schemas/_index.yaml'
+  securitySchemes:
+    TokenAuth:
+      type: apiKey
+      name: Authorization
+      in: header
+      description: Token-based auth # TODO

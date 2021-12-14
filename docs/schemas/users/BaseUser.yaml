@@ -1,0 +1,15 @@
+type: object
+properties:
+  id:
+    type: string
+    format: uuid
+    readOnly: true
+  display_name:
+    type: string
+    example: 'sdf'
+  phone:
+    type: string
+    example: '79876543210'
+  email:
+    type: string
+    example: 'test@test.ru'

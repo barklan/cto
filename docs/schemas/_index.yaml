@@ -1,0 +1,2 @@
+BaseUser:
+  $ref: './users/BaseUser.yaml'
