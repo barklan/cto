@@ -113,7 +113,7 @@ func LogServerServe(data *storage.Data) {
 		mu := sync.Mutex{}
 
 		go func(m *sync.Mutex) {
-			period := 5 * time.Minute
+			period := 1 * time.Minute
 			ticker := time.NewTicker(period)
 			for range ticker.C {
 				for projectName := range data.Config.P {
