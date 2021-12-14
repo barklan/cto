@@ -23,9 +23,7 @@ paths:
     get:
       tags:
         - users
-      summary: List followers of user
-      security:
-        - TokenAuth: [Client]
+      summary: Temp
       responses:
         '200':
           description: 'OK'
@@ -35,12 +33,3 @@ paths:
           description: 'Not Authorized'
         '403':
           description: 'Forbidden'
-
-
-  components:
-  securitySchemes:
-    TokenAuth:
-      type: apiKey
-      name: Authorization
-      in: header
-      description: Token-based auth # TODO
