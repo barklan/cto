@@ -1,40 +1,15 @@
-ListFollowers:
-  get:
-    tags:
-      - users
-    summary: List followers of user
-    security:
-      - TokenAuth: [Client]
-    responses:
-      '200':
-        description: 'OK'
-      '400':
-        $ref: '../../responses/BadRequestResponse.yaml'
-      '401':
-        description: 'Not Authorized'
-      '403':
-        description: 'Forbidden'
-
-RetrieveFollower:
-  get:
-    tags:
-      - users
-    summary: Retrieve follower of user
-    parameters:
-      - name: user_id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-    security:
-      - TokenAuth: [Client]
-    responses:
-      '200':
-        description: 'OK'
-      '400':
-        $ref: '../../responses/BadRequestResponse.yaml'
-      '401':
-        description: 'Not Authorized'
-      '403':
-        description: 'Forbidden'
+get:
+  tags:
+    - users
+  summary: List followers of user
+  security:
+    - TokenAuth: [Client]
+  responses:
+    '200':
+      description: 'OK'
+    '400':
+      $ref: '../../responses/BadRequestResponse.yaml'
+    '401':
+      description: 'Not Authorized'
+    '403':
+      description: 'Forbidden'

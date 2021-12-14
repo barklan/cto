@@ -1,4 +1,2 @@
 /users/followers/:
-  $ref: './users/followers.yaml#/ListFollowers'
-/users/followers/{user_id}/:
-  $ref: './users/followers.yaml#/RetrieveFollower'
+  $ref: './users/followers.yaml

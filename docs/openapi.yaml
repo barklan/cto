@@ -24,8 +24,6 @@ paths:
 components:
   responses:
     $ref: './responses/_index.yaml'
-  schemas:
-    $ref: './schemas/_index.yaml'
   securitySchemes:
     TokenAuth:
       type: apiKey
