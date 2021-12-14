@@ -15,7 +15,6 @@ type QueryJob struct {
 	FieldsQ         string
 	RegexQ          string
 	RegexQField     string
-	PowerTokens     []string
 	NegateUserRegex bool
 }
 

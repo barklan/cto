@@ -80,29 +80,23 @@
       w="full"
       style="max-width: 500px; max-height: 480px"
     >
-      <p class="col-span-2 row-span-1"></p>
-      <input
-        class="col-span-2 row-span-1"
-        id="tokeninput"
-        v-model="powertoken"
-        placeholder="internal options"
-        type="text"
-        autocomplete="false"
-        p="x-4 y-2"
-        w="full"
-        text="left"
-        bg="dark-700"
-        border="~ rounded gray-700"
-        outline="none active:none"
-        @keydown.enter="go"
-        style="max-width: 500px"
-      />
+      <!-- <p class="col-span-2 row-span-1"></p> -->
 
       <div class="col-span-1 row-span-1">
         <button
           w="full"
           style="max-width: 310px"
-          class="p-2 text-mm btn truncate"
+          class="mt-5 p-3 text-mm btn truncate"
+          :disabled="!name"
+          @click="go"
+        >History</button>
+      </div>
+
+      <div class="col-span-1 row-span-1">
+        <button
+          w="full"
+          style="max-width: 310px"
+          class="mt-5 p-3 text-mm btn truncate"
           :disabled="!name"
           @click="go"
         >{{ mainbtntext }}</button>
@@ -335,7 +329,6 @@ export default {
       name: ref(""),
       fields: ref(""),
       regexq: ref(""),
-      powertoken: ref(""),
       viteHostname: import.meta.env.VITE_HOSTNAME,
       depth: 1,
       timestamp: "",
@@ -452,9 +445,6 @@ export default {
       }
       if (this.regexq != "") {
         urlToFetch = urlToFetch + "&regex=" + this.regexq
-      }
-      if (this.powertoken != "") {
-        urlToFetch = urlToFetch + "&powertoken=" + this.powertoken
       }
       fetch(
         urlToFetch

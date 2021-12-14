@@ -13,41 +13,6 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func getSLAinfo(data *storage.Data, projectName string) string {
-	totalRuningTimeKey := fmt.Sprintf("%s-totalRunningTime", projectName)
-	var totalRunningTime time.Duration
-	totalRunningTimeRaw := data.Get(totalRuningTimeKey)
-	if string(totalRunningTimeRaw) == "" {
-		totalRunningTime = 0
-	} else {
-		err := json.Unmarshal(totalRunningTimeRaw, &totalRunningTime)
-		if err != nil {
-			data.CSend("Failed to unmarshal totalRunningTime")
-		}
-	}
-
-	downTimeKey := fmt.Sprintf("%s-downTime", projectName)
-	var totalDownTime time.Duration
-	totalDownTimeRaw := data.Get(downTimeKey)
-	if string(totalDownTimeRaw) == "" {
-		totalDownTime = 0
-	} else {
-		err := json.Unmarshal(totalDownTimeRaw, &totalDownTime)
-		if err != nil {
-			data.CSend("Failed to unmarshal totalDownTime")
-		}
-	}
-
-	invertedSLA := float64(totalDownTime) / float64(totalRunningTime) * 100
-	sla := 100.0 - invertedSLA
-	return fmt.Sprintf(
-		`Uptime: %.10f%% \(total: %s, down: %s\)\. `,
-		sla,
-		totalRunningTime.Round(time.Second),
-		totalDownTime.Round(time.Second),
-	)
-}
-
 func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 	b.Handle("/status", func(m *tb.Message) {
 		projectName, ok := VerifySender(data, m)
@@ -123,8 +88,6 @@ func registerStatusHandler(b *tb.Bot, data *storage.Data) {
 		}
 
 		msg += fmt.Sprintf(`Logs are retained for %d hours\. `, data.Config.Internal.Log.RetentionHours)
-
-		msg += getSLAinfo(data, projectName)
 
 		msg += fmt.Sprintf(`%s\.`, projectName)
 

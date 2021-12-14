@@ -59,13 +59,16 @@ function fluentd:push {
 }
 
 function docs:dev {
-    docker run -it --rm -p 80:80 \
-    -v "$(pwd)"/docs:/usr/share/nginx/html/swagger/ \
-    -e SPEC_URL=swagger/openapi.yml redocly/redoc:v2.0.0-rc.59
+    # docker run -it --rm -p 80:80 \
+    # -v "$(pwd)"/docs:/usr/share/nginx/html/swagger/ \
+    # -e SPEC_URL=swagger/openapi.yml redocly/redoc:v2.0.0-rc.59
+    docker run -p 80:8080 -e SWAGGER_JSON=/docs/openapi.yml -v "$(pwd)"/docs:/docs swaggerapi/swagger-ui
 }
 
+
+
 function docs:bundle {
-    cd docs && npx redoc-cli bundle openapi.yml && mv redoc-static.html index.html
+    docker run --rm -v "$(pwd)"/docs:/spec redocly/openapi-cli bundle -o bundle.json --ext json openapi.yml
 }
 
 # -----------------------------------------------------------------------------

@@ -153,9 +153,6 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 	w.Header().Set("Content-Type", "application/json")
 	rawQuery := r.URL.Query()
 
-	powerTokensQ := rawQuery.Get("powertoken")
-	powerTokens := strings.Fields(powerTokensQ)
-
 	tokenQ := rawQuery.Get("token")
 	projectName, statusCode, ok := authorize(data, tokenQ)
 	if !ok {
@@ -291,7 +288,6 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 		FieldsQ:         fieldsQ,
 		RegexQ:          regexQ,
 		RegexQField:     regexQField,
-		PowerTokens:     powerTokens,
 		NegateUserRegex: negateUserRegex,
 	}
 

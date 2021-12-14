@@ -1,5 +1,7 @@
 package checking
 
+// TODO whole package with subpackages is dead code.
+
 import (
 	"fmt"
 	"sync"
@@ -42,3 +44,16 @@ func LaunchChecks(b *tb.Bot, data *storage.Data, projectName string) {
 	msg := "All registered checks exited."
 	data.CSend(msg)
 }
+
+// // main
+// wg.Add(1)
+// go func() {
+// 	defer func() {
+// 		CrashExit(data, "All checks exited.")
+// 		wg.Done()
+// 	}()
+// 	for projectName := range data.Config.P {
+// 		time.Sleep(2 * time.Second) // we want some interval between outgoing requests
+// 		checking.LaunchChecks(b, data, projectName)
+// 	}
+// }()

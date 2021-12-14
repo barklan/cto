@@ -21,6 +21,7 @@ func ServeLogExact(w http.ResponseWriter, r *http.Request, data *storage.Data) {
 		return
 	}
 
+	// TODO just return bytes directly from badger.
 	var valueDec interface{}
 	err := json.Unmarshal(value, &valueDec)
 	if err != nil {

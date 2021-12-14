@@ -85,19 +85,6 @@ func main() {
 		b.Start()
 	}()
 
-	// TODO recovery from v4
-	// wg.Add(1)
-	// go func() {
-	// 	defer func() {
-	// 		CrashExit(data, "All checks exited.")
-	// 		wg.Done()
-	// 	}()
-	// 	for projectName := range data.Config.P {
-	// 		time.Sleep(2 * time.Second) // we want some interval between outgoing requests
-	// 		checking.LaunchChecks(b, data, projectName)
-	// 	}
-	// }()
-
 	wg.Add(1)
 	go func() {
 		defer func() {
@@ -136,25 +123,6 @@ func main() {
 			<-tokenRotationTicker.C
 		}
 	}()
-
-	// TODO recovery from v4
-	// go func() {
-	// 	defer data.CSend("All SLA checks exited.")
-	// 	wgSLA := new(sync.WaitGroup)
-	// 	wgSLA.Add(len(data.Config.P))
-
-	// 	for projectName := range data.Config.P {
-	// 		go func(pName string) {
-	// 			defer func() {
-	// 				data.CSend(fmt.Sprintf("SLA exited for project %s.", pName))
-	// 				wgSLA.Done()
-	// 			}()
-	// 			checking.SLAAggregator(data, pName)
-	// 		}(projectName)
-	// 	}
-
-	// 	wgSLA.Wait()
-	// }()
 
 	go func() {
 		handleSysSignals(data)

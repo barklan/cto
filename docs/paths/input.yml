@@ -1,0 +1,14 @@
+FluentdLogInput:
+  post:
+    tags:
+      - log
+    summary: Fluentd input.
+    security:
+      - FluentdBasicAuth: []
+    responses:
+      '200':
+        description: 'OK'
+      '401':
+        description: 'Not Authorized'
+      '403':
+        description: 'Forbidden'
