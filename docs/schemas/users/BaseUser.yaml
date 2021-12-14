@@ -9,7 +9,7 @@ properties:
     example: 'sdf'
   phone:
     type: string
-    example: '79876543210'
+    example: '79875543210'
   email:
     type: string
     example: 'test@test.ru'

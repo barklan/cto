@@ -15,7 +15,6 @@ docker image push "barklan/cto-explorer:rolling"
 docker-compose -f docker-compose.yml config > docker-stack.yml
 
 ssh -tt -o StrictHostKeyChecking=no "${SSH_SERVER_NAME}" "mkdir -p ${PROJECT_PATH}/environment"
-scp .env "${SSH_SERVER_NAME}:${PROJECT_PATH}"
 
 scp docker-stack.yml "${SSH_SERVER_NAME}:${PROJECT_PATH}/"
 scp -r environment "${SSH_SERVER_NAME}:${PROJECT_PATH}"
