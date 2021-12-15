@@ -1,7 +1,6 @@
 LogExact:
   get:
-    tags:
-      - log
+    tags: [log]
     summary: Exact log by key.
     parameters:
       - in: query
@@ -20,5 +19,21 @@ LogExact:
         description: "Not Authorized"
       "403":
         description: "Forbidden"
+      "404":
+        description: "Key not found"
 
 PlaceLogRangeQuery:
+  post:
+    tags: [log]
+    summary: Place log range query for execution.
+    parameters:
+    - in: query
+      name: token
+      schema:
+        type: string
+      description: Token for authorization, added automatically to telegram links.
+    - in: query
+      name: query
+      schema:
+        type: string
+      description: Query for 

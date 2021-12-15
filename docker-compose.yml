@@ -82,7 +82,6 @@ services:
     restart: on-failure
     ports:
       - 8080:8080
-      - 50051:50051
     networks:
       - traefik-public
     volumes:

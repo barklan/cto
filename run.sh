@@ -65,8 +65,6 @@ function docs:dev {
     docker run -p 80:8080 -e SWAGGER_JSON=/docs/openapi.yml -v "$(pwd)"/docs:/docs swaggerapi/swagger-ui
 }
 
-
-
 function docs:bundle {
     docker run --rm -v "$(pwd)"/docs:/spec redocly/openapi-cli bundle -o bundle.json --ext json openapi.yml
 }

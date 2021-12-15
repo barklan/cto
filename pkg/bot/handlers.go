@@ -42,6 +42,8 @@ func RegisterHandlers(b *tb.Bot, data *storage.Data) {
 		data.SetVar(projectName, vars.SecretKey, secretKey, -1)
 		data.SetVar(projectName, vars.Owner, m.Sender.Username, -1)
 
+		storage.RotateJWT(data, projectName)
+
 		data.JustSend(
 			m.Chat,
 			fmt.Sprintf(
@@ -70,7 +72,6 @@ func RegisterHandlers(b *tb.Bot, data *storage.Data) {
 		data.DeleteVar(project, "muted")
 		data.CSend("Unmuted.")
 	})
-
 
 	// TODO
 	// registerOnTextHanler(b, data)

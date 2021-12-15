@@ -13,7 +13,6 @@ import (
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/barklan/cto/pkg/logserver"
 	"github.com/barklan/cto/pkg/storage"
-	"github.com/golang-jwt/jwt/v4"
 )
 
 func handleSysSignals(data *storage.Data) {
@@ -102,23 +101,7 @@ func main() {
 		}()
 		for {
 			for projectName := range data.Config.P {
-				mySigningKey := []byte(data.Config.Internal.TG.BotToken)
-
-				jwtExp := time.Duration(data.Config.Internal.JWTExpHours) * time.Hour
-				expTime := time.Now().Add(jwtExp)
-				claims := TokenClaims{
-					projectName,
-					jwt.RegisteredClaims{
-						ExpiresAt: jwt.NewNumericDate(expTime),
-						Issuer:    "cto",
-					},
-				}
-
-				token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-				ss, _ := token.SignedString(mySigningKey)
-				log.Println("Rotated auth token:", ss)
-
-				data.SetObj(fmt.Sprintf("authToken-%s", projectName), ss, jwtExp)
+				storage.RotateJWT(data, projectName)
 			}
 			<-tokenRotationTicker.C
 		}
@@ -132,9 +115,4 @@ func main() {
 
 	wg.Wait()
 	data.CSend("All goroutines are done (or no one left alive). Main function will now exit.")
-}
-
-type TokenClaims struct {
-	ProjectName string `json:"project_name"`
-	jwt.RegisteredClaims
 }
