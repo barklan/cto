@@ -45,7 +45,15 @@ function upd {
 }
 
 function direct {
+    . .env
+    export REGISTRY_PASSWORD REGISTRY_USERNAME
     bash scripts/directswarm.sh
+}
+
+function direct:s {
+    . .env
+    export REGISTRY_PASSWORD REGISTRY_USERNAME
+    bash scripts/directsupport.sh
 }
 
 function fluentd:push {

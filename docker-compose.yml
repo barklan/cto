@@ -28,7 +28,7 @@ services:
       - --log
       - --api
     env_file:
-      - .env
+      - ./.env
     deploy:
       labels:
         - traefik.enable=true
@@ -48,10 +48,9 @@ services:
         - traefik.http.routers.traefik-public-https.tls.certresolver=le
         - traefik.http.services.traefik-public.loadbalancer.server.port=8085
         # Auth
-        # - traefik.http.middlewares.docsauth.basicauth.usersfile=basicauth/docs
-        # - traefik.http.middlewares.adminauth.basicauth.usersfile=basicauth/admin
-        # - traefik.http.routers.traefik-public-http.middlewares=adminauth
-        # - traefik.http.routers.traefik-public-https.middlewares=adminauth
+        - traefik.http.middlewares.adminauth.basicauth.usersfile=/app/config/adminauth
+        - traefik.http.routers.traefik-public-http.middlewares=adminauth
+        - traefik.http.routers.traefik-public-https.middlewares=adminauth
 
   frontend:
     image: barklan/cto-explorer:rolling
@@ -106,7 +105,6 @@ services:
         - traefik.http.services.backend.loadbalancer.server.port=8080
 
   db:
-    container_name: db
     image: 'postgres:14'
     networks:
       - traefik-public

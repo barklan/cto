@@ -3,11 +3,8 @@ services:
   fluentd:
     # `bash run.sh registry:refresh` to build and push internal fluentd
     image: barklan/fluentd-cto:2.2.1
-    environment:
-      FLUENTD_HOSTNAME: 'ctopanel.com'
-      FLUENTD_HTTP_DUMP_ENDPOINT: http://cto_backend:8080/api/log/input
-      FLUENTD_CTO_PROJECT_TOKEN: ${FLUENTD_CTO_PROJECT_TOKEN?Variable not set}
-      FLUENTD_CTO_PROJECT_NAME: ${FLUENTD_CTO_PROJECT_NAME?Variable not set}
+    env_file:
+      ./.env
     ports:
       - 24224:24224
       - 24224:24224/udp
@@ -20,21 +17,19 @@ services:
         condition: on-failure
 
   pgweb:
-    container_name: pgweb
     image: 'sosedoff/pgweb'
     networks:
       - traefik-public
     env_file:
-      - ../.env
+      - ./.env
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER?Variable not
-        set}:${POSTGRES_PASSWORD?Variable not set}@${STACK_NAME?Variable not
-        set}_db:5432/${POSTGRES_DB?Variable not set}?sslmode=disable
+        set}:${POSTGRES_PASSWORD?Variable not set}@cto_db:5432/${POSTGRES_DB?Variable not set}?sslmode=disable
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
-        - traefik.constraint-label=${TRAEFIK_PUBLIC_TAG?Variable not set}
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
         - traefik.http.routers.pgweb-http.rule=Host(`pgweb.${DOMAIN?Variable not
           set}`)
         - traefik.http.routers.pgweb-http.entrypoints=http
@@ -48,38 +43,6 @@ services:
         # Auth
         - traefik.http.routers.pgweb-http.middlewares=adminauth
         - traefik.http.routers.pgweb-https.middlewares=adminauth
-
-  erdapp:
-    image: barklan/erdapp-backend:rolling
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - erdapp-volume:/app/media
-    networks:
-      - traefik-public
-    logging:
-      driver: fluentd
-      options:
-        tag: docker.support.erdapp-backend
-        fluentd-async-connect: "true"
-    ports:
-      - 8110:8110
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.docker.network=traefik-public
-        - traefik.constraint-label=traefik-public
-        - traefik.http.routers.erdapp-http.rule=Host(`erdapp.${DOMAIN?Variable
-          not set}`)
-        - traefik.http.routers.erdapp-http.entrypoints=http
-        - traefik.http.routers.erdapp-http.middlewares=https-redirect
-        - traefik.http.routers.erdapp-https.rule=Host(`erdapp.${DOMAIN?Variable
-          not set}`)
-        - traefik.http.routers.erdapp-https.entrypoints=https
-        - traefik.http.routers.erdapp-https.tls=true
-        - traefik.http.routers.erdapp-https.tls.certresolver=le
-        - traefik.http.services.erdapp.loadbalancer.server.port=8110
 
 volumes:
   erdapp-volume: null
