@@ -19,6 +19,36 @@ services:
       restart_policy:
         condition: on-failure
 
+  pgweb:
+    container_name: pgweb
+    image: 'sosedoff/pgweb'
+    networks:
+      - traefik-public
+    env_file:
+      - ../.env
+    environment:
+      - DATABASE_URL=postgres://${POSTGRES_USER?Variable not
+        set}:${POSTGRES_PASSWORD?Variable not set}@${STACK_NAME?Variable not
+        set}_db:5432/${POSTGRES_DB?Variable not set}?sslmode=disable
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+        - traefik.constraint-label=${TRAEFIK_PUBLIC_TAG?Variable not set}
+        - traefik.http.routers.pgweb-http.rule=Host(`pgweb.${DOMAIN?Variable not
+          set}`)
+        - traefik.http.routers.pgweb-http.entrypoints=http
+        - traefik.http.routers.pgweb-http.middlewares=https-redirect
+        - traefik.http.routers.pgweb-https.rule=Host(`pgweb.${DOMAIN?Variable
+          not set}`)
+        - traefik.http.routers.pgweb-https.entrypoints=https
+        - traefik.http.routers.pgweb-https.tls=true
+        - traefik.http.routers.pgweb-https.tls.certresolver=le
+        - traefik.http.services.pgweb.loadbalancer.server.port=8081
+        # Auth
+        - traefik.http.routers.pgweb-http.middlewares=adminauth
+        - traefik.http.routers.pgweb-https.middlewares=adminauth
+
   erdapp:
     image: barklan/erdapp-backend:rolling
     build:
@@ -40,18 +70,19 @@ services:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
-        - traefik.http.routers.erdapp-http.rule=Host(`erdapp.${DOMAIN?Variable not set}`)
+        - traefik.http.routers.erdapp-http.rule=Host(`erdapp.${DOMAIN?Variable
+          not set}`)
         - traefik.http.routers.erdapp-http.entrypoints=http
         - traefik.http.routers.erdapp-http.middlewares=https-redirect
-        - traefik.http.routers.erdapp-https.rule=Host(`erdapp.${DOMAIN?Variable not set}`)
+        - traefik.http.routers.erdapp-https.rule=Host(`erdapp.${DOMAIN?Variable
+          not set}`)
         - traefik.http.routers.erdapp-https.entrypoints=https
         - traefik.http.routers.erdapp-https.tls=true
         - traefik.http.routers.erdapp-https.tls.certresolver=le
         - traefik.http.services.erdapp.loadbalancer.server.port=8110
 
 volumes:
-  erdapp-volume:
-
+  erdapp-volume: null
 networks:
   traefik-public:
     external: true
