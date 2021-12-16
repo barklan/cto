@@ -3,7 +3,6 @@ services:
 
   traefik:
     image: traefik:2.5.5
-    restart: always
     ports:
       - '80:80'
       - '443:443'
@@ -79,7 +78,6 @@ services:
 
   backend:
     image: barklan/cto-core:rolling
-    restart: on-failure
     ports:
       - 8080:8080
     networks:

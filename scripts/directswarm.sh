@@ -7,9 +7,9 @@ export SSH_SERVER_NAME=cto
 export STACK_NAME=cto
 export PROJECT_PATH=/home/docker/cto
 
-docker build -t "barklan/cto-core:rolling" .
+docker build -t "barklan/cto-core:rolling" -f dockerfiles/core.dockerfile .
 docker image push "barklan/cto-core:rolling"
-docker build -t "barklan/cto-explorer:rolling" ./frontend
+docker build -t "barklan/cto-explorer:rolling" -f dockerfiles/frontend.dockerfile ./frontend
 docker image push "barklan/cto-explorer:rolling"
 
 docker-compose -f docker-compose.yml config > docker-stack.yml

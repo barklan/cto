@@ -11,7 +11,9 @@ services:
     container_name: cto
     networks:
       - traefik-public
-    build: .
+    build:
+      context: .
+      dockerfile: dockerfiles/core.dockerfile
     environment:
       - CONFIG_ENV=devdocker
 

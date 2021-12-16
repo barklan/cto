@@ -4,7 +4,7 @@ services:
     # `bash run.sh registry:refresh` to build and push internal fluentd
     image: barklan/fluentd-cto:2.2.1
     environment:
-      FLUENTD_HOSTNAME: 'erdapp.ctopanel.com'
+      FLUENTD_HOSTNAME: 'ctopanel.com'
       FLUENTD_HTTP_DUMP_ENDPOINT: http://cto_backend:8080/api/log/input
       FLUENTD_CTO_PROJECT_TOKEN: ${FLUENTD_CTO_PROJECT_TOKEN?Variable not set}
       FLUENTD_CTO_PROJECT_NAME: ${FLUENTD_CTO_PROJECT_NAME?Variable not set}
