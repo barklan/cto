@@ -1,7 +1,8 @@
 package vars
 
 var (
-	SecretKey = "SecretKey"
-	Owner     = "Owner"
-	ChatState = "ChatState"
+	SecretKey   = "SecretKey"
+	Owner       = "Owner"
+	ChatState   = "ChatState"
+	KnownErrors = "KnownErrors"
 )

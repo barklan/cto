@@ -8,6 +8,7 @@ services:
     profiles: ["extra"]
 
   backend:
+    restart: on-failure
     profiles: ["main"]
     container_name: cto_backend
     networks:
