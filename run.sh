@@ -128,6 +128,10 @@ function db:migrate:remote {
     -database postgres://postgres:${POSTGRES_PASSWORD}@cto_db:5432/app?sslmode=disable up"
 }
 
+function logs {
+    ssh -tt cto "docker service logs $1 --since $2"
+}
+
 # -----------------------------------------------------------------------------
 
 function help {

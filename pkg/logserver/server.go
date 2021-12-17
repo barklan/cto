@@ -10,14 +10,12 @@ import (
 	"net/http"
 	"os"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/barklan/cto/pkg/logserver/querying"
 	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/postgres/models"
 	"github.com/barklan/cto/pkg/storage"
-	"github.com/barklan/cto/pkg/storage/vars"
 )
 
 type LogRecordReport struct {
@@ -48,60 +46,6 @@ func authorizeRequest(data *storage.Data, r *http.Request) (string, bool) {
 	}
 
 	return "", false
-}
-
-func openOrEnterSession(
-	data *storage.Data,
-	sessDataMap map[string]*SessionData,
-	projectName string,
-) {
-	if v, ok := sessDataMap[projectName]; ok {
-		atomic.AddUint64(v.Using, 1)
-		log.Printf("%q project entered session", projectName)
-	} else {
-		knownErrorsMutex := new(sync.Mutex)
-		knownErrors := make([]types.KnownError, 0)
-		knownErrorsRaw := data.GetVar(projectName, vars.KnownErrors)
-		if string(knownErrorsRaw) != "" {
-			if err := json.Unmarshal(knownErrorsRaw, &knownErrors); err != nil {
-				log.Println("failed to unmarshal KnownErrors", err)
-			}
-		}
-		var using uint64 = 1
-		sessDataMap[projectName] = &SessionData{
-			KnownErrorsMutex: knownErrorsMutex,
-			KnownErrors:      knownErrors,
-			Using:            &using,
-		}
-		log.Printf("%q project opened session", projectName)
-	}
-}
-
-func closeOrLeaveSession(
-	data *storage.Data,
-	sessDataMap map[string]*SessionData,
-	projectName string,
-) {
-	sessData := sessDataMap[projectName]
-
-	sessData.KnownErrorsMutex.Lock()
-	for i, knownError := range sessData.KnownErrors {
-		if knownError.LastSeen.Before(time.Now().Add(time.Duration(-12) * time.Hour)) {
-			sessData.KnownErrors = remove(sessData.KnownErrors, i)
-			log.Println("deteted old error", knownError.OriginBadgerKey)
-			break
-		}
-	}
-	data.SetVar(projectName, vars.KnownErrors, sessData.KnownErrors, 48*time.Hour)
-	sessData.KnownErrorsMutex.Unlock()
-
-	if *sessDataMap[projectName].Using == uint64(1) {
-		delete(sessDataMap, projectName)
-		log.Printf("%q project closed session", projectName)
-	} else {
-		atomic.AddUint64(sessDataMap[projectName].Using, ^uint64(0))
-		log.Printf("%q project left session", projectName)
-	}
 }
 
 func logOneRequest(

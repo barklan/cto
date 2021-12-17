@@ -17,7 +17,7 @@ func GetSubset(array []RawLogRecord, divisor int) []RawLogRecord {
 
 func getRandomElements(array []RawLogRecord, count int) []RawLogRecord {
 	result := make([]RawLogRecord, 0)
-	existingIndexes := make(map[int]struct{}, 0)
+	existingIndexes := make(map[int]struct{})
 	randomElementsCount := count
 
 	for i := 0; i < randomElementsCount; i++ {
