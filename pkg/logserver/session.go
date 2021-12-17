@@ -7,39 +7,43 @@ import (
 	"sync"
 	"time"
 
-	"github.com/barklan/cto/pkg/bot"
 	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
-	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func registerResetErrorsHandler(data *storage.Data, sessionDataMap map[string]*SessionData) {
-	data.B.Handle("/reset", func(m *tb.Message) {
-		projectName, ok := bot.VerifySender(data, m)
-		if !ok {
-			return
-		}
+// TODO recovery v5
+// func registerResetErrorsHandler(data *storage.Data, sessionDataMap map[string]*SessionData) {
+// 	data.B.Handle("/reset", func(m *tb.Message) {
+// 		projectName, ok := bot.VerifySender(data, m)
+// 		if !ok {
+// 			return
+// 		}
 
-		sessData := sessionDataMap[projectName]
-		knownErrors := make([]types.KnownError, 0)
+// 		sessData := sessionDataMap[projectName]
+// 		knownErrors := make([]types.KnownError, 0)
 
-		sessData.KnownErrorsMutex.Lock()
-		sessData.KnownErrors = knownErrors
-		data.SetObj(
-			fmt.Sprintf("knownErrors-%s", projectName),
-			sessData.KnownErrors,
-			12*time.Hour,
-		)
-		sessData.KnownErrorsMutex.Unlock()
+// 		sessData.KnownErrorsMutex.Lock()
+// 		sessData.KnownErrors = knownErrors
+// 		data.SetObj(
+// 			fmt.Sprintf("knownErrors-%s", projectName),
+// 			sessData.KnownErrors,
+// 			12*time.Hour,
+// 		)
+// 		sessData.KnownErrorsMutex.Unlock()
 
-		data.PSend(projectName, "Error records have been reset.")
-	})
-}
+// 		data.PSend(projectName, "Error records have been reset.")
+// 	})
+// }
 
 func openSession(data *storage.Data) map[string]*SessionData {
 	sessionDataMap := map[string]*SessionData{}
 
-	for projectName := range data.Config.P {
+	projects := make([]string, 0)
+	if err := data.R.Select(&projects, "select id from project"); err != nil {
+		log.Println("no projects found when opening logserver session")
+	}
+
+	for _, projectName := range projects {
 		knownErrors := make([]types.KnownError, 0)
 		sessionData := &SessionData{
 			KnownErrors:      knownErrors,
@@ -50,16 +54,18 @@ func openSession(data *storage.Data) map[string]*SessionData {
 
 	if data.Config.Internal.Log.ClearOnRestart {
 		log.Println("clearing known errors")
-		for projectName := range data.Config.P {
+		for _, projectName := range projects {
 			knownErrors := make([]types.KnownError, 0)
 			data.SetObj(fmt.Sprintf("knownErrors-%s", projectName), knownErrors, 1*time.Hour)
 		}
 	} else {
-		for projectName := range data.Config.P {
+		for _, projectName := range projects {
 			knownErrors := make([]types.KnownError, 0)
 			knownErrorsRaw := data.Get(fmt.Sprintf("knownErrors-%s", projectName))
-			if err := json.Unmarshal(knownErrorsRaw, &knownErrors); err != nil {
-				log.Println("failed to unmarshal knownErrors", err)
+			if string(knownErrorsRaw) != "" {
+				if err := json.Unmarshal(knownErrorsRaw, &knownErrors); err != nil {
+					log.Println("failed to unmarshal knownErrors", err)
+				}
 			}
 			sessionDataMap[projectName].KnownErrors = knownErrors
 		}
@@ -99,7 +105,8 @@ func openSession(data *storage.Data) map[string]*SessionData {
 		}
 	}(sessionDataMap)
 
-	registerResetErrorsHandler(data, sessionDataMap)
+	// TODO recovery v5
+	// registerResetErrorsHandler(data, sessionDataMap)
 
 	return sessionDataMap
 }

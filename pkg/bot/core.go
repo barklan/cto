@@ -8,7 +8,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/barklan/cto/pkg/storage"
+	"github.com/barklan/cto/pkg/porter"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -24,8 +24,8 @@ func Bot(botToken string) *tb.Bot {
 	return b
 }
 
-func GetBoss(data *storage.Data) *tb.Chat {
-	chatID := data.Config.Internal.TG.BossChatID
+func GetBoss(data *porter.Data) *tb.Chat {
+	chatID := data.Config.TG.BossChatID
 	return &tb.Chat{ID: chatID}
 }
 

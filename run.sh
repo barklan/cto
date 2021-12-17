@@ -15,6 +15,11 @@ fi
 # Helper functions start with _ and aren't listed in this script's help menu.
 # -----------------------------------------------------------------------------
 
+function _export_pg {
+    . local.env
+    export POSTGRES_DB POSTGRES_PASSWORD POSTGRES_USER POSTGRES_HOST
+}
+
 function _dc {
     export DOCKER_BUILDKIT=1
     docker-compose ${TTY} "${@}"
@@ -22,12 +27,31 @@ function _dc {
 
 # ----------------------------------------------------------------------------
 
-function up {
+function up:c {
     export CTO_DATA_PATH=/home/barklan/dev/cto/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
     export CONFIG_ENV=dev
+    _export_pg
+    export POSTGRES_HOST=localhost:5432
+    echo "$POSTGRES_HOST"
     go run cmd/cto/main.go
+}
+
+function up:p {
+    _export_pg
+    export CONFIG_ENV=dev
+    export POSTGRES_HOST=localhost:5432
+    echo "$POSTGRES_HOST"
+    go run cmd/porter/main.go
+}
+
+function up:db {
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile db up --build
+}
+
+function psql {
+    _dc exec db psql -U postgres -d app "${@}"
 }
 
 function reset {
@@ -41,7 +65,8 @@ function front {
 
 function upd {
     export DOCKER_BUILDKIT=1
-    docker-compose -f docker-compose.yml -f docker-compose.local.yml up --build
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile main build --parallel
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile main up
 }
 
 function direct {
@@ -75,6 +100,28 @@ function docs:dev {
 
 function docs:bundle {
     docker run --rm -v "$(pwd)"/docs:/spec redocly/openapi-cli bundle -o bundle.json --ext json openapi.yml
+}
+
+function proto {
+    protoc --go_out=. --go_opt=paths=source_relative \
+    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
+    pkg/protos/"${1}".proto
+}
+
+function db:makemigrations {
+    docker run -v "$(pwd)"/db/migrations:/migrations --network host migrate/migrate \
+    create -ext sql -dir /migrations -seq "${@}"
+}
+
+function db:migrate {
+    docker run -v "$(pwd)"/db/migrations:/migrations --network host migrate/migrate \
+    -database postgres://postgres:postgres@localhost:5432/app?sslmode=disable -path /migrations "${@}"
+}
+
+function db:migrate:remote {
+    # FIXME
+    migrate -source github://mattes:personal-access-token@mattes/migrate_test \
+    -database postgres://localhost:5432/database down 2
 }
 
 # -----------------------------------------------------------------------------

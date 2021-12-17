@@ -14,8 +14,8 @@ import (
 
 	"github.com/barklan/cto/pkg/logserver/querying"
 	"github.com/barklan/cto/pkg/logserver/types"
+	"github.com/barklan/cto/pkg/postgres/models"
 	"github.com/barklan/cto/pkg/storage"
-	"github.com/barklan/cto/pkg/storage/vars"
 )
 
 var LogServerSessionDataMap map[string]*SessionData
@@ -30,17 +30,20 @@ type SessionData struct {
 }
 
 func authorizeRequest(data *storage.Data, r *http.Request) (string, bool) {
-	project, password, ok := r.BasicAuth()
+	projectName, password, ok := r.BasicAuth()
 	if !ok {
 		log.Println("error parsing basic auth")
 		return "", false
 	}
 
-	// TODO magic string
-	secret := data.GetVar(project, vars.SecretKey)
+	project := models.Project{}
+	if err := data.R.Get(&project, "select * from project where id = $1", projectName); err != nil {
+		log.Println("project not found from basic auth")
+		return "", false
+	}
 
-	if subtle.ConstantTimeCompare([]byte(password), secret) == 1 {
-		return project, true
+	if subtle.ConstantTimeCompare([]byte(password), []byte(project.SecretKey)) == 1 {
+		return project.ID, true
 	}
 
 	return "", false
@@ -104,10 +107,15 @@ func LogServerServe(data *storage.Data) {
 
 	reportChan := make(chan LogRecordReport, 50)
 
+	projects := make([]string, 0)
+	if err := data.R.Select(&projects, "select id from project"); err != nil {
+		log.Println("no projects found when opening logserver session")
+	}
+
 	// Save new reports every 5 minutes
 	go func() {
 		aggregateRecordsRecievedMap := map[string]int{}
-		for projectName := range data.Config.P {
+		for _, projectName := range projects {
 			aggregateRecordsRecievedMap[projectName] = 0
 		}
 		mu := sync.Mutex{}
@@ -116,7 +124,7 @@ func LogServerServe(data *storage.Data) {
 			period := 1 * time.Minute
 			ticker := time.NewTicker(period)
 			for range ticker.C {
-				for projectName := range data.Config.P {
+				for _, projectName := range projects {
 					report := types.PeriodicReport{
 						Period:   period,
 						Recieved: aggregateRecordsRecievedMap[projectName],

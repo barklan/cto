@@ -2,65 +2,28 @@ package storage
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
-	"os"
 	"reflect"
 	"time"
 
 	"github.com/dgraph-io/badger/v3"
+	"github.com/jmoiron/sqlx"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
 var (
+	// FIXME Internal values should be stored in pg (v5).
 	Internal          = "Internal" // Reserved internal project - not listed in projects.
-	internalKeySymbol = "!"
 	variableKeySymbol = "$"
 )
 
 type Data struct {
-	B         *tb.Bot
 	Chat      *tb.Chat
 	DB        *badger.DB
 	Config    *Config
 	MediaPath string
-}
-
-func InitData() *Data {
-	data := Data{}
-
-	configEnvironment, ok := os.LookupEnv("CONFIG_ENV")
-	if !ok {
-		log.Panic("Config environment variable CONFIG_ENV must be specified.")
-	}
-	if configEnvironment == "dev" {
-		currentDir, err := os.Getwd()
-		if err != nil {
-			log.Panic(err)
-		}
-
-		data.MediaPath = currentDir + "/.cache/media"
-	} else {
-		data.MediaPath = "/app/media"
-	}
-
-	return &data
-}
-
-// CreateMediaDirIfNotExists creates the directory in default media path.
-// It can accept nested directory path, but all parent directories must
-// exist. Returns full directory path.
-func (d *Data) CreateMediaDirIfNotExists(dirname string) string {
-	fullDirname := d.MediaPath + "/" + dirname
-	_, err := os.Stat(fullDirname)
-
-	if os.IsNotExist(err) {
-		errDir := os.MkdirAll(fullDirname, 0755)
-		if errDir != nil {
-			log.Panic(err)
-		}
-	}
-
-	return fullDirname
+	R         *sqlx.DB
 }
 
 // TODO deprecate this
@@ -150,46 +113,35 @@ func (d *Data) Get(key string) []byte {
 	return Get(d.DB, varKey)
 }
 
-// Send sends a message and saves it to main storage.
-func (d *Data) Send(to tb.Recipient, msg interface{}, options ...interface{}) (*tb.Message, error) {
-	m, err := d.B.Send(to, msg, options...)
-	if err != nil {
-		log.Printf("Failed to send tg message. %v", err)
-		return nil, err
+func GSend(project string, msg interface{}) {
+	switch v := msg.(type) {
+	default:
+		fmt.Printf("unexpected type as a tg message %T", v)
+	case string:
+		SendTgMessage(project, v)
 	}
-	log.Printf("Send TG message %v\n", msg)
-	return m, err
 }
 
+// TODO it is deprecated in this module
 func (d *Data) JustSend(to tb.Recipient, msg interface{}, options ...interface{}) {
-	go func() {
-		_, _ = d.Send(to, msg, options...)
-	}()
+	log.Println("JustSend has been called!")
 }
 
 // CSendSync sends to barklan with sync
 func (d *Data) CSendSync(msg interface{}, options ...interface{}) (*tb.Message, error) {
-	return d.Send(d.Chat, msg, options...)
+	GSend(Internal, msg)
+	return &tb.Message{}, nil
 }
 
 // CSend sends to barklan
 func (d *Data) CSend(msg interface{}, options ...interface{}) {
 	go func() {
-		_, _ = d.Send(d.Chat, msg, options...)
+		GSend(Internal, msg)
 	}()
 }
 
 func (d *Data) PSend(projectName string, msg interface{}, options ...interface{}) {
-	// TODO recovery for mute operation like in CSend or maybe fuck it?
-	muted := d.VarExists(projectName, "muted")
-	if muted {
-		log.Println("I am muted!")
-		return
-	}
-
-	chatID := d.Config.P[projectName]
-	chat := &tb.Chat{ID: chatID}
 	go func() {
-		_, _ = d.Send(chat, msg, options...)
+		GSend(projectName, msg)
 	}()
 }

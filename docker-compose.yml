@@ -84,7 +84,6 @@ services:
       - cto-data:/app/data
       - cto-media:/app/media
       - '${PROJECT_PATH-.}/environment:/app/config'
-      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       # CONFIG_ENV should be one of "dev", "devdocker", "prod"
       - CONFIG_ENV=prod
@@ -103,6 +102,37 @@ services:
         - traefik.http.routers.backend-https.tls=true
         - traefik.http.routers.backend-https.tls.certresolver=le
         - traefik.http.services.backend.loadbalancer.server.port=8080
+
+  porter:
+    image: barklan/cto-porter:rolling
+    build:
+      context: .
+      dockerfile: dockerfiles/porter.dockerfile
+    ports:
+      - 9010:9010
+      - 50051:50051
+    networks:
+      - traefik-public
+    volumes:
+      - '${PROJECT_PATH-.}/environment:/app/config'
+    environment:
+      # CONFIG_ENV should be one of "dev", "devdocker", "prod"
+      - CONFIG_ENV=prod
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.porter-http.rule=Host(`${DOMAIN?Variable not
+          set}`) && (PathPrefix(`/porter/`))
+        - traefik.http.routers.porter-http.entrypoints=http
+        - traefik.http.routers.porter-http.middlewares=https-redirect
+        - traefik.http.routers.porter-https.rule=Host(`${DOMAIN?Variable not
+          set}`) && (PathPrefix(`/porter/`))
+        - traefik.http.routers.porter-https.entrypoints=https
+        - traefik.http.routers.porter-https.tls=true
+        - traefik.http.routers.porter-https.tls.certresolver=le
+        - traefik.http.services.porter.loadbalancer.server.port=9010
 
   db:
     image: 'postgres:14'

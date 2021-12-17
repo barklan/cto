@@ -10,9 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/barklan/cto/pkg/bot"
 	"github.com/barklan/cto/pkg/logserver"
+	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/barklan/cto/pkg/storage"
+	"github.com/jmoiron/sqlx"
 )
 
 func handleSysSignals(data *storage.Data) {
@@ -37,14 +38,12 @@ func handleSysSignals(data *storage.Data) {
 	data.CSendSync(fmt.Sprintf("I received %s. Exiting now!", sigID))
 	time.Sleep(200 * time.Millisecond)
 	data.DB.Close()
-	data.B.Close()
 	os.Exit(0)
 }
 
 func CrashExit(data *storage.Data, info string) {
 	data.CSendSync(fmt.Sprintf("Help! I crashed! %s", info))
 	data.DB.Close()
-	data.B.Close()
 	os.Exit(1)
 }
 
@@ -54,7 +53,23 @@ func main() {
 	// https://dgraph.io/docs/badger/faq/#are-there-any-go-specific-settings-that-i-should-use
 	runtime.GOMAXPROCS(128)
 
-	data := storage.InitData()
+	data := &storage.Data{}
+
+	var rdb *sqlx.DB
+	var err error
+	for i := 0; i < 10; i++ {
+		rdb, err = postgres.OpenDB()
+		if err != nil {
+			if i == 9 {
+				log.Panicf("Could not open pg connection  10 times.")
+			}
+			time.Sleep(1 * time.Second)
+			continue
+		}
+
+	}
+
+	data.R = rdb
 
 	db := storage.OpenDB("", "/main")
 	data.DB = db
@@ -63,26 +78,9 @@ func main() {
 	config := storage.ReadConfig(data)
 	data.Config = config
 
-	// TODO telebot migrating to v3 soon
-	b := bot.Bot(config.Internal.TG.BotToken)
-	data.B = b
-
-	data.Chat = bot.GetBoss(data)
-
 	defer CrashExit(data, "Deferred in main.")
 
 	var wg sync.WaitGroup
-
-	wg.Add(1)
-	go func() {
-		defer func() {
-			CrashExit(data, "Telebot poller exited.")
-			wg.Done()
-		}()
-
-		bot.RegisterHandlers(b, data)
-		b.Start()
-	}()
 
 	wg.Add(1)
 	go func() {
