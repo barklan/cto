@@ -84,6 +84,8 @@ services:
       - cto-data:/app/data
       - cto-media:/app/media
       - '${PROJECT_PATH-.}/environment:/app/config'
+    env_file:
+      - ./.env
     environment:
       # CONFIG_ENV should be one of "dev", "devdocker", "prod"
       - CONFIG_ENV=prod
@@ -115,6 +117,8 @@ services:
       - traefik-public
     volumes:
       - '${PROJECT_PATH-.}/environment:/app/config'
+    env_file:
+      - ./.env
     environment:
       # CONFIG_ENV should be one of "dev", "devdocker", "prod"
       - CONFIG_ENV=prod
@@ -161,7 +165,7 @@ volumes:
     external: true
   cto-postgres: null
 
-# docker network create --driver=overlay traefik-public
+# docker network create --driver=overlay --attachable traefik-public
 networks:
   traefik-public:
     external: true

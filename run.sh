@@ -119,9 +119,13 @@ function db:migrate {
 }
 
 function db:migrate:remote {
+    . .env
+    export POSTGRES_PASSWORD
     # FIXME
-    migrate -source github://mattes:personal-access-token@mattes/migrate_test \
-    -database postgres://localhost:5432/database down 2
+    ssh -tt -o StrictHostKeyChecking=no cto \
+    "docker run --network traefik-public migrate/migrate \
+    -source github://barklan/cto/db/migrations \
+    -database postgres://postgres:${POSTGRES_PASSWORD}@cto_db:5432/app?sslmode=disable up"
 }
 
 # -----------------------------------------------------------------------------
