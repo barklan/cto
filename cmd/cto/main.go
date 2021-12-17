@@ -35,14 +35,14 @@ func handleSysSignals(data *storage.Data) {
 	default:
 		sigID = "UNKNOWN"
 	}
-	data.CSendSync(fmt.Sprintf("I received %s. Exiting now!", sigID))
+	data.InternalAlert(fmt.Sprintf("I received %s. Exiting now!", sigID))
 	time.Sleep(200 * time.Millisecond)
 	data.DB.Close()
 	os.Exit(0)
 }
 
 func CrashExit(data *storage.Data, info string) {
-	data.CSendSync(fmt.Sprintf("Help! I crashed! %s", info))
+	data.InternalAlert(fmt.Sprintf("Help! I crashed! %s", info))
 	data.DB.Close()
 	os.Exit(1)
 }
@@ -91,26 +91,27 @@ func main() {
 		logserver.LogServerServe(data)
 	}()
 
-	tokenRotationTicker := time.NewTicker(4 * time.Hour)
-	go func() {
-		defer func() {
-			CrashExit(data, "Token rotation goroutine exited.")
-			wg.Done()
-		}()
-		for {
-			for projectName := range data.Config.P {
-				storage.RotateJWT(data, projectName)
-			}
-			<-tokenRotationTicker.C
-		}
-	}()
+	// FIXME move to porter
+	// tokenRotationTicker := time.NewTicker(4 * time.Hour)
+	// go func() {
+	// 	defer func() {
+	// 		CrashExit(data, "Token rotation goroutine exited.")
+	// 		wg.Done()
+	// 	}()
+	// 	for {
+	// 		for projectName := range data.Config.P {
+	// 			storage.RotateJWT(data, projectName)
+	// 		}
+	// 		<-tokenRotationTicker.C
+	// 	}
+	// }()
 
 	go func() {
 		handleSysSignals(data)
 	}()
 
-	data.CSend("I am up!")
+	data.InternalAlert("I am up!")
 
 	wg.Wait()
-	data.CSend("All goroutines are done (or no one left alive). Main function will now exit.")
+	data.InternalAlert("All goroutines are done (or no one left alive). Main function will now exit.")
 }

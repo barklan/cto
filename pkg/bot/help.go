@@ -4,22 +4,21 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/postgres/models"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func registerHelpHandler(data *porter.Data, b *tb.Bot) {
-	b.Handle("/help", func(m *tb.Message) {
+func (s *Sylon) registerHelpHandler() {
+	s.B.Handle("/help", func(m *tb.Message) {
 		// TODO should return project name, owner and secret.
-		project, _, ok := VerifySender(data, m)
+		project, _, ok := s.VerifySender(m)
 		if !ok {
 			return
 		}
 
 		// FIXME select
 		var owner models.Client
-		if err := data.R.Get(&owner, "select * from client where id = $1", project.ClientID); err != nil {
+		if err := s.R.Get(&owner, "select * from client where id = $1", project.ClientID); err != nil {
 			log.Panic("Owner must exist.")
 		}
 
@@ -44,7 +43,7 @@ func registerHelpHandler(data *porter.Data, b *tb.Bot) {
 		// }
 
 		// TODO enabled/disabled feature flags for projects
-		data.PSend(project.ID, fmt.Sprintf(
+		s.PSend(project.ID, fmt.Sprintf(
 			`Project: <code>%s</code>; secret: <code>%s</code>; owner: <code>%s</code>.`,
 			project.ID,
 			project.SecretKey,

@@ -18,7 +18,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PorterClient interface {
-	TelegramSend(ctx context.Context, in *TelegramSendRequest, opts ...grpc.CallOption) (*TelegramSendReply, error)
+	ProjectAlert(ctx context.Context, in *ProjectAlertRequest, opts ...grpc.CallOption) (*Message, error)
+	InternalAlert(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
+	NewIssue(ctx context.Context, in *NewIssueRequest, opts ...grpc.CallOption) (*Message, error)
 }
 
 type porterClient struct {
@@ -29,9 +31,27 @@ func NewPorterClient(cc grpc.ClientConnInterface) PorterClient {
 	return &porterClient{cc}
 }
 
-func (c *porterClient) TelegramSend(ctx context.Context, in *TelegramSendRequest, opts ...grpc.CallOption) (*TelegramSendReply, error) {
-	out := new(TelegramSendReply)
-	err := c.cc.Invoke(ctx, "/protos.Porter/TelegramSend", in, out, opts...)
+func (c *porterClient) ProjectAlert(ctx context.Context, in *ProjectAlertRequest, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, "/protos.Porter/ProjectAlert", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *porterClient) InternalAlert(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, "/protos.Porter/InternalAlert", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *porterClient) NewIssue(ctx context.Context, in *NewIssueRequest, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, "/protos.Porter/NewIssue", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +62,9 @@ func (c *porterClient) TelegramSend(ctx context.Context, in *TelegramSendRequest
 // All implementations must embed UnimplementedPorterServer
 // for forward compatibility
 type PorterServer interface {
-	TelegramSend(context.Context, *TelegramSendRequest) (*TelegramSendReply, error)
+	ProjectAlert(context.Context, *ProjectAlertRequest) (*Message, error)
+	InternalAlert(context.Context, *Message) (*Message, error)
+	NewIssue(context.Context, *NewIssueRequest) (*Message, error)
 	mustEmbedUnimplementedPorterServer()
 }
 
@@ -50,8 +72,14 @@ type PorterServer interface {
 type UnimplementedPorterServer struct {
 }
 
-func (UnimplementedPorterServer) TelegramSend(context.Context, *TelegramSendRequest) (*TelegramSendReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method TelegramSend not implemented")
+func (UnimplementedPorterServer) ProjectAlert(context.Context, *ProjectAlertRequest) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProjectAlert not implemented")
+}
+func (UnimplementedPorterServer) InternalAlert(context.Context, *Message) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InternalAlert not implemented")
+}
+func (UnimplementedPorterServer) NewIssue(context.Context, *NewIssueRequest) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewIssue not implemented")
 }
 func (UnimplementedPorterServer) mustEmbedUnimplementedPorterServer() {}
 
@@ -66,20 +94,56 @@ func RegisterPorterServer(s grpc.ServiceRegistrar, srv PorterServer) {
 	s.RegisterService(&Porter_ServiceDesc, srv)
 }
 
-func _Porter_TelegramSend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TelegramSendRequest)
+func _Porter_ProjectAlert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProjectAlertRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PorterServer).TelegramSend(ctx, in)
+		return srv.(PorterServer).ProjectAlert(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/protos.Porter/TelegramSend",
+		FullMethod: "/protos.Porter/ProjectAlert",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PorterServer).TelegramSend(ctx, req.(*TelegramSendRequest))
+		return srv.(PorterServer).ProjectAlert(ctx, req.(*ProjectAlertRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Porter_InternalAlert_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Message)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PorterServer).InternalAlert(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.Porter/InternalAlert",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PorterServer).InternalAlert(ctx, req.(*Message))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Porter_NewIssue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewIssueRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PorterServer).NewIssue(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.Porter/NewIssue",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PorterServer).NewIssue(ctx, req.(*NewIssueRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -92,8 +156,16 @@ var Porter_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PorterServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "TelegramSend",
-			Handler:    _Porter_TelegramSend_Handler,
+			MethodName: "ProjectAlert",
+			Handler:    _Porter_ProjectAlert_Handler,
+		},
+		{
+			MethodName: "InternalAlert",
+			Handler:    _Porter_InternalAlert_Handler,
+		},
+		{
+			MethodName: "NewIssue",
+			Handler:    _Porter_NewIssue_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

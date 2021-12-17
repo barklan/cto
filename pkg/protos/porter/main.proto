@@ -19,14 +19,25 @@ option go_package = "github.com/barklan/cto/pkg/protos/porter";
 package protos;
 
 service Porter {
-  rpc TelegramSend (TelegramSendRequest) returns (TelegramSendReply) {}
+  rpc ProjectAlert (ProjectAlertRequest) returns (Message) {}
+  rpc InternalAlert (Message) returns (Message) {}
+  rpc NewIssue (NewIssueRequest) returns (Message) {}
 }
 
-message TelegramSendRequest {
+message ProjectAlertRequest {
   string project = 1;
   string message = 2;
 }
 
-message TelegramSendReply {
+message NewIssueRequest {
+  string project = 1;
+  string key = 2;
+  string timestamp = 3;
+  string env = 4;
+  string service = 5;
+  string flag = 6;
+}
+
+message Message {
   string message = 1;
 }

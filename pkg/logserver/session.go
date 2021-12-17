@@ -21,7 +21,7 @@ func openSession(data *storage.Data) map[string]*SessionData {
 	}
 
 	if data.Config.Internal.Log.ClearOnRestart {
-		log.Println("clearing known errors")
+		log.Printf("clearing known errors for projects %s", projects)
 		for _, projectName := range projects {
 			data.DeleteVar(projectName, vars.KnownErrors)
 		}
@@ -43,6 +43,7 @@ func openOrEnterSession(
 		knownErrors := make([]types.KnownError, 0)
 		knownErrorsRaw := data.GetVar(projectName, vars.KnownErrors)
 		if string(knownErrorsRaw) != "" {
+			log.Printf("known errors found for project %s", projectName)
 			if err := json.Unmarshal(knownErrorsRaw, &knownErrors); err != nil {
 				log.Println("failed to unmarshal KnownErrors", err)
 			}

@@ -18,7 +18,7 @@ func GetKnownServices(data *storage.Data, project, env string) Set {
 	}
 	err := json.Unmarshal(knownServicesRaw, &knownServices)
 	if err != nil {
-		data.PSend(project, fmt.Sprintf("Failed to unmarshal knownServices for %s.", env))
+		data.InternalAlert(fmt.Sprintf("Failed to unmarshal knownServices for %s.", env))
 	}
 	return knownServices
 }
@@ -35,7 +35,7 @@ func GetKnownEnvs(data *storage.Data, project string) Set {
 	}
 	err := json.Unmarshal(knownEnvsRaw, &knownEnvs)
 	if err != nil {
-		data.PSend(project, "Failed to unmarshal knownEnvs.")
+		data.InternalAlert(fmt.Sprintf("Failed to unmarshal knownEnvs for project %q", project))
 	}
 	return knownEnvs
 }

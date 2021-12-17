@@ -35,6 +35,13 @@ services:
     env_file:
       - local.env
 
+  rabbitmq:
+    profiles: ["main"]
+    env_file:
+      - local.env
+    logging:
+      driver: "none"
+
   fluentd:
     profiles: ["main"]
     build:

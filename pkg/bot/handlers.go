@@ -1,15 +1,14 @@
 package bot
 
 import (
-	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/postgres/models"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-func RegisterHandlers(b *tb.Bot, data *porter.Data) {
+func (s *Sylon) RegisterHandlers() {
 	// TODO recovery v5
 	// registerStatusHandler(b, data)
-	registerHelpHandler(data, b)
+	s.registerHelpHandler()
 	// registerManagementHandlers(data, b)
 	// registerOnTextHanler(data, b)
 
@@ -78,15 +77,15 @@ func RegisterHandlers(b *tb.Bot, data *porter.Data) {
 }
 
 // VerifySender returns projectName and if chat is registered
-func VerifySender(data *porter.Data, m *tb.Message) (*models.Project, *models.Chat, bool) {
+func (s *Sylon) VerifySender(m *tb.Message) (*models.Project, *models.Chat, bool) {
 	chat := &models.Chat{}
-	if err := data.R.Get(chat, "select * from chat where id = $1", m.Chat.ID); err != nil {
-		data.JustSend(m.Chat, "This chat is not registered for any project.")
+	if err := s.R.Get(chat, "select * from chat where id = $1", m.Chat.ID); err != nil {
+		s.JustSend(m.Chat, "This chat is not registered for any project.")
 		return nil, nil, false
 	}
 
 	project := &models.Project{}
-	data.R.Get(project, "select * from project where id = $1", chat.ProjectID)
+	s.R.Get(project, "select * from project where id = $1", chat.ProjectID)
 
 	return project, chat, true
 }

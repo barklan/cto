@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/barklan/cto/pkg/bot"
 	pb "github.com/barklan/cto/pkg/protos/porter"
 	"google.golang.org/grpc"
 )
@@ -14,27 +15,49 @@ var port = 50051
 
 type server struct {
 	pb.UnimplementedPorterServer
-	data *Data
+	base  *Base
+	sylon *bot.Sylon
 }
 
-func (s *server) TelegramSend(ctx context.Context, in *pb.TelegramSendRequest) (*pb.TelegramSendReply, error) {
+func (s *server) ProjectAlert(ctx context.Context, in *pb.ProjectAlertRequest) (*pb.Message, error) {
 	projectID := in.GetProject()
 	tgMessage := in.GetMessage()
 	log.Printf("Received request to send tg message %q for project %q", tgMessage, projectID)
 	go func() {
-		s.data.PSend(projectID, tgMessage)
+		s.sylon.PSend(projectID, tgMessage)
 	}()
 
-	return &pb.TelegramSendReply{Message: "ok"}, nil
+	return &pb.Message{Message: "ok"}, nil
 }
 
-func Serve(data *Data) {
+func (s *server) InternalAlert(ctx context.Context, in *pb.Message) (*pb.Message, error) {
+	message := in.GetMessage()
+	s.sylon.CSend(message)
+	return &pb.Message{Message: "ok"}, nil
+}
+
+func (s *server) NewIssue(ctx context.Context, in *pb.NewIssueRequest) (*pb.Message, error) {
+	s.sylon.NotifyAboutError(
+		in.GetProject(),
+		in.GetEnv(),
+		in.GetService(),
+		in.GetTimestamp(),
+		in.GetKey(),
+		in.GetFlag(),
+	)
+	return &pb.Message{Message: "ok"}, nil
+}
+
+func (b *Base) ServeGRPC(sylon *bot.Sylon) {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Panicf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterPorterServer(s, &server{data: data})
+	pb.RegisterPorterServer(s, &server{
+		base:  b,
+		sylon: sylon,
+	})
 	if err := s.Serve(lis); err != nil {
 		log.Panicf("failed to serve: %v", err)
 	}

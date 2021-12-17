@@ -30,6 +30,9 @@ services:
     env_file:
       - ./.env
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
@@ -123,6 +126,9 @@ services:
       # CONFIG_ENV should be one of "dev", "devdocker", "prod"
       - CONFIG_ENV=prod
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
@@ -139,7 +145,7 @@ services:
         - traefik.http.services.porter.loadbalancer.server.port=9010
 
   db:
-    image: 'postgres:14'
+    image: 'postgres:14.1'
     networks:
       - traefik-public
     volumes:
@@ -152,6 +158,20 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
       # THIS IS UNSAFE!
       # - POSTGRES_HOST_AUTH_METHOD=trust
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+
+  rabbitmq:
+    image: 'rabbitmq:3.9.11-management'
+    env_file:
+      - .env
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - traefik-public
     deploy:
       placement:
         constraints:

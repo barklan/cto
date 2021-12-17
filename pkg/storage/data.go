@@ -2,7 +2,6 @@ package storage
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"reflect"
 	"time"
@@ -58,9 +57,11 @@ func (d *Data) GetVar(projectName, key string) []byte {
 	return Get(d.DB, varKey)
 }
 
+// TODO use this more instead of comparing to empty string.
 func (d *Data) VarExists(projectName, key string) bool {
+	varKey := projectName + variableKeySymbol + key
 	err := d.DB.View(func(txn *badger.Txn) error {
-		_, err := txn.Get([]byte(key))
+		_, err := txn.Get([]byte(varKey))
 		return err
 	})
 	switch err {
@@ -75,9 +76,9 @@ func (d *Data) VarExists(projectName, key string) bool {
 }
 
 func (d *Data) DeleteVar(projectName, key string) {
+	varKey := projectName + variableKeySymbol + key
 	err := d.DB.Update(func(txn *badger.Txn) error {
-		err := txn.Delete([]byte(key))
-		return err
+		return txn.Delete([]byte(varKey))
 	})
 	if err != nil {
 		log.Panicln("panicing in DeleteVar function", err)
@@ -111,37 +112,4 @@ func (d *Data) SetObj(key string, obj interface{}, ttl time.Duration) {
 func (d *Data) Get(key string) []byte {
 	varKey := variableKeySymbol + key
 	return Get(d.DB, varKey)
-}
-
-func GSend(project string, msg interface{}) {
-	switch v := msg.(type) {
-	default:
-		fmt.Printf("unexpected type as a tg message %T", v)
-	case string:
-		SendTgMessage(project, v)
-	}
-}
-
-// TODO it is deprecated in this module
-func (d *Data) JustSend(to tb.Recipient, msg interface{}, options ...interface{}) {
-	log.Println("JustSend has been called!")
-}
-
-// CSendSync sends to barklan with sync
-func (d *Data) CSendSync(msg interface{}, options ...interface{}) (*tb.Message, error) {
-	GSend(Internal, msg)
-	return &tb.Message{}, nil
-}
-
-// CSend sends to barklan
-func (d *Data) CSend(msg interface{}, options ...interface{}) {
-	go func() {
-		GSend(Internal, msg)
-	}()
-}
-
-func (d *Data) PSend(projectName string, msg interface{}, options ...interface{}) {
-	go func() {
-		GSend(projectName, msg)
-	}()
 }

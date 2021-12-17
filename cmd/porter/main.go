@@ -16,7 +16,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func handleSysSignals(data *porter.Data) {
+func handleSysSignals(base *porter.Base, sylon *bot.Sylon) {
 	SigChan := make(chan os.Signal, 1)
 
 	signal.Notify(SigChan, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
@@ -35,7 +35,8 @@ func handleSysSignals(data *porter.Data) {
 	default:
 		sigID = "UNKNOWN"
 	}
-	data.B.Close()
+	sylon.B.Close()
+	base.R.Close()
 	log.Println(fmt.Sprintf("I received %s. Exiting now!", sigID))
 	os.Exit(0)
 }
@@ -43,18 +44,10 @@ func handleSysSignals(data *porter.Data) {
 func main() {
 	log.Println("Starting...")
 
-	data := porter.InitData()
 	config, err := storage.ReadInternalConfig("")
 	if err != nil {
 		log.Fatal(err)
 	}
-	data.Config = &config
-
-	// TODO telebot migrating to v3 soon
-	b := bot.Bot(config.TG.BotToken)
-	data.B = b
-
-	data.Chat = bot.GetBoss(data)
 
 	var rdb *sqlx.DB
 	for i := 0; i < 10; i++ {
@@ -69,14 +62,19 @@ func main() {
 
 	}
 
-	data.R = rdb
+	base := porter.InitBase(&config, rdb)
+
+	// TODO telebot migrating to v3 soon
+	b := bot.Bot(config.TG.BotToken)
+
+	sylon := bot.InitSylon(rdb, &config, b)
 
 	wg := new(sync.WaitGroup)
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		porter.Serve(data)
+		base.ServeGRPC(sylon)
 	}()
 
 	wg.Add(1)
@@ -86,12 +84,12 @@ func main() {
 			wg.Done()
 		}()
 
-		bot.RegisterHandlers(b, data)
+		sylon.RegisterHandlers()
 		b.Start()
 	}()
 
 	go func() {
-		handleSysSignals(data)
+		handleSysSignals(base, sylon)
 	}()
 
 	wg.Wait()

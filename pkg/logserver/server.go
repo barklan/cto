@@ -84,15 +84,14 @@ func logOneRequest(
 
 		var wg sync.WaitGroup
 		wg.Add(len(multiLog))
-
 		for _, pick := range multiLog {
 			go func(record RawLogRecord) {
 				defer wg.Done()
 				processLogRecord(data, projectName, record, sessDataMap, reportChan)
 			}(pick)
 		}
-
 		wg.Wait()
+
 		closeOrLeaveSession(data, sessDataMap, projectName)
 	}(body)
 }
@@ -169,7 +168,7 @@ func LogServerServe(data *storage.Data) {
 	}
 	err := http.ListenAndServe(portString, nil)
 	if err != nil {
-		_, _ = data.CSendSync("Logserver errored.")
+		data.InternalAlert("Logserver errored.")
 		log.Panic(err)
 	}
 }
