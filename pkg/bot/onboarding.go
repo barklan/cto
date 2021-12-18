@@ -29,6 +29,7 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 	}
 	u4 := uid4.String()
 
+	log.Println("opening tx to create new project")
 	tx, err := s.R.Begin()
 	if err != nil {
 		s.logAndReport(from, "failed to create db transaction.", err)
@@ -52,11 +53,15 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 		return
 	}
 
-	req, _ := http.NewRequest(
+	log.Println("requesting cto-core to acknoledge project")
+	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("cto_backend:8888/api/core/setproject/%s", u4),
+		fmt.Sprintf("http://cto_backend:8888/api/core/setproject/%s", u4),
 		nil,
 	)
+	if err != nil {
+		s.logAndReport(from, "failed to create request", err)
+	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		s.logAndReport(from, "failed to propagate project to one of core replicas", err)
@@ -86,7 +91,7 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 	s.JustSend(from, fmt.Sprintf(
 		"New project <code>%s</code> created with secret <code>%s</code>.",
 		u4, secretKey,
-	))
+	), tb.ModeHTML)
 }
 
 func (s *Sylon) registerOnboardingHandlers() {
@@ -122,6 +127,7 @@ func (s *Sylon) registerOnboardingHandlers() {
 			return
 		}
 
+		log.Println("Request to register new project.")
 		s.newProject(m.Chat, &client)
 	})
 }
