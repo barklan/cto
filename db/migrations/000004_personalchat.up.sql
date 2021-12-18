@@ -1,0 +1,5 @@
+BEGIN;
+
+ALTER TABLE client ADD COLUMN personal_chat BIGINT;
+
+COMMIT;
