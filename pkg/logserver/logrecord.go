@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -145,13 +144,4 @@ func assignFlag(str string) string {
 	}
 
 	return flagNone
-}
-
-func findTimeStringByRegex(str string) (string, bool) {
-	r, _ := regexp.Compile(`(?:\D|\b)((?:[01]\d|2[0-3]):(?:[0-5]\d):(?:[0-5]\d))(?:\D|\b)`)
-	timeStr := r.FindStringSubmatch(str)
-	if len(timeStr) >= 2 {
-		return timeStr[1], true
-	}
-	return "", false
 }

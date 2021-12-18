@@ -1,14 +1,14 @@
 package bot
 
 // FIXME recovery for v5
-// func registerStatusHandler(b *tb.Bot, data *porter.Data) {
-// 	b.Handle("/status", func(m *tb.Message) {
-// 		projectName, ok := VerifySender(data, m)
+// func (s *Sylon) registerStatusHandler() {
+// 	s.B.Handle("/status", func(m *tb.Message) {
+// 		project, chat, ok := s.VerifySender(m)
 // 		if !ok {
 // 			return
 // 		}
 
-// 		knownErrors := make([]logservertypes.KnownError, 0)
+// 		knownErrors := make([]types.KnownError, 0)
 // 		knownErrorsRaw := data.Get(fmt.Sprintf("knownErrors-%s", projectName))
 // 		if string(knownErrorsRaw) != "" {
 // 			if err := json.Unmarshal(knownErrorsRaw, &knownErrors); err != nil {

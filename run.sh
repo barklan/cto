@@ -63,7 +63,7 @@ function front {
     cd frontend && pnpm dev
 }
 
-function upd {
+function up:stack {
     export DOCKER_BUILDKIT=1
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile main build --parallel
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile main up

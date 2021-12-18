@@ -36,11 +36,11 @@ func handleSysSignals(base *porter.Base, sylon *bot.Sylon) {
 		sigID = "UNKNOWN"
 	}
 	sylon.B.Close()
-	base.R.Close()
 	log.Println(fmt.Sprintf("I received %s. Exiting now!", sigID))
 	os.Exit(0)
 }
 
+// TODO handle closing database gracefully
 func main() {
 	log.Println("Starting...")
 
@@ -59,8 +59,8 @@ func main() {
 			time.Sleep(1 * time.Second)
 			continue
 		}
-
 	}
+	defer rdb.Close()
 
 	base := porter.InitBase(&config, rdb)
 

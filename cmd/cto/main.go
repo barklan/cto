@@ -12,6 +12,7 @@ import (
 
 	"github.com/barklan/cto/pkg/logserver"
 	postgres "github.com/barklan/cto/pkg/postgres"
+	"github.com/barklan/cto/pkg/restcore"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/jmoiron/sqlx"
 )
@@ -89,6 +90,15 @@ func main() {
 			wg.Done()
 		}()
 		logserver.LogServerServe(data)
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer func() {
+			CrashExit(data, "chi server exited")
+			wg.Done()
+		}()
+		restcore.Serve(data)
 	}()
 
 	// FIXME move to porter

@@ -62,6 +62,9 @@ services:
     networks:
       - traefik-public
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
@@ -81,6 +84,7 @@ services:
     image: barklan/cto-core:rolling
     ports:
       - 8080:8080
+      - 8888:8888
     networks:
       - traefik-public
     volumes:
@@ -93,6 +97,9 @@ services:
       # CONFIG_ENV should be one of "dev", "devdocker", "prod"
       - CONFIG_ENV=prod
     deploy:
+      placement:
+        constraints:
+          - node.role == manager
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
@@ -182,8 +189,9 @@ volumes:
   cto-data:
     external: true
   cto-media:
+    external: false
+  cto-postgres:
     external: true
-  cto-postgres: null
 
 # docker network create --driver=overlay --attachable traefik-public
 networks:

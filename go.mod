@@ -7,6 +7,7 @@ require (
 	github.com/adrg/strutil v0.2.3
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/dgraph-io/badger/v3 v3.2103.2
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/golang-jwt/jwt/v4 v4.2.0
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/jmoiron/sqlx v1.3.4
