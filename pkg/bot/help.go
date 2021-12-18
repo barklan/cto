@@ -18,7 +18,7 @@ func (s *Sylon) registerHelpHandler() {
 		// TODO should return project name, owner and secret.
 		if m.Chat.Type == tb.ChatPrivate {
 			var client models.Client
-			if err := s.R.Get(&client, "select * from client where id = $1", m.Chat.ID); err != nil {
+			if err := s.R.Get(&client, "select * from client where personal_chat = $1", m.Chat.ID); err != nil {
 				s.JustSend(m.Chat,
 					"Personal chat. You are not registered. "+
 						"To register call <code>/start</code>.",
