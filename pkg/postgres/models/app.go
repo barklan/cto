@@ -3,9 +3,10 @@ package models
 import "database/sql"
 
 type Client struct {
-	ID     string `db:"id"`
-	Active bool   `db:"active"`
-	TGNick string `db:"tg_nick"`
+	ID           string `db:"id"`
+	Active       bool   `db:"active"`
+	TGNick       string `db:"tg_nick"`
+	PersonalChat int64  `db:"personal_chat"`
 }
 
 type Project struct {
@@ -17,7 +18,7 @@ type Project struct {
 }
 
 type Chat struct {
-	ID        string `db:"id"`
+	ID        int64  `db:"id"`
 	Active    bool   `db:"active"`
 	ProjectID string `db:"project_id"`
 }
