@@ -111,7 +111,7 @@ func (s *Sylon) registerOnboardingHandlers() {
 		}
 
 		client := models.Client{}
-		if err := s.R.Get(&client, "select * from client where id = $1", m.Sender.ID); err != nil {
+		if err := s.R.Get(&client, "select * from client where personal_chat = $1", m.Sender.ID); err != nil {
 			s.JustSend(
 				m.Chat,
 				"This chat is not registered, but you cannot register projects "+
