@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 services:
 
   traefik:
@@ -82,6 +82,9 @@ services:
 
   backend:
     image: barklan/cto-core:rolling
+    build:
+      context: .
+      dockerfile: dockerfiles/core.dockerfile
     ports:
       - 8080:8080
       - 8888:8888
@@ -141,15 +144,48 @@ services:
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
         - traefik.http.routers.porter-http.rule=Host(`${DOMAIN?Variable not
-          set}`) && (PathPrefix(`/porter/`))
+          set}`) && (PathPrefix(`/api/porter/`))
         - traefik.http.routers.porter-http.entrypoints=http
         - traefik.http.routers.porter-http.middlewares=https-redirect
         - traefik.http.routers.porter-https.rule=Host(`${DOMAIN?Variable not
-          set}`) && (PathPrefix(`/porter/`))
+          set}`) && (PathPrefix(`/api/porter/`))
         - traefik.http.routers.porter-https.entrypoints=https
         - traefik.http.routers.porter-https.tls=true
         - traefik.http.routers.porter-https.tls.certresolver=le
         - traefik.http.services.porter.loadbalancer.server.port=9010
+
+  loginput:
+    image: barklan/cto-loginput:rolling
+    build:
+      context: .
+      dockerfile: dockerfiles/loginput.dockerfile
+    ports:
+      - 8900:8900
+    networks:
+      - traefik-public
+    env_file:
+      - ./.env
+    environment:
+      # CONFIG_ENV should be one of "dev", "devdocker", "prod"
+      - CONFIG_ENV=prod
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.loginput-http.rule=Host(`${DOMAIN?Variable not
+          set}`) && (PathPrefix(`/api/loginput/`))
+        - traefik.http.routers.loginput-http.entrypoints=http
+        - traefik.http.routers.loginput-http.middlewares=https-redirect
+        - traefik.http.routers.loginput-https.rule=Host(`${DOMAIN?Variable not
+          set}`) && (PathPrefix(`/api/loginput/`))
+        - traefik.http.routers.loginput-https.entrypoints=https
+        - traefik.http.routers.loginput-https.tls=true
+        - traefik.http.routers.loginput-https.tls.certresolver=le
+        - traefik.http.services.loginput.loadbalancer.server.port=8900
 
   db:
     image: 'postgres:14.1'

@@ -17,7 +17,9 @@ fi
 
 function _export_pg {
     . local.env
-    export POSTGRES_DB POSTGRES_PASSWORD POSTGRES_USER POSTGRES_HOST
+    export POSTGRES_DB POSTGRES_PASSWORD POSTGRES_USER
+    export POSTGRES_HOST=localhost:5432
+    export RABBITMQ_HOST=localhost
 }
 
 function _dc {
@@ -33,21 +35,26 @@ function up:c {
     export CTO_LOCAL_ENV=true
     export CONFIG_ENV=dev
     _export_pg
-    export POSTGRES_HOST=localhost:5432
-    echo "$POSTGRES_HOST"
     go run cmd/cto/main.go
 }
 
 function up:p {
     _export_pg
     export CONFIG_ENV=dev
-    export POSTGRES_HOST=localhost:5432
-    echo "$POSTGRES_HOST"
     go run cmd/porter/main.go
+}
+
+function up:loginput {
+    _export_pg
+    go run cmd/loginput/main.go
 }
 
 function up:db {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile db up --build
+}
+
+function up:dbmq {
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile mq --profile db up --build
 }
 
 function psql {

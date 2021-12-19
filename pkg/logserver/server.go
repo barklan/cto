@@ -107,12 +107,14 @@ func LogServerServe(data *storage.Data) {
 
 	reportChan := make(chan LogRecordReport, 50)
 
+	// FIXME this only works for one replica
+	// 1. This should generate and save reports only for project that are resident on that node
+	// 2. It should also periodically update list of projects
 	projects := make([]string, 0)
 	if err := data.R.Select(&projects, "select id from project"); err != nil {
-		log.Println("no projects found when opening logserver session")
+		log.Println("no projects in database")
 	}
 
-	// Save new reports every 5 minutes
 	go func() {
 		aggregateRecordsRecievedMap := map[string]int{}
 		for _, projectName := range projects {
@@ -145,6 +147,8 @@ func LogServerServe(data *storage.Data) {
 
 		}
 	}()
+
+	go Subscriber()
 
 	logInputHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logOneRequest(w, r, data, sessionDataMap, reportChan)

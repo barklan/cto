@@ -1,4 +1,4 @@
-version: "3.7"
+version: "3.8"
 services:
 
   traefik:
@@ -11,11 +11,12 @@ services:
     restart: on-failure
     profiles: ["main"]
     container_name: cto_backend
+    volumes:
+      - ./.cache:/app/data
+      - ./.cache/media:/app/media
+      - '${PROJECT_PATH-.}/environment:/app/config'
     networks:
       - traefik-public
-    build:
-      context: .
-      dockerfile: dockerfiles/core.dockerfile
     env_file:
       ./local.env
     environment:
@@ -29,6 +30,12 @@ services:
     environment:
       - CONFIG_ENV=devdocker
 
+  loginput:
+    profiles: ["main"]
+    container_name: cto_loginput
+    env_file:
+      ./local.env
+
   db:
     container_name: db
     profiles: ["main", "db"]
@@ -36,11 +43,9 @@ services:
       - local.env
 
   rabbitmq:
-    profiles: ["main"]
+    profiles: ["main", "mq"]
     env_file:
       - local.env
-    logging:
-      driver: "none"
 
   fluentd:
     profiles: ["main"]

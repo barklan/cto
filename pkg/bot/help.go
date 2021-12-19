@@ -48,7 +48,7 @@ func (s *Sylon) registerHelpHandler() {
 			log.Panic("Owner must exist.")
 		}
 
-		// TODO recovery v5
+		// TODO this should be visible in personal chats
 		// yourProjects := []string{}
 		// participatingIn := []string{}
 		// for p, cid := range data.Config.P {

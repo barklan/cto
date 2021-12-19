@@ -1,0 +1,12 @@
+BEGIN;
+
+ALTER TABLE chat DROP CONSTRAINT chat_project_id_fkey;
+
+COMMIT;
+
+BEGIN;
+
+ALTER TABLE chat ADD CONSTRAINT chat_project_id_fkey2
+FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+COMMIT;
