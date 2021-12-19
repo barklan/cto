@@ -11,14 +11,6 @@ export REGISTRY_PASSWORD="${REGISTRY_PASSWORD?Variable not set}"
 
 docker-compose build --parallel
 docker-compose push
-# docker build -t "barklan/cto-core:rolling" -f dockerfiles/core.dockerfile .
-# docker image push "barklan/cto-core:rolling"
-# docker build -t "barklan/cto-explorer:rolling" -f dockerfiles/frontend.dockerfile ./frontend
-# docker image push "barklan/cto-explorer:rolling"
-# docker build -t "barklan/cto-porter:rolling" -f dockerfiles/porter.dockerfile .
-# docker image push "barklan/cto-porter:rolling"
-# docker build -t "barklan/cto-loginput:rolling" -f dockerfiles/loginput.dockerfile .
-# docker image push "barklan/cto-loginput:rolling"
 
 docker-compose -f docker-compose.yml config > docker-stack.yml
 

@@ -70,6 +70,7 @@ func Subscriber(data *storage.Data, reqs chan<- loginput.LogRequest) {
 			projectID := d.Headers["projectID"].(string)
 			if !data.VarExists(projectID, "") {
 				log.Printf("rejecting log req for project %s\n", projectID)
+				// TODO add `continue` here after you made sure you have that flag
 			}
 			reqs <- loginput.LogRequest{
 				ProjectID: projectID,
