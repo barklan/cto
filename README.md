@@ -12,7 +12,7 @@
 
 ```
 /api
-    /loginput (:8900 internal)
+    /loginput/fluentd (:8900 internal)
     /core (:8888 internal)
         /debug/{projectID}?key | GET
         /setproject{projectID} | POST
@@ -23,30 +23,38 @@
 
 `porter` on 50051
 
-## Sanity
+## Sanity check
 
 
 ```
-       │   │        │
-  front│   │bot     │fluentd
-       ▼   ▼        ▼
-     ┌───────┐ ┌──────────┐   r
-┌───►│porter │ │ loginput ├────┐
-│    └┬──┬──┬┘ └┬─────────┘    ▼
-│     │  │  │   │            ┌───┐
-│ ┌───┘  └──┼───┼───────────►│pg │
-│ │         │   │        rw  └─┬─┘
-│ │         ▼   ▼              │
-│ │       ┌───────┐            │
-│ │       │  mq   │           r│
-│ │       └─┬───┬─┘            │
-│ │   query │   │loginput      │
-│ │   fanout│   │fanout        │
-│ │         │   │              │
-│ │choose ┌─┴───┴─┐ replicated │
-│ │one    │ core  │ stateful  ─┘
-│ └──────►│       │ cores
-│         └┬──────┘
-│ callback │
-└──────────┘
+         │   │        │
+    front│   │bot     │fluentd
+         │   │        ▼
+       ┌─┴───┴─┐ ┌──────────┐
+┌─────►│       │ │          │
+│      │porter │ │ loginput ├────┐
+│ ┌────┤       │ │          │    │
+│ │    └┬──┬──┬┘ └┬─────────┘   r│
+│ │     │  │  │   │            ┌─┴─┐
+│ │     │  └──┼───┼───────────►│pg │
+│ │   rw│     │   │        rw  └─┬─┘
+│ │     ▼     ▼   ▼              │
+│ │  w┌───┐ ┌───────┐           r│
+├─┼──►│ c │ │  mq   │            │
+│ │   └───┘ └─┬───┬─┘            │
+│ │     query │   │loginput      │
+│ │     fanout│   │fanout        │
+│ │           │   │              │
+│ │ choose  ┌─┴───┴─┐ replicated │
+│ │ one     │ core  │ stateful  ─┘
+│ └────────►│       │ cores
+│           └┬──────┘
+│   callback │
+└◄───────────┘
 ```
+
+- core - meant to be replicated (1 replica per node)
+- loginput - can be replicated
+- porter - not sure...
+- mq - can be replicated through [quorum queues](https://www.rabbitmq.com/quorum-queues.html)
+- pg - can be cockroachdb

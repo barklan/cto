@@ -103,6 +103,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+      # TODO remove api from this
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public

@@ -1,10 +1,8 @@
 package logserver
 
 import (
-	"crypto/subtle"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"math/rand"
 	"net/http"
@@ -12,9 +10,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/barklan/cto/pkg/loginput"
 	"github.com/barklan/cto/pkg/logserver/querying"
 	"github.com/barklan/cto/pkg/logserver/types"
-	"github.com/barklan/cto/pkg/postgres/models"
 	"github.com/barklan/cto/pkg/storage"
 )
 
@@ -28,44 +26,13 @@ type SessionData struct {
 	KnownErrors      []types.KnownError
 }
 
-func authorizeRequest(data *storage.Data, r *http.Request) (string, bool) {
-	projectName, password, ok := r.BasicAuth()
-	if !ok {
-		log.Println("error parsing basic auth")
-		return "", false
-	}
-
-	project := models.Project{}
-	if err := data.R.Get(&project, "select * from project where id = $1", projectName); err != nil {
-		log.Println("project not found from basic auth")
-		return "", false
-	}
-
-	if subtle.ConstantTimeCompare([]byte(password), []byte(project.SecretKey)) == 1 {
-		return project.ID, true
-	}
-
-	return "", false
-}
-
 func logOneRequest(
-	w http.ResponseWriter,
-	r *http.Request,
+	projectName string,
+	body []byte,
 	data *storage.Data,
 	sessDataMap map[string]*SessionData,
 	reportChan chan LogRecordReport,
 ) {
-	projectName, ok := authorizeRequest(data, r)
-	if !ok {
-		log.Println("recieved unauthorized request")
-		w.WriteHeader(401)
-		return
-	}
-
-	log.Println(fmt.Sprintf("recieved log dump for project %q", projectName))
-
-	body, _ := io.ReadAll(r.Body)
-
 	go func([]byte) {
 		multiLog := make([]RawLogRecord, 1)
 		err := json.Unmarshal(body, &multiLog)
@@ -99,6 +66,18 @@ func logOneRequest(
 func remove(s []types.KnownError, i int) []types.KnownError {
 	s[i] = s[len(s)-1]
 	return s[:len(s)-1]
+}
+
+func processLogInputs(
+	data *storage.Data,
+	reqs <-chan loginput.LogRequest,
+	sessDataMap map[string]*SessionData,
+	reportChan chan LogRecordReport,
+) {
+	defer log.Panicln("log input processing stopped")
+	for req := range reqs {
+		logOneRequest(req.ProjectID, req.Body, data, sessDataMap, reportChan)
+	}
 }
 
 func LogServerServe(data *storage.Data) {
@@ -148,12 +127,9 @@ func LogServerServe(data *storage.Data) {
 		}
 	}()
 
-	go Subscriber()
-
-	logInputHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logOneRequest(w, r, data, sessionDataMap, reportChan)
-	})
-	http.Handle("/api/log/input", logInputHandler)
+	reqs := make(chan loginput.LogRequest, 10)
+	go Subscriber(data, reqs)
+	go processLogInputs(data, reqs, sessionDataMap, reportChan)
 
 	logExactHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		querying.ServeLogExact(w, r, data)

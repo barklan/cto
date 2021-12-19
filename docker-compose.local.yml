@@ -56,10 +56,10 @@ services:
     networks:
       - traefik-public
     environment:
-      FLUENTD_HTTP_DUMP_ENDPOINT: 'http://cto_backend:8080/api/log/input'
+      FLUENTD_HTTP_DUMP_ENDPOINT: 'http://cto_loginput:8900/api/loginput/fluentd'
       FLUENTD_HOSTNAME: 'stag.nftgallerydev.online'
-      FLUENTD_CTO_PROJECT_TOKEN: '12345'
-      FLUENTD_CTO_PROJECT_NAME: '0b6badb2-edbe-458c-a6af-df49e393e5fc'
+      FLUENTD_CTO_PROJECT_TOKEN: 'pJUIUOQfkMRJrtfNjFXKxUjnEmgsVBmaDGRcLFgTqyKktKgK'
+      FLUENTD_CTO_PROJECT_NAME: 'c8751840-629e-40ea-8cf5-c9d331f5444c'
     ports:
       - "24224:24224"
       - "24224:24224/udp"
