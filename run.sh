@@ -20,6 +20,7 @@ function _export_pg {
     export POSTGRES_DB POSTGRES_PASSWORD POSTGRES_USER
     export POSTGRES_HOST=localhost:5432
     export RABBITMQ_HOST=localhost
+    export REDIS_HOST=localhost
 }
 
 function _dc {
@@ -53,8 +54,8 @@ function up:db {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile db up --build
 }
 
-function up:dbmq {
-    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile mq --profile db up --build
+function up:extra {
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile mq --profile db --profile cache up --build
 }
 
 function psql {

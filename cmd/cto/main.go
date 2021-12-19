@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/logserver"
 	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/barklan/cto/pkg/restcore"
@@ -77,6 +78,9 @@ func main() {
 
 	config := storage.ReadConfig(data)
 	data.Config = config
+
+	redis := caching.InitRedis()
+	data.Cache = redis
 
 	defer CrashExit(data, "Deferred in main.")
 

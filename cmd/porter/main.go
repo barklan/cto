@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/barklan/cto/pkg/bot"
+	"github.com/barklan/cto/pkg/caching"
 	porter "github.com/barklan/cto/pkg/porter"
 	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/barklan/cto/pkg/storage"
@@ -63,6 +64,9 @@ func main() {
 	defer rdb.Close()
 
 	base := porter.InitBase(&config, rdb)
+
+	redis := caching.InitRedis()
+	base.Cache = redis
 
 	// TODO telebot migrating to v3 soon
 	b := bot.Bot(config.TG.BotToken)

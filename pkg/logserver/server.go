@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 
@@ -138,17 +137,5 @@ func LogServerServe(data *storage.Data) {
 
 	querying.InitQueryService(data)
 
-	var portString string
-	if v, ok := os.LookupEnv("CTO_LOCAL_ENV"); ok {
-		if v == "true" {
-			portString = ":8080"
-		}
-	} else {
-		portString = ":8080"
-	}
-	err := http.ListenAndServe(portString, nil)
-	if err != nil {
-		data.InternalAlert("Logserver errored.")
-		log.Panic(err)
-	}
+	log.Panic(http.ListenAndServe(":8080", nil))
 }

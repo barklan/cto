@@ -47,6 +47,11 @@ services:
     env_file:
       - local.env
 
+  cache:
+    profiles: ["main", "cache"]
+    env_file:
+      - local.env
+
   fluentd:
     profiles: ["main"]
     build:

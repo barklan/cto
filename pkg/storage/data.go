@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/barklan/cto/pkg/caching"
 	"github.com/dgraph-io/badger/v3"
 	"github.com/jmoiron/sqlx"
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -23,6 +24,7 @@ type Data struct {
 	Config    *Config
 	MediaPath string
 	R         *sqlx.DB
+	Cache     caching.Cache
 }
 
 // TODO deprecate this

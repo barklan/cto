@@ -224,6 +224,13 @@ services:
         constraints:
           - node.role == manager
 
+  cache:
+    image: 'redis:6.2.6'
+    ports:
+      - 6379:6379
+    networks:
+      - traefik-public
+
 volumes:
   traefik-public-certificates: null
   cto-data:

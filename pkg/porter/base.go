@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/jmoiron/sqlx"
 )
@@ -12,6 +13,7 @@ type Base struct {
 	Config    *storage.InternalConfig
 	MediaPath string
 	R         *sqlx.DB
+	Cache     caching.Cache
 }
 
 func InitBase(config *storage.InternalConfig, db *sqlx.DB) *Base {
