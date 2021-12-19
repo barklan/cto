@@ -3,11 +3,11 @@ package porter
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 
 	"github.com/barklan/cto/pkg/bot"
 	pb "github.com/barklan/cto/pkg/protos/porter"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
@@ -58,6 +58,8 @@ func (b *Base) ServeGRPC(sylon *bot.Sylon) {
 		base:  b,
 		sylon: sylon,
 	})
+
+	log.Info("starting grpc server")
 	if err := s.Serve(lis); err != nil {
 		log.Panicf("failed to serve: %v", err)
 	}

@@ -130,11 +130,6 @@ func LogServerServe(data *storage.Data) {
 	go Subscriber(data, reqs)
 	go processLogInputs(data, reqs, sessionDataMap, reportChan)
 
-	logExactHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		querying.ServeLogExact(w, r, data)
-	})
-	http.Handle("/api/log/exact", logExactHandler)
-
 	querying.InitQueryService(data)
 
 	log.Panic(http.ListenAndServe(":8080", nil))

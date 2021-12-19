@@ -1,20 +1,18 @@
-package loginput
+package porter
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/rabbit"
 	"github.com/streadway/amqp"
 )
 
-type LogRequest struct {
+type QueryRequest struct {
 	ProjectID string
-	Body      []byte
+	Text      []byte
 }
 
-// FIXME
-// https://github.com/wagslane/go-rabbitmq
-func Publisher(reqs <-chan LogRequest) {
+func Publisher(queries <-chan QueryRequest) {
 	defer log.Panicln("publisher exited")
 
 	conn := rabbit.OpenMQ()
@@ -25,32 +23,32 @@ func Publisher(reqs <-chan LogRequest) {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		"logs",   // name
-		"fanout", // type
-		true,     // durable
-		false,    // auto-deleted
-		false,    // internal
-		false,    // no-wait
-		nil,      // arguments
+		"queries", // name
+		"fanout",  // type
+		true,      // durable
+		false,     // auto-deleted
+		false,     // internal
+		false,     // no-wait
+		nil,       // arguments
 	)
 	panicOnErr(err, "failed to declare an exchange")
 
-	for req := range reqs {
+	for req := range queries {
 		err = ch.Publish(
-			"logs", // exchange
-			"",     // routing key
-			false,  // mandatory
-			false,  // immediate
+			"queries", // exchange
+			"",        // routing key
+			false,     // mandatory
+			false,     // immediate
 			amqp.Publishing{
 				Headers: amqp.Table{
 					"projectID": req.ProjectID,
 				},
 				ContentType: "text/plain",
-				Body:        req.Body,
+				Body:        req.Text,
 			})
 		panicOnErr(err, "failed to publish a message")
 
-		log.Printf("published loginginput for project %q", req.ProjectID)
+		log.WithField("pid", req.ProjectID).Info("published query request")
 	}
 }
 

@@ -13,11 +13,6 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type LogRequest struct {
-	ProjectID string
-	Body      []byte
-}
-
 func authorizeRequest(rdb *sqlx.DB, r *http.Request) (string, bool) {
 	projectName, password, ok := r.BasicAuth()
 	if !ok {

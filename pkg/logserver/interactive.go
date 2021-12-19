@@ -2,8 +2,9 @@ package logserver
 
 import (
 	"fmt"
-	"log"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
@@ -71,6 +72,13 @@ func handleErrorRecord(
 	sessData.KnownErrors = append(sessData.KnownErrors, newError)
 	log.Println("Added new Error!")
 	sessData.KnownErrorsMutex.Unlock()
+
+	raw := data.GetLog(badgerKey)
+	if err := data.Cache.Set(badgerKey, raw, 336*time.Hour); err != nil {
+		warn := "failed to set new error in cache"
+		log.WithField("badgerKey", badgerKey).Warn(warn)
+		data.InternalAlert(warn)
+	}
 
 	data.NewIssue(
 		projectName,

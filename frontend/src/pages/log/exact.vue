@@ -22,7 +22,7 @@ export default {
             import.meta.env.VITE_PROTOCOL +
             "://" +
             import.meta.env.VITE_HOSTNAME +
-            "/api/log/exact?key=" +
+            "/api/porter/query/exact?key=" +
             this.$route.query.key
         )
             .then((response) => {

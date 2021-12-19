@@ -42,6 +42,7 @@ func InitRedis() *Redis {
 	if err = rs.Set("test", "", 1*time.Minute); err != nil {
 		log.Panicln("failed to test test key to redis")
 	}
+	log.Println("redis client is ready")
 
 	return rs
 }

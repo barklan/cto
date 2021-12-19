@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -15,6 +14,7 @@ import (
 	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 )
 
 func handleSysSignals(base *porter.Base, sylon *bot.Sylon) {
@@ -43,7 +43,7 @@ func handleSysSignals(base *porter.Base, sylon *bot.Sylon) {
 
 // TODO handle closing database gracefully
 func main() {
-	log.Println("Starting...")
+	log.Info("Starting...")
 
 	config, err := storage.ReadInternalConfig("")
 	if err != nil {
@@ -72,6 +72,10 @@ func main() {
 	b := bot.Bot(config.TG.BotToken)
 
 	sylon := bot.InitSylon(rdb, &config, b)
+
+	queries := make(chan porter.QueryRequest, 10)
+	go porter.Serve(base, sylon, queries)
+	go porter.Publisher(queries)
 
 	wg := new(sync.WaitGroup)
 
