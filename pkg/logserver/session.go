@@ -2,10 +2,11 @@ package logserver
 
 import (
 	"encoding/json"
-	"log"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"

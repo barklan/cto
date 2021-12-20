@@ -3,8 +3,9 @@ package storage
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"gopkg.in/yaml.v3"
 )

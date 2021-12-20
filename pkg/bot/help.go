@@ -2,7 +2,8 @@ package bot
 
 import (
 	"fmt"
-	"log"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/postgres/models"
 	tb "gopkg.in/tucnak/telebot.v2"

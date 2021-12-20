@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"runtime"
 	"sync"
 	"syscall"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/logserver"

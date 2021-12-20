@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
 	"time"
 
 	"github.com/barklan/cto/pkg/loginput"
 	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {

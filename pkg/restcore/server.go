@@ -1,8 +1,9 @@
 package restcore
 
 import (
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/go-chi/chi/v5"

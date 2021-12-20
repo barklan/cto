@@ -4,8 +4,9 @@ import (
 	"crypto/subtle"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/postgres/models"
 	"github.com/go-chi/chi/v5"

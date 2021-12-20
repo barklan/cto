@@ -1,9 +1,10 @@
 package storage
 
 import (
-	"log"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/dgraph-io/badger/v3"
 )

@@ -3,8 +3,9 @@ package caching
 import (
 	"context"
 	"fmt"
-	"log"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/caarlos0/env"
 	"github.com/go-redis/redis/v8"

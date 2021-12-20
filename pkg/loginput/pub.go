@@ -1,7 +1,7 @@
 package loginput
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/rabbit"
 	"github.com/streadway/amqp"

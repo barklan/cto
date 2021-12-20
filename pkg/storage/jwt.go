@@ -2,8 +2,9 @@ package storage
 
 import (
 	"fmt"
-	"log"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/golang-jwt/jwt/v4"
 )

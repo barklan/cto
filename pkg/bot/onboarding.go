@@ -2,10 +2,11 @@ package bot
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/postgres/models"
 	"github.com/gofrs/uuid"

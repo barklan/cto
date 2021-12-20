@@ -2,8 +2,9 @@ package querying
 
 import (
 	"fmt"
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/golang-jwt/jwt/v4"

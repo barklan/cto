@@ -2,9 +2,10 @@ package storage
 
 import (
 	"encoding/json"
-	"log"
 	"reflect"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // You do not need to marshal anything!

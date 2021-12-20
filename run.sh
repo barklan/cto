@@ -35,7 +35,7 @@ function up {
     reflex -c reflex.conf --decoration=fancy
 }
 
-function up:c {
+function up:core {
     export CTO_DATA_PATH=/home/barklan/dev/cto/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
@@ -44,7 +44,7 @@ function up:c {
     go run cmd/cto/main.go
 }
 
-function up:p {
+function up:porter {
     _export_pg
     export CONFIG_ENV=dev
     go run cmd/porter/main.go
@@ -59,7 +59,7 @@ function up:db {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile db up --build
 }
 
-function up:extra {
+function up:support {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile mq --profile db --profile cache up --build
 }
 
@@ -67,28 +67,28 @@ function psql {
     _dc exec db psql -U postgres -d app "${@}"
 }
 
-function reset {
+function badger:reset {
     rm -r .cache/main
     rm -r .cache/log
 }
 
-function front {
+function frontend {
     cd frontend && pnpm dev
 }
 
-function up:stack {
+function up:fullstack {
     export DOCKER_BUILDKIT=1
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile main build --parallel
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile main up
 }
 
-function direct {
+function ci:direct {
     . .env
     export REGISTRY_PASSWORD REGISTRY_USERNAME
     bash scripts/directswarm.sh
 }
 
-function direct:s {
+function ci:direct:support {
     . .env
     export REGISTRY_PASSWORD REGISTRY_USERNAME
     bash scripts/directsupport.sh

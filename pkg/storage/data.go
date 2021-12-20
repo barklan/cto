@@ -2,9 +2,10 @@ package storage
 
 import (
 	"encoding/json"
-	"log"
 	"reflect"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/caching"
 	"github.com/dgraph-io/badger/v3"

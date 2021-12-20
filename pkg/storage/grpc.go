@@ -2,9 +2,10 @@ package storage
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	pb "github.com/barklan/cto/pkg/protos/porter"
 	"google.golang.org/grpc"

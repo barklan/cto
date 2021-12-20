@@ -1,7 +1,7 @@
 package rabbit
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/streadway/amqp"
 )

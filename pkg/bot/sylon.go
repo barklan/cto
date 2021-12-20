@@ -3,10 +3,11 @@ package bot
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/jmoiron/sqlx"

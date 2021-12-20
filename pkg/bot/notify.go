@@ -2,8 +2,9 @@ package bot
 
 import (
 	"fmt"
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type Chat struct{}

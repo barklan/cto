@@ -1,7 +1,7 @@
 package logserver
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/loginput"
 	"github.com/barklan/cto/pkg/rabbit"

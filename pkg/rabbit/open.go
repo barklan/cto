@@ -2,8 +2,9 @@ package rabbit
 
 import (
 	"fmt"
-	"log"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/caarlos0/env"
 	"github.com/streadway/amqp"

@@ -1,8 +1,9 @@
 package porter
 
 import (
-	"log"
 	"net/http"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/go-chi/chi/v5"

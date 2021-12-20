@@ -1,8 +1,9 @@
 package porter
 
 import (
-	"log"
 	"os"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/storage"
