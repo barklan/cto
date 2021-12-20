@@ -39,8 +39,8 @@ func (s *Sylon) RegisterHandlers() {
 
 // VerifySender returns projectName and if chat is registered
 func (s *Sylon) VerifySender(m *tb.Message) (*models.Project, *models.Chat, bool) {
-	chat := &models.Chat{}
-	if err := s.R.Get(chat, "select * from chat where id = $1", m.Chat.ID); err != nil {
+	chat := models.Chat{}
+	if err := s.R.Get(&chat, "select * from chat where id = $1", m.Chat.ID); err != nil {
 		return nil, nil, false
 	}
 
@@ -50,5 +50,5 @@ func (s *Sylon) VerifySender(m *tb.Message) (*models.Project, *models.Chat, bool
 		return nil, nil, false
 	}
 
-	return project, chat, true
+	return project, &chat, true
 }

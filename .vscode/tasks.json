@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "run.sh",
+            "type": "shell",
+            "command": "bash -i run.sh ${input:runsh}",
+            "isBackground": true,
+        }
+    ],
+    "inputs": [
+        {
+            "description": "run.sh command",
+            "id": "runsh",
+            "type": "pickString",
+            "options": [
+"up:c", "up:p", "up:loginput", "up:db", "up:extra", "psql", "reset", "front", "up:stack", "direct", "direct:s", "fluentd:push", "docs:dev", "docs:bundle", "proto", "db:makemigrations", "db:migrate", "db:migrate:remote", "logs",
+            ]
+        }
+    ]
+}

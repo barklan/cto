@@ -75,7 +75,10 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 	if resp.StatusCode != http.StatusOK {
 		s.logAndReport(
 			from,
-			fmt.Sprintf("core replica denied new project request (status code %d)", resp.StatusCode),
+			fmt.Sprintf(
+				"core replica denied new project request (status code %d)",
+				resp.StatusCode,
+			),
 			err,
 		)
 		if e := tx.Rollback(); e != nil {
@@ -96,7 +99,8 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 
 func (s *Sylon) registerOnboardingHandlers() {
 	s.B.Handle("/start", func(m *tb.Message) {
-		if m.Sender.Username != "barklan" && m.Sender.Username != "qufiwefefwoyn" { // TODO
+		if m.Sender.Username != "barklan" &&
+			m.Sender.Username != "qufiwefefwoyn" { // TODO
 			s.JustSend(m.Chat, "You are not authorized to do anything.")
 			return
 		}
