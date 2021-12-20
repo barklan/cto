@@ -33,6 +33,7 @@ function _dc {
 # ----------------------------------------------------------------------------
 
 function up {
+    _export_common
     reflex -c reflex.conf --decoration=fancy
 }
 

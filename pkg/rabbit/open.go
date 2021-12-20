@@ -23,8 +23,8 @@ func OpenMQ() *amqp.Connection {
 		log.Panicln("failed to parse env for mq connection", err)
 	}
 
-	// TODO
-	// streadway/amqp is not maintained. Migrate to official client eventually.
+	// TODO streadway/amqp is not maintained.
+	// Migrate to official client eventually.
 	// https://github.com/rabbitmq/amqp091-go
 	var conn *amqp.Connection
 	for i := 0; i < 30; i++ {

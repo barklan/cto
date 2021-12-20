@@ -68,12 +68,10 @@ func processLogRecord(
 	projectName string,
 	record RawLogRecord,
 	sessDataMap map[string]*SessionData,
-	// TODO google: passing one-way channels to functions.
 	reportChan chan LogRecordReport,
 ) {
 	logData := constructMetadata(record)
 
-	// TODO maybe send environment with fluentd in headers or query params.
 	knownEnvs := querying.GetKnownEnvs(data, projectName)
 	if _, ok := knownEnvs[logData.Hostname]; !ok {
 		knownEnvs[logData.Hostname] = struct{}{}

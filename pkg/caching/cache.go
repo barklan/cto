@@ -41,8 +41,8 @@ func InitRedis() *Redis {
 	}
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:6379", cfg.Host),
-		Password: cfg.Password, // TODO no password set
-		DB:       0,            // use default DB
+		Password: cfg.Password,
+		DB:       0, // use default DB
 	})
 	rs := &Redis{cl: redisClient}
 

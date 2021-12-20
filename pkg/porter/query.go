@@ -19,8 +19,6 @@ const (
 )
 
 type QResp struct {
-	// TODO don't use magic strings
-	// Status should be one of: working, failed, done
 	Status QStatus                  `json:"status,omitempty"`
 	Msg    string                   `json:"msg,omitempty"`
 	Result []map[string]interface{} `json:"result,omitempty"`

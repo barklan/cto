@@ -50,7 +50,6 @@ func (d *Data) GetVar(projectName, key string) []byte {
 	return Get(d.DB, varKey)
 }
 
-// TODO use this more instead of comparing to empty string.
 func (d *Data) VarExists(projectName, key string) bool {
 	varKey := projectName + variableKeySymbol + key
 	err := d.DB.View(func(txn *badger.Txn) error {
