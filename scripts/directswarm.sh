@@ -9,7 +9,7 @@ export PROJECT_PATH=/home/docker/cto
 export REGISTRY_USERNAME="${REGISTRY_USERNAME?Variable not set}"
 export REGISTRY_PASSWORD="${REGISTRY_PASSWORD?Variable not set}"
 
-docker-compose build --parallel
+docker-compose build #--parallel
 docker-compose push
 
 docker-compose -f docker-compose.yml config > docker-stack.yml

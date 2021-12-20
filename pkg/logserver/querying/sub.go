@@ -36,6 +36,8 @@ func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
 				log.Panicln("failed to unmarshal query request from mq")
 			}
 
+			SetMsgInCache(data, qr.RequestID, porter.QWorking, "Query taken from rabbit by core replica.")
+
 			reqs <- qr
 			log.Printf("log req for project %s added to local queue", projectID)
 		}

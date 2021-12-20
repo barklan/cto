@@ -105,8 +105,6 @@ func main() {
 		restcore.Serve(data)
 	}()
 
-
-
 	go func() {
 		handleSysSignals(data)
 	}()

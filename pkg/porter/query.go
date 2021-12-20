@@ -114,6 +114,7 @@ func serveLogRange(
 
 	wrapped := QueryRequestWrap{
 		ProjectID: projectName,
+		QID:       u4,
 		Json:      qreqJson,
 	}
 

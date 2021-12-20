@@ -230,6 +230,10 @@ services:
       - 6379:6379
     networks:
       - traefik-public
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
 
 volumes:
   traefik-public-certificates: null

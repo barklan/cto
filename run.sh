@@ -32,10 +32,12 @@ function _dc {
 # ----------------------------------------------------------------------------
 
 function up {
+    # sudo chown barklan:barklan .cache/main/*
     reflex -c reflex.conf --decoration=fancy
 }
 
 function up:core {
+    # sudo chown barklan:barklan .cache/main/*
     export CTO_DATA_PATH=/home/barklan/dev/cto/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
@@ -59,7 +61,7 @@ function up:db {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile db up --build
 }
 
-function up:support {
+function up:extra {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile mq --profile db --profile cache up --build
 }
 

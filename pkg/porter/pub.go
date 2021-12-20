@@ -17,10 +17,11 @@ type QueryRequest struct {
 
 type QueryRequestWrap struct {
 	ProjectID string
+	QID       string
 	Json      []byte
 }
 
-func Publisher(queries <-chan QueryRequestWrap) {
+func Publisher(base *Base, queries <-chan QueryRequestWrap) {
 	defer log.Panicln("publisher exited")
 
 	conn := rabbit.OpenMQ()
@@ -55,6 +56,7 @@ func Publisher(queries <-chan QueryRequestWrap) {
 			})
 		panicOnErr(err, "failed to publish a message")
 
+		SetQRespInCache(base, req.QID, QWorking, "Query published to rabbit.")
 		log.WithField("pid", req.ProjectID).Info("published query request")
 	}
 }

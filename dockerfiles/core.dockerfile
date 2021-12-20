@@ -12,7 +12,7 @@ RUN apk update && apk add --no-cache git ca-certificates tzdata && update-ca-cer
 
 # Create appuser
 ENV USER=appuser
-ENV UID=10001
+ENV UID=1000
 
 # See https://stackoverflow.com/a/55757473/12429735
 RUN adduser \
@@ -54,7 +54,7 @@ COPY --from=builder /etc/group /etc/group
 COPY --from=builder /go/bin/hello /go/bin/hello
 
 # Use an unprivileged user.
-# USER appuser:appuser
+USER appuser:appuser
 
 # Run the hello binary.
 ENTRYPOINT ["/go/bin/hello"]

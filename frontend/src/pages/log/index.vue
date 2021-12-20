@@ -353,7 +353,6 @@ export default {
       this.mainbtntext = "Search";
     },
     async poll() {
-      this.respFeedback = "Polling..."
       this.respFeedbackColor = "text-light-500"
       this.showlogs = "invisible"
       fetch(
@@ -392,40 +391,26 @@ export default {
             this.pollingDone();
             return {};
           }
-          // this.pollingDone();
-          // this.respFeedback = "Rendering..."
-          // this.respFeedbackColor = "text-light-500"
-          // this.showhelp = "hidden"
           return response.json()
         })
         .then((data) => {
           if ('msg' in data) {
+            this.respFeedback = data.msg
             if (data.status == 0) {
-              this.respFeedback = data.msg
               this.respFeedbackColor = "text-light-500"
-              // this.respFeedback = "Too many matching events. Only 100 most recent are shown."
-              // this.respFeedbackColor = "text-yellow-500"
             } else if (data.status == 1) {
               this.pollingDone();
               this.showhelp = "hidden"
-              this.respFeedback = data.msg
               this.respFeedbackColor = "text-light-500"
               this.jsonData = data.result
               this.showlogs = "visible"
-              // this.respFeedback == ""
-              // this.showlogs = "visible"
-              // this.respFeedback = data.length + " matching events found."
-              // this.respFeedbackColor = "text-green-600"
             } else if (data.status == 2) {
               this.pollingDone();
-              this.respFeedback = data.msg
               this.respFeedbackColor = "text-red-500"
+              this.showlogs = "invisible"
+              this.showhelp = "block"
             };
-          // } else if (this.respFeedback == "Rendering...") {
-            // this.showlogs = "visible"
-            // this.respFeedback == ""
           }
-          // this.jsonData = data;
         })
     },
     async go() {
@@ -482,7 +467,7 @@ export default {
           this.respFeedback = "Query job queued."
           this.respFeedbackColor = "text-light-500"
           setTimeout(() => this.poll, 100)
-          var pollIntervalId = setInterval(this.poll, 500);
+          var pollIntervalId = setInterval(this.poll, 200);
           this.pollIntervalId = pollIntervalId;
           return response.json()
         })

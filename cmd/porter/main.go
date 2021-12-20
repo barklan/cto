@@ -75,7 +75,7 @@ func main() {
 
 	queries := make(chan porter.QueryRequestWrap, 10)
 	go porter.Serve(base, sylon, queries)
-	go porter.Publisher(queries)
+	go porter.Publisher(base, queries)
 
 	wg := new(sync.WaitGroup)
 

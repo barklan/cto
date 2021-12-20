@@ -1,21 +1,125 @@
 {
     "version": "2.0.0",
     "tasks": [
-        {
-            "label": "run.sh",
+		{
+            "label": "run.sh up",
             "type": "shell",
-            "command": "bash -i run.sh ${input:runsh}",
+            "command": "bash -i run.sh up",
             "isBackground": true,
-        }
+        },
+		{
+            "label": "run.sh up:core",
+            "type": "shell",
+            "command": "bash -i run.sh up:core",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh up:porter",
+            "type": "shell",
+            "command": "bash -i run.sh up:porter",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh up:loginput",
+            "type": "shell",
+            "command": "bash -i run.sh up:loginput",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh up:db",
+            "type": "shell",
+            "command": "bash -i run.sh up:db",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh up:extra",
+            "type": "shell",
+            "command": "bash -i run.sh up:extra",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh psql",
+            "type": "shell",
+            "command": "bash -i run.sh psql",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh badger:reset",
+            "type": "shell",
+            "command": "bash -i run.sh badger:reset",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh frontend",
+            "type": "shell",
+            "command": "bash -i run.sh frontend",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh up:fullstack",
+            "type": "shell",
+            "command": "bash -i run.sh up:fullstack",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh ci:direct",
+            "type": "shell",
+            "command": "bash -i run.sh ci:direct",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh ci:direct:support",
+            "type": "shell",
+            "command": "bash -i run.sh ci:direct:support",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh fluentd:push",
+            "type": "shell",
+            "command": "bash -i run.sh fluentd:push",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh docs:dev",
+            "type": "shell",
+            "command": "bash -i run.sh docs:dev",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh docs:bundle",
+            "type": "shell",
+            "command": "bash -i run.sh docs:bundle",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh proto",
+            "type": "shell",
+            "command": "bash -i run.sh proto",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh db:makemigrations",
+            "type": "shell",
+            "command": "bash -i run.sh db:makemigrations",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh db:migrate",
+            "type": "shell",
+            "command": "bash -i run.sh db:migrate",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh db:migrate:remote",
+            "type": "shell",
+            "command": "bash -i run.sh db:migrate:remote",
+            "isBackground": true,
+        },
+		{
+            "label": "run.sh logs",
+            "type": "shell",
+            "command": "bash -i run.sh logs",
+            "isBackground": true,
+        },
     ],
-    "inputs": [
-        {
-            "description": "run.sh command",
-            "id": "runsh",
-            "type": "pickString",
-            "options": [
-"up", "up:core", "up:porter", "up:loginput", "up:db", "up:support", "psql", "badger:reset", "frontend", "up:fullstack", "ci:direct", "ci:direct:support", "fluentd:push", "docs:dev", "docs:bundle", "proto", "db:makemigrations", "db:migrate", "db:migrate:remote", "logs", 
-            ]
-        }
-    ]
 }
