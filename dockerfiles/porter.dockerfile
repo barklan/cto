@@ -1,7 +1,8 @@
 ############################
 # STEP 1 build executable binary
 ############################
-FROM golang:alpine as builder
+ARG DOCKER_IMAGE_PREFIX=
+FROM ${DOCKER_IMAGE_PREFIX}golang:alpine as builder
 
 ARG BUILDKIT_INLINE_CACHE=1
 

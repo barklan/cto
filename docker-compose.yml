@@ -2,7 +2,7 @@ version: "3.8"
 services:
 
   traefik:
-    image: traefik:2.5.5
+    image: '${DOCKER_IMAGE_PREFIX?Variable not set}traefik:2.5.5'
     ports:
       - '80:80'
       - '443:443'
@@ -56,10 +56,12 @@ services:
         - traefik.http.routers.traefik-public-https.middlewares=adminauth
 
   frontend:
-    image: barklan/cto-explorer:rolling
+    image: '${DOCKER_IMAGE_PREFIX?Variable not set}barklan/cto-explorer:rolling'
     build:
       context: ./frontend
       dockerfile: ../dockerfiles/frontend.dockerfile
+      args:
+        DOCKER_IMAGE_PREFIX: ${DOCKER_IMAGE_PREFIX?Variable not set}
     ports:
       - 3333:3333
     networks:
@@ -84,10 +86,12 @@ services:
         - traefik.http.routers.frontend-https.tls.certresolver=le
 
   backend:
-    image: barklan/cto-core:rolling
+    image: '${DOCKER_IMAGE_PREFIX?Variable not set}barklan/cto-core:rolling'
     build:
       context: .
       dockerfile: dockerfiles/core.dockerfile
+      args:
+        DOCKER_IMAGE_PREFIX: ${DOCKER_IMAGE_PREFIX?Variable not set}
     ports:
       # TODO secure the shit out of this server
       - 8888:8888
@@ -122,10 +126,12 @@ services:
         - traefik.http.services.backend.loadbalancer.server.port=8888
 
   porter:
-    image: barklan/cto-porter:rolling
+    image: '${DOCKER_IMAGE_PREFIX?Variable not set}barklan/cto-porter:rolling'
     build:
       context: .
       dockerfile: dockerfiles/porter.dockerfile
+      args:
+        DOCKER_IMAGE_PREFIX: ${DOCKER_IMAGE_PREFIX?Variable not set}
     ports:
       - 9010:9010
       - 50051:50051
@@ -158,10 +164,12 @@ services:
         - traefik.http.services.porter.loadbalancer.server.port=9010
 
   loginput:
-    image: barklan/cto-loginput:rolling
+    image: '${DOCKER_IMAGE_PREFIX?Variable not set}barklan/cto-loginput:rolling'
     build:
       context: .
       dockerfile: dockerfiles/loginput.dockerfile
+      args:
+        DOCKER_IMAGE_PREFIX: ${DOCKER_IMAGE_PREFIX?Variable not set}
     ports:
       - 8900:8900
     networks:
@@ -191,7 +199,7 @@ services:
         - traefik.http.services.loginput.loadbalancer.server.port=8900
 
   db:
-    image: 'postgres:14.1'
+    image: '${DOCKER_IMAGE_PREFIX?Variable not set}postgres:14.1'
     networks:
       - traefik-public
     volumes:
@@ -210,7 +218,7 @@ services:
           - node.role == manager
 
   rabbitmq:
-    image: 'rabbitmq:3.9.11-management'
+    image: '${DOCKER_IMAGE_PREFIX?Variable not set}rabbitmq:3.9.11-management'
     env_file:
       - .env
     ports:
@@ -224,7 +232,7 @@ services:
           - node.role == manager
 
   cache:
-    image: 'redis:6.2.6'
+    image: '${DOCKER_IMAGE_PREFIX?Variable not set}redis:6.2.6'
     command: redis-server --requirepass ${REDIS_PASSWORD?Variable not set}
     ports:
       - 6379:6379

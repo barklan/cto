@@ -85,7 +85,6 @@ services:
 
   pgweb:
     profiles: [ "main", "db" ]
-    restart: on-failure
     networks:
       - traefik-public
     container_name: pgweb

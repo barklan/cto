@@ -86,13 +86,14 @@ function up:fullstack {
 
 function ci:direct {
     . .env
-    export REGISTRY_PASSWORD REGISTRY_USERNAME
+    export REGISTRY_PASSWORD REGISTRY_USERNAME DOCKER_IMAGE_PREFIX DOCKER_REGISTRY
+    echo "$DOCKER_REGISTRY"
     bash scripts/directswarm.sh
 }
 
 function ci:direct:support {
     . .env
-    export REGISTRY_PASSWORD REGISTRY_USERNAME
+    export REGISTRY_PASSWORD REGISTRY_USERNAME DOCKER_IMAGE_PREFIX DOCKER_REGISTRY
     bash scripts/directsupport.sh
 }
 
@@ -142,8 +143,8 @@ function db:migrate:remote {
     -database postgres://postgres:${POSTGRES_PASSWORD}@cto_db:5432/app?sslmode=disable up"
 }
 
-function logs {
-    ssh -tt cto "docker service logs $1 --since $2"
+function log {
+    ssh -tt cto "docker service logs cto_$1 --since $2m"
 }
 
 # -----------------------------------------------------------------------------

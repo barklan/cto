@@ -339,7 +339,8 @@ export default {
       respFeedback: "",
       respFeedbackColor: "text-red-600",
       pollIntervalId: 1,
-      blockform: false
+      blockform: false,
+      polltry: 0
     };
   },
   created() {
@@ -397,6 +398,13 @@ export default {
           if ('msg' in data) {
             this.respFeedback = data.msg
             if (data.status == 0) {
+              if (this.polltry == 0) {
+                setTimeout(() => this.poll, 100)
+                this.polltry++
+              } else if (this.polltry == 1) {
+                setTimeout(() => this.poll, 200)
+                this.polltry++
+              }
               this.respFeedbackColor = "text-light-500"
             } else if (data.status == 1) {
               this.pollingDone();
@@ -417,6 +425,7 @@ export default {
       if (this.blockform == true) {
         return {};
       }
+      this.polltry = 0
       console.log("new query request")
       this.blockform = true
       this.mainbtntext = "Requesting..."
@@ -466,8 +475,8 @@ export default {
           }
           this.respFeedback = "Query job queued."
           this.respFeedbackColor = "text-light-500"
-          setTimeout(() => this.poll, 100)
-          var pollIntervalId = setInterval(this.poll, 200);
+          setTimeout(() => this.poll, 80)
+          var pollIntervalId = setInterval(this.poll, 600);
           this.pollIntervalId = pollIntervalId;
           return response.json()
         })
