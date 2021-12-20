@@ -14,7 +14,6 @@ func (s *Sylon) RegisterHandlers() {
 	// registerManagementHandlers(data, b)
 	// registerOnTextHanler(data, b)
 
-	// TODO recoery v5
 	// b.Handle("/mute", func(m *tb.Message) {
 	// 	project, ok := VerifySender(data, m)
 	// 	if !ok {

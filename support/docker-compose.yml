@@ -3,8 +3,7 @@ services:
   fluentd:
     # `bash run.sh registry:refresh` to build and push internal fluentd
     image: barklan/fluentd-cto:2.2.1
-    env_file:
-      ./.env
+    env_file: ./.env
     ports:
       - 24224:24224
       - 24224:24224/udp
@@ -24,7 +23,8 @@ services:
       - ./.env
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER?Variable not
-        set}:${POSTGRES_PASSWORD?Variable not set}@cto_db:5432/${POSTGRES_DB?Variable not set}?sslmode=disable
+        set}:${POSTGRES_PASSWORD?Variable not
+        set}@cto_db:5432/${POSTGRES_DB?Variable not set}?sslmode=disable
     deploy:
       labels:
         - traefik.enable=true

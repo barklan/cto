@@ -1,4 +1,9 @@
 package vars
 
-var KnownErrors = "KnownErrors"
-var Test = "dfdf"
+var (
+	// Core
+	KnownErrors       = "KnownErrors"
+	PeriodicLogReport = "PeriodicLogReport"
+	// Cache
+	AuthToken = "AuthToken"
+)

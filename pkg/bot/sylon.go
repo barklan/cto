@@ -66,7 +66,7 @@ func (d *Sylon) CSend(msg interface{}, options ...interface{}) {
 }
 
 func (d *Sylon) PSend(projectName string, msg interface{}, options ...interface{}) {
-	// TODO recovery for mute operation for v5
+	// TODO recovery for mute operation for v5 and use this instead of JustSend where it is meant to be
 	// muted := d.VarExists(projectName, "muted")
 	// if muted {
 	// 	log.Println("I am muted!")

@@ -13,11 +13,7 @@ import (
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
-var (
-	// FIXME Internal values should be stored in pg (v5).
-	Internal          = "Internal" // Reserved internal project - not listed in projects.
-	variableKeySymbol = "$"
-)
+var variableKeySymbol = "$"
 
 type Data struct {
 	Chat      *tb.Chat
@@ -26,12 +22,6 @@ type Data struct {
 	MediaPath string
 	R         *sqlx.DB
 	Cache     caching.Cache
-}
-
-// TODO deprecate this
-func (d *Data) GetStr(key string) string {
-	varKey := variableKeySymbol + key
-	return string(Get(d.DB, varKey))
 }
 
 func (d *Data) SetVar(projectName, key string, obj interface{}, ttl time.Duration) {
@@ -86,33 +76,4 @@ func (d *Data) DeleteVar(projectName, key string) {
 	if err != nil {
 		log.Panicln("panicing in DeleteVar function", err)
 	}
-}
-
-// TODO deprecate this
-func (d *Data) SetObj(key string, obj interface{}, ttl time.Duration) {
-	var byteObj []byte
-	val := reflect.ValueOf(obj)
-	if val.Kind() == reflect.String {
-		byteObj = []byte(obj.(string))
-	} else {
-		var err error
-		byteObj, err = json.Marshal(obj)
-		if err != nil {
-			log.Panic(err)
-		}
-	}
-
-	varKey := variableKeySymbol + key
-
-	if ttl > 0 {
-		SetWithTTL(d.DB, varKey, byteObj, ttl)
-	} else {
-		Set(d.DB, varKey, byteObj)
-	}
-}
-
-// TODO deprecate this
-func (d *Data) Get(key string) []byte {
-	varKey := variableKeySymbol + key
-	return Get(d.DB, varKey)
 }

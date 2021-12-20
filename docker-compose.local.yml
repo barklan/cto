@@ -2,14 +2,14 @@ version: "3.8"
 services:
 
   traefik:
-    profiles: ["extra"]
+    profiles: [ "extra" ]
 
   frontend:
-    profiles: ["extra"]
+    profiles: [ "extra" ]
 
   backend:
     restart: on-failure
-    profiles: ["main"]
+    profiles: [ "main" ]
     container_name: cto_backend
     volumes:
       - ./.cache:/app/data
@@ -17,43 +17,33 @@ services:
       - '${PROJECT_PATH-.}/environment:/app/config'
     networks:
       - traefik-public
-    env_file:
-      ./local.env
     environment:
       - CONFIG_ENV=devdocker
 
   porter:
-    profiles: ["main"]
+    profiles: [ "main" ]
     container_name: cto_porter
-    env_file:
-      ./local.env
     environment:
       - CONFIG_ENV=devdocker
 
   loginput:
-    profiles: ["main"]
+    profiles: [ "main" ]
     container_name: cto_loginput
-    env_file:
-      ./local.env
 
   db:
-    container_name: db
-    profiles: ["main", "db"]
-    env_file:
-      - local.env
+    container_name: cto_db
+    profiles: [ "main", "db" ]
 
   rabbitmq:
-    profiles: ["main", "mq"]
-    env_file:
-      - local.env
+    container_name: cto_rabbitmq
+    profiles: [ "main", "mq" ]
 
   cache:
-    profiles: ["main", "cache"]
-    env_file:
-      - local.env
+    container_name: cto_cache
+    profiles: [ "main", "cache" ]
 
   fluentd:
-    profiles: ["main"]
+    profiles: [ "main" ]
     build:
       context: ./dockerfiles/fluentd_cto
       dockerfile: Dockerfile
@@ -70,8 +60,8 @@ services:
       - "24224:24224/udp"
 
   flooder:
-    profiles: ["main"]
-    entrypoint: ["bash", "/entrypoint.local.sh"]
+    profiles: [ "main" ]
+    entrypoint: [ "bash", "/entrypoint.local.sh" ]
     ports:
       - 8000:8000
     environment:
@@ -94,7 +84,7 @@ services:
         fluentd-async-connect: "true"
 
   pgweb:
-    profiles: ["main", "db"]
+    profiles: [ "main", "db" ]
     restart: on-failure
     networks:
       - traefik-public
@@ -103,7 +93,9 @@ services:
     ports:
       - '8081:8081'
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@db:5432/app?sslmode=disable
+      - DATABASE_URL=postgres://${POSTGRES_USER?Variable not
+        set}:${POSTGRES_PASSWORD?Variable not
+        set}@cto_db:5432/${POSTGRES_DB?Variable not set}?sslmode=disable
 
 volumes:
   cto-data:

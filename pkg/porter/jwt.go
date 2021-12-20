@@ -1,9 +1,9 @@
 package porter
 
 import (
-	"fmt"
 	"time"
 
+	"github.com/barklan/cto/pkg/storage/vars"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -31,7 +31,7 @@ func RotateJWT(base *Base, project string) {
 	ss, _ := token.SignedString(mySigningKey)
 	log.Println("Rotated auth token:", ss)
 
-	err := base.Cache.Set(fmt.Sprintf("authToken-%s", project), ss, jwtExp)
+	err := base.Cache.SetVar(project, vars.AuthToken, ss, jwtExp)
 	if err != nil {
 		log.Panicln("failed to set new jwt token to cache")
 	}

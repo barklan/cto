@@ -3,6 +3,7 @@ package bot
 import (
 	"fmt"
 
+	"github.com/barklan/cto/pkg/storage/vars"
 	log "github.com/sirupsen/logrus"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
@@ -84,8 +85,7 @@ func (s *Sylon) registerStatusHandler() {
 
 		msg += fmt.Sprintf(`Logs are retained for %d hours\. `, s.Config.Log.RetentionHours)
 
-		// TODO badger keys like this should not be magic strings
-		authToken, ok, err := s.Cache.Get(fmt.Sprintf("authToken-%s", project.ID))
+		authToken, ok, err := s.Cache.GetVar(project.ID, vars.AuthToken)
 		if err != nil {
 			log.Panicln("Failed to access cache.")
 		}

@@ -89,7 +89,7 @@ services:
       context: .
       dockerfile: dockerfiles/core.dockerfile
     ports:
-      - 8080:8080
+      # TODO secure the shit out of this server
       - 8888:8888
     networks:
       - traefik-public
@@ -106,21 +106,20 @@ services:
       placement:
         constraints:
           - node.role == manager
-      # TODO remove api from this
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
         - traefik.http.routers.backend-http.rule=Host(`${DOMAIN?Variable not
-          set}`) && (PathPrefix(`/api/`))
+          set}`) && (PathPrefix(`/api/core/`))
         - traefik.http.routers.backend-http.entrypoints=http
         - traefik.http.routers.backend-http.middlewares=https-redirect
         - traefik.http.routers.backend-https.rule=Host(`${DOMAIN?Variable not
-          set}`) && (PathPrefix(`/api/`))
+          set}`) && (PathPrefix(`/api/core/`))
         - traefik.http.routers.backend-https.entrypoints=https
         - traefik.http.routers.backend-https.tls=true
         - traefik.http.routers.backend-https.tls.certresolver=le
-        - traefik.http.services.backend.loadbalancer.server.port=8080
+        - traefik.http.services.backend.loadbalancer.server.port=8888
 
   porter:
     image: barklan/cto-porter:rolling
@@ -226,6 +225,7 @@ services:
 
   cache:
     image: 'redis:6.2.6'
+    command: redis-server --requirepass ${REDIS_PASSWORD?Variable not set}
     ports:
       - 6379:6379
     networks:

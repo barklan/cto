@@ -9,6 +9,7 @@ import (
 
 	pb "github.com/barklan/cto/pkg/protos/porter"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 var port = "50051"
@@ -22,7 +23,8 @@ func (d *Data) dial() (*grpc.ClientConn, error) {
 			addr = "cto_porter:" + port
 		}
 	}
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	creds := insecure.NewCredentials()
+	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(creds))
 	return conn, err
 }
 

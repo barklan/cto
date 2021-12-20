@@ -2,9 +2,7 @@ package logserver
 
 import (
 	"encoding/json"
-	"fmt"
 	"math/rand"
-	"net/http"
 	"sync"
 	"time"
 
@@ -14,6 +12,7 @@ import (
 	"github.com/barklan/cto/pkg/logserver/querying"
 	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
+	"github.com/barklan/cto/pkg/storage/vars"
 )
 
 type LogRecordReport struct {
@@ -110,7 +109,7 @@ func LogServerServe(data *storage.Data) {
 						Period:   period,
 						Recieved: aggregateRecordsRecievedMap[projectName],
 					}
-					data.SetObj(fmt.Sprintf("periodicLogReport-%s", projectName), report, period)
+					data.SetVar(projectName, vars.PeriodicLogReport, report, period)
 
 					m.Lock()
 					aggregateRecordsRecievedMap[projectName] = 0
@@ -132,6 +131,4 @@ func LogServerServe(data *storage.Data) {
 	go processLogInputs(data, reqs, sessionDataMap, reportChan)
 
 	querying.InitQueryService(data)
-
-	log.Panic(http.ListenAndServe(":8080", nil))
 }

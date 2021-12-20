@@ -57,8 +57,9 @@
 └◄───────────┘
 ```
 
-- core - meant to be replicated (1 replica per node)
+- core - meant to be replicated (one replica per node)
 - loginput - can be replicated
 - porter - not sure...
 - mq - can be replicated through [quorum queues](https://www.rabbitmq.com/quorum-queues.html)
-- pg - can be cockroachdb
+- pg - can be replicated cockroachdb
+- c - sure, why not

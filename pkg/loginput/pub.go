@@ -12,8 +12,6 @@ type LogRequest struct {
 	Body      []byte
 }
 
-// FIXME
-// https://github.com/wagslane/go-rabbitmq
 func Publisher(reqs <-chan LogRequest) {
 	defer log.Panicln("publisher exited")
 

@@ -3,6 +3,7 @@ package caching
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -11,11 +12,16 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-var ctx = context.TODO()
+var (
+	ctx               = context.TODO()
+	variableKeySymbol = "$"
+)
 
 type Cache interface {
 	Set(string, interface{}, time.Duration) error
 	Get(string) ([]byte, bool, error)
+	SetVar(string, string, interface{}, time.Duration) error
+	GetVar(string, string) ([]byte, bool, error)
 }
 
 type RedisConnectionData struct {
@@ -35,8 +41,8 @@ func InitRedis() *Redis {
 	}
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:6379", cfg.Host),
-		Password: "", // TODO no password set
-		DB:       0,  // use default DB
+		Password: cfg.Password, // TODO no password set
+		DB:       0,            // use default DB
 	})
 	rs := &Redis{cl: redisClient}
 
@@ -65,4 +71,14 @@ func (r *Redis) Get(key string) ([]byte, bool, error) {
 	} else {
 		return []byte(val), true, nil
 	}
+}
+
+func (r *Redis) SetVar(namespace, variable string, val interface{}, ttl time.Duration) error {
+	fullKey := strings.Join([]string{namespace, variable}, variableKeySymbol)
+	return r.Set(fullKey, val, ttl)
+}
+
+func (r *Redis) GetVar(namespace, variable string) ([]byte, bool, error) {
+	fullKey := strings.Join([]string{namespace, variable}, variableKeySymbol)
+	return r.Get(fullKey)
 }

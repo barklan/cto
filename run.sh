@@ -15,10 +15,11 @@ fi
 # Helper functions start with _ and aren't listed in this script's help menu.
 # -----------------------------------------------------------------------------
 
-function _export_pg {
-    . local.env
+function _export_common {
+    . .env
     export POSTGRES_DB POSTGRES_PASSWORD POSTGRES_USER
     export RABBITMQ_DEFAULT_USER RABBITMQ_DEFAULT_PASS
+    export REDIS_PASSWORD
     export POSTGRES_HOST=localhost:5432
     export RABBITMQ_HOST=localhost
     export REDIS_HOST=localhost
@@ -40,18 +41,18 @@ function up:core {
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
     export CONFIG_ENV=dev
-    _export_pg
+    _export_common
     go run cmd/cto/main.go
 }
 
 function up:porter {
-    _export_pg
+    _export_common
     export CONFIG_ENV=dev
     go run cmd/porter/main.go
 }
 
 function up:loginput {
-    _export_pg
+    _export_common
     go run cmd/loginput/main.go
 }
 
@@ -134,7 +135,6 @@ function db:migrate {
 function db:migrate:remote {
     . .env
     export POSTGRES_PASSWORD
-    # FIXME
     ssh -tt -o StrictHostKeyChecking=no cto \
     "docker run --network traefik-public migrate/migrate \
     -source github://barklan/cto/db/migrations \
