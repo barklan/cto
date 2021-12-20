@@ -122,7 +122,7 @@ func serveLogRange(
 	respMap := map[string]string{"qid": u4}
 	resp, err := json.Marshal(respMap)
 	if err != nil {
-		log.Error("failed to marshal response:", err)
+		http.Error(w, "failed to marshal response:", 500)
 		return
 	}
 

@@ -360,7 +360,7 @@ export default {
         import.meta.env.VITE_PROTOCOL +
         "://" +
         import.meta.env.VITE_HOSTNAME +
-        "/api/log/poll?qid=" +
+        "/api/porter/query/poll?qid=" +
         localStorage.getItem('qid') +
         "&token=" +
         this.$route.query.token
@@ -376,55 +376,58 @@ export default {
             this.respFeedbackColor = "text-red-500"
             this.pollingDone();
             return {};
-          } else if (response.status == 400) {
-            this.respFeedback = "Bad job id. Please resend your query."
+          } else if (response.status == 404) {
+            this.respFeedback = "Query request id not found."
             this.respFeedbackColor = "text-red-500"
             this.pollingDone();
             return {};
-          } else if (response.status == 200) {
-            this.respFeedback = "Processing..."
-            this.respFeedbackColor = "text-light-500"
-            return {}
-          } else if (response.status == 202) {
-            this.respFeedback = "Queued..."
-            this.respFeedbackColor = "text-light-500"
-            return {}
-          } else if (response.status == 404) {
-            this.respFeedback = "No logs found for this query."
-            this.respFeedbackColor = "text-yellow-500"
+          } else if (response.status == 500) {
+            this.respFeedback = "Internal server error."
+            this.respFeedbackColor = "text-red-500"
             this.pollingDone();
             return {};
-          } else if (response.status != 201) {
+          } else if (response.status != 200) {
             this.respFeedback = "Failed to fetch data from server. Please try again later."
             this.respFeedbackColor = "text-red-500"
             this.pollingDone();
             return {};
           }
-          this.pollingDone();
-          this.respFeedback = "Rendering..."
-          this.respFeedbackColor = "text-light-500"
-          this.showhelp = "hidden"
+          // this.pollingDone();
+          // this.respFeedback = "Rendering..."
+          // this.respFeedbackColor = "text-light-500"
+          // this.showhelp = "hidden"
           return response.json()
         })
         .then((data) => {
-          if (length in data) {
-            if (data.length == 100) {
+          if (msg in data) {
+            if (data.status == 0) {
+              this.respFeedback = data.msg
+              this.respFeedbackColor = "text-light-500"
+              // this.respFeedback = "Too many matching events. Only 100 most recent are shown."
+              // this.respFeedbackColor = "text-yellow-500"
+            } else if (data.status == 1) {
+              this.pollingDone();
+              this.showhelp = "hidden"
+              this.respFeedback = data.msg
+              this.respFeedbackColor = "text-light-500"
+              this.jsonData = data.result
               this.showlogs = "visible"
-              this.respFeedback = "Too many matching events. Only 100 most recent are shown."
-              this.respFeedbackColor = "text-yellow-500"
-            } else {
-              this.showlogs = "visible"
-              this.respFeedback = data.length + " matching events found."
-              this.respFeedbackColor = "text-green-600"
-            }
-          } else if (this.respFeedback == "Rendering...") {
-            this.showlogs = "visible"
-            this.respFeedback == ""
+              // this.respFeedback == ""
+              // this.showlogs = "visible"
+              // this.respFeedback = data.length + " matching events found."
+              // this.respFeedbackColor = "text-green-600"
+            } else if (data.status == 1) {
+              this.pollingDone();
+              this.respFeedback = data.msg
+              this.respFeedbackColor = "text-red-500"
+            };
+          // } else if (this.respFeedback == "Rendering...") {
+            // this.showlogs = "visible"
+            // this.respFeedback == ""
           }
-          this.jsonData = data;
+          // this.jsonData = data;
         })
     },
-    BreakSignal() { },
     async go() {
       if (this.blockform == true) {
         return {};
@@ -436,7 +439,7 @@ export default {
       var urlToFetch = import.meta.env.VITE_PROTOCOL +
         "://" +
         import.meta.env.VITE_HOSTNAME +
-        "/api/log/range?query=" +
+        "/api/porter/query/range?query=" +
         this.name +
         "&token=" +
         this.$route.query.token
@@ -465,7 +468,12 @@ export default {
             this.respFeedbackColor = "text-red-500"
             this.blockform = false
             return {}
-          } else if (response.status != 202) {
+          } else if (response.status == 500) {
+            this.respFeedback = "Internal server error."
+            this.respFeedbackColor = "text-red-500"
+            this.blockform = false
+            return {}
+          } else if (response.status != 200) {
             this.respFeedback = "Failed to fetch data from server. Please try again later."
             this.respFeedbackColor = "text-red-500"
             this.blockform = false
