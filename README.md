@@ -8,8 +8,6 @@
 
 #### Rest
 
-[Docs](https://docs.ctopanel.com/)
-
 ```
 /api
     /loginput/fluentd (:8900 internal)
