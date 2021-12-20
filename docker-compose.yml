@@ -58,8 +58,8 @@ services:
   frontend:
     image: barklan/cto-explorer:rolling
     build:
-      context: .
-      dockerfile: dockerfiles/frontend.dockerfile
+      context: ./frontend
+      dockerfile: ../dockerfiles/frontend.dockerfile
     ports:
       - 3333:3333
     networks:
