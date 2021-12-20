@@ -7,7 +7,7 @@ import (
 
 func (s *Sylon) RegisterHandlers() {
 	// TODO recovery v5
-	// registerStatusHandler(b, data)
+	s.registerStatusHandler()
 	s.registerOnboardingHandlers() // `/start`
 	s.registerHelpHandler()        // `/help`
 	s.registerRemoveHandler()      // `/remove`

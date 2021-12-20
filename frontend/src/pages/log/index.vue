@@ -399,7 +399,7 @@ export default {
           return response.json()
         })
         .then((data) => {
-          if (msg in data) {
+          if ('msg' in data) {
             if (data.status == 0) {
               this.respFeedback = data.msg
               this.respFeedbackColor = "text-light-500"
@@ -416,7 +416,7 @@ export default {
               // this.showlogs = "visible"
               // this.respFeedback = data.length + " matching events found."
               // this.respFeedbackColor = "text-green-600"
-            } else if (data.status == 1) {
+            } else if (data.status == 2) {
               this.pollingDone();
               this.respFeedback = data.msg
               this.respFeedbackColor = "text-red-500"

@@ -55,7 +55,7 @@ func main() {
 		rdb, err = postgres.OpenDB()
 		if err != nil {
 			if i == 9 {
-				log.Panicf("Could not open pg connection  10 times.")
+				log.Panicln("Could not open pg connection  10 times.")
 			}
 			time.Sleep(1 * time.Second)
 			continue
@@ -71,13 +71,29 @@ func main() {
 	// TODO telebot migrating to v3 soon
 	b := bot.Bot(config.TG.BotToken)
 
-	sylon := bot.InitSylon(rdb, &config, b)
+	sylon := bot.InitSylon(rdb, &config, b, redis)
 
 	queries := make(chan porter.QueryRequestWrap, 10)
 	go porter.Serve(base, sylon, queries)
 	go porter.Publisher(queries)
 
 	wg := new(sync.WaitGroup)
+
+	tokenRotationTicker := time.NewTicker(4 * time.Hour)
+	go func() {
+		defer log.Panicln("Token rotation goroutine exited.")
+		for {
+			projects := make([]string, 0)
+			if err := rdb.Select(&projects, "select id from project"); err != nil {
+				log.Panicln("failed to get projects from db to rotate jwt")
+			}
+
+			for _, projectName := range projects {
+				porter.RotateJWT(base, projectName)
+			}
+			<-tokenRotationTicker.C
+		}
+	}()
 
 	wg.Add(1)
 	go func() {

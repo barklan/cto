@@ -17,16 +17,20 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 	r.Route("/api/porter", func(r chi.Router) {
 		r.Route("/query", func(r chi.Router) {
 			r.Get("/exact", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
 				serveLogExact(base, s, w, r)
 			})
-			r.Post("/range", func(w http.ResponseWriter, r *http.Request) {
+			r.Get("/range", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
 				serveLogRange(base, s, queries, w, r)
 			})
 			r.Get("/poll", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
 				pollLogRange(base, w, r)
 			})
 		})
 	})
 
+	log.Println("porter rest server listening on 9010")
 	log.Panic(http.ListenAndServe(":9010", r))
 }

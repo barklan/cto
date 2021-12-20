@@ -105,20 +105,7 @@ func main() {
 		restcore.Serve(data)
 	}()
 
-	// FIXME move to porter
-	// tokenRotationTicker := time.NewTicker(4 * time.Hour)
-	// go func() {
-	// 	defer func() {
-	// 		CrashExit(data, "Token rotation goroutine exited.")
-	// 		wg.Done()
-	// 	}()
-	// 	for {
-	// 		for projectName := range data.Config.P {
-	// 			storage.RotateJWT(data, projectName)
-	// 		}
-	// 		<-tokenRotationTicker.C
-	// 	}
-	// }()
+
 
 	go func() {
 		handleSysSignals(data)

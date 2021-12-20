@@ -9,6 +9,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/jmoiron/sqlx"
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -19,9 +20,10 @@ type Sylon struct {
 	Config *storage.InternalConfig
 	B      *tb.Bot
 	Chat   *tb.Chat
+	Cache  caching.Cache
 }
 
-func InitSylon(r *sqlx.DB, config *storage.InternalConfig, b *tb.Bot) *Sylon {
+func InitSylon(r *sqlx.DB, config *storage.InternalConfig, b *tb.Bot, cache caching.Cache) *Sylon {
 	chatID := config.TG.BossChatID
 	chat, err := b.ChatByID(fmt.Sprint(chatID))
 	if err != nil {
@@ -32,6 +34,7 @@ func InitSylon(r *sqlx.DB, config *storage.InternalConfig, b *tb.Bot) *Sylon {
 		Config: config,
 		B:      b,
 		Chat:   chat,
+		Cache:  cache,
 	}
 	return sylon
 }

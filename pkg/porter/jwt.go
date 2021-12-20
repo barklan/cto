@@ -1,4 +1,4 @@
-package storage
+package porter
 
 import (
 	"fmt"
@@ -14,10 +14,10 @@ type TokenClaims struct {
 	jwt.RegisteredClaims
 }
 
-func RotateJWT(data *Data, project string) {
-	mySigningKey := []byte(data.Config.Internal.TG.BotToken)
+func RotateJWT(base *Base, project string) {
+	mySigningKey := []byte(base.Config.TG.BotToken)
 
-	jwtExp := time.Duration(data.Config.Internal.JWTExpHours) * time.Hour
+	jwtExp := time.Duration(base.Config.JWTExpHours) * time.Hour
 	expTime := time.Now().Add(jwtExp)
 	claims := TokenClaims{
 		project,
@@ -31,5 +31,8 @@ func RotateJWT(data *Data, project string) {
 	ss, _ := token.SignedString(mySigningKey)
 	log.Println("Rotated auth token:", ss)
 
-	data.SetObj(fmt.Sprintf("authToken-%s", project), ss, jwtExp)
+	err := base.Cache.Set(fmt.Sprintf("authToken-%s", project), ss, jwtExp)
+	if err != nil {
+		log.Panicln("failed to set new jwt token to cache")
+	}
 }
