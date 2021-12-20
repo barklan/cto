@@ -32,12 +32,10 @@ function _dc {
 # ----------------------------------------------------------------------------
 
 function up {
-    # sudo chown barklan:barklan .cache/main/*
     reflex -c reflex.conf --decoration=fancy
 }
 
 function up:core {
-    # sudo chown barklan:barklan .cache/main/*
     export CTO_DATA_PATH=/home/barklan/dev/cto/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
