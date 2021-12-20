@@ -18,6 +18,7 @@ fi
 function _export_pg {
     . local.env
     export POSTGRES_DB POSTGRES_PASSWORD POSTGRES_USER
+    export RABBITMQ_DEFAULT_USER RABBITMQ_DEFAULT_PASS
     export POSTGRES_HOST=localhost:5432
     export RABBITMQ_HOST=localhost
     export REDIS_HOST=localhost
@@ -29,6 +30,10 @@ function _dc {
 }
 
 # ----------------------------------------------------------------------------
+
+function up {
+    reflex -c reflex.conf --decoration=fancy
+}
 
 function up:c {
     export CTO_DATA_PATH=/home/barklan/dev/cto/.cache
