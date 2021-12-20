@@ -8,11 +8,19 @@ import (
 )
 
 type QueryRequest struct {
-	ProjectID string
-	Text      []byte
+	RequestID string `json:"request_id,omitempty"`
+	ProjectID string `json:"project_id,omitempty"`
+	QueryText string `json:"query_text,omitempty"`
+	Fields    string `json:"fields,omitempty"`
+	Regex     string `json:"regex,omitempty"`
 }
 
-func Publisher(queries <-chan QueryRequest) {
+type QueryRequestWrap struct {
+	ProjectID string
+	Json      []byte
+}
+
+func Publisher(queries <-chan QueryRequestWrap) {
 	defer log.Panicln("publisher exited")
 
 	conn := rabbit.OpenMQ()
@@ -43,8 +51,7 @@ func Publisher(queries <-chan QueryRequest) {
 				Headers: amqp.Table{
 					"projectID": req.ProjectID,
 				},
-				ContentType: "text/plain",
-				Body:        req.Text,
+				Body: req.Json,
 			})
 		panicOnErr(err, "failed to publish a message")
 

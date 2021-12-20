@@ -7,6 +7,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/storage"
 )
 
@@ -29,7 +30,7 @@ func Queue(data *storage.Data, queueChan chan QueryJob) {
 				m.Unlock()
 				jobValue := job.Value.(QueryJob)
 				workerChan <- jobValue
-				data.SetObj(jobValue.ID, "processing", 1*time.Hour)
+				SetMsgInCache(data, jobValue.ID, porter.QWorking, "Worker started processing.")
 				m.Lock()
 				jobsQueue.Remove(job)
 				m.Unlock()
@@ -43,7 +44,7 @@ func Queue(data *storage.Data, queueChan chan QueryJob) {
 	for requestedJob := range queueChan {
 		log.Println("queue recieved new job")
 
-		data.SetObj(requestedJob.ID, "queued", 1*time.Hour)
+		SetMsgInCache(data, requestedJob.ID, porter.QWorking, "Query was queued in core node.")
 
 		mx.Lock()
 		jobsQueue.PushBack(requestedJob)

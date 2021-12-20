@@ -1,4 +1,4 @@
-package querying
+package porter
 
 import (
 	"fmt"
@@ -6,11 +6,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/barklan/cto/pkg/storage"
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func authorize(data *storage.Data, tokenQ string) (string, int, bool) {
+func authorize(base *Base, tokenQ string) (string, int, bool) {
 	if tokenQ == "" {
 		log.Println("No token provided for query.")
 		return "", http.StatusUnauthorized, false
@@ -20,7 +19,7 @@ func authorize(data *storage.Data, tokenQ string) (string, int, bool) {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(data.Config.Internal.TG.BotToken), nil
+		return []byte(base.Config.TG.BotToken), nil
 	})
 	if err != nil {
 		return "", http.StatusUnauthorized, false

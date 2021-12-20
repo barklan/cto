@@ -1,8 +1,9 @@
 package querying
 
 import (
-	"net/http"
+	"log"
 
+	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/storage"
 )
 
@@ -19,17 +20,15 @@ type QueryJob struct {
 }
 
 func InitQueryService(data *storage.Data) {
+	defer log.Panic("query block exited")
+
 	queueChan := make(chan QueryJob, 5)
+	reqs := make(chan porter.QueryRequest, 10)
+
 	go Queue(data, queueChan)
+	go Subscriber(data, reqs)
 
-	placeQueryHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		PlaceQuery(w, r, data, queueChan)
-	})
-
-	pollQueryHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		PollQuery(w, r, data)
-	})
-
-	http.Handle("/api/log/range", placeQueryHandler)
-	http.Handle("/api/log/poll", pollQueryHandler)
+	for query := range reqs {
+		PlaceQuery(query, data, queueChan)
+	}
 }

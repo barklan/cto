@@ -7,18 +7,14 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/dgraph-io/badger/v3"
 	"github.com/thedevsaddam/gojsonq/v2"
 )
-
-func jobFailed(data *storage.Data, key string, workerChan chan QueryJob) {
-	data.SetObj(key, "error", 1*time.Hour)
-}
 
 // Worker should either set "timeout", "error", "none" or processed json data
 // as a value for job.ID key.
@@ -33,7 +29,7 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 			userRegex, err = regexp.Compile(queryJob.RegexQ)
 			if err != nil {
 				log.Printf("failed to compile user regexp; %v", err)
-				jobFailed(data, queryJob.ID, workerChan)
+				SetMsgInCache(data, queryJob.ID, porter.QFailed, "Failed to compile user regexp in worker.")
 				continue
 			}
 		}
@@ -44,6 +40,7 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 		}
 
 		filteredValues := make([]map[string]interface{}, 0)
+		tooMuch := false
 		err := data.DB.View(func(txn *badger.Txn) error {
 			opts := badger.DefaultIteratorOptions
 			opts.Reverse = true
@@ -96,6 +93,7 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 				}
 
 				if len(filteredValues) == 100 {
+					tooMuch = true
 					break
 				}
 			}
@@ -103,14 +101,20 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 		})
 		if err != nil {
 			log.Println("failed to filter values:", err)
-			jobFailed(data, queryJob.ID, workerChan)
+			SetMsgInCache(data, queryJob.ID, porter.QFailed, "Internal error. Failed to filter values.")
 			continue
 		}
 
 		if len(filteredValues) == 0 {
-			data.SetObj(queryJob.ID, "none", 1*time.Hour)
+			SetMsgInCache(data, queryJob.ID, porter.QFailed, "No results found.")
 		} else {
-			data.SetObj(queryJob.ID, filteredValues, 1*time.Hour)
+			var msg string
+			if tooMuch {
+				msg = "Too many matching events found. Only the last 100 are shown."
+			} else {
+				msg = fmt.Sprintf("%d matching events found.", len(filteredValues))
+			}
+			SetResultInCache(data, queryJob.ID, msg, filteredValues)
 		}
 
 		log.Println("worker finished job successfuly:", queryJob.ID)

@@ -17,6 +17,10 @@
         /debug/{projectID}?key | GET
         /setproject{projectID} | POST
     /porter (:9010 internal)
+        /query
+            /exact | GET
+            /range | POST
+            /poll | GET
 ```
 
 #### gRPC

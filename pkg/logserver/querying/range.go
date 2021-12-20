@@ -3,8 +3,6 @@ package querying
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
-	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -12,6 +10,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/storage"
 )
 
@@ -34,7 +33,10 @@ type RequestQuery struct {
 func (rq RequestQuery) BeaconToSeek(syntax timeSyntax) (string, error) {
 	var timeQueryBeacon string
 	if syntax == lastMinutesSyntax {
-		timeQueryBeacon = time.Now().Add(1 * time.Minute).UTC().Format("15:04:05")
+		timeQueryBeacon = time.Now().
+			Add(1 * time.Minute).
+			UTC().
+			Format("15:04:05")
 	} else {
 		timeQueryBeacon = TimeQueryBeaconToSeek(rq.TimeQuery)
 	}
@@ -63,10 +65,17 @@ func (rq RequestQuery) ValidPrefix(syntax timeSyntax) string {
 	return prefix
 }
 
-func (rq RequestQuery) NorthStar(syntax timeSyntax, now time.Time) (string, error) {
+func (rq RequestQuery) NorthStar(
+	syntax timeSyntax,
+	now time.Time,
+) (string, error) {
 	// TODO should do it once and not in every function
 	if syntax == lastMinutesSyntax {
-		minutes, err := strconv.ParseInt(rq.TimeQuery[:len(rq.TimeQuery)-1], 10, 64)
+		minutes, err := strconv.ParseInt(
+			rq.TimeQuery[:len(rq.TimeQuery)-1],
+			10,
+			64,
+		)
 		if err != nil {
 			return "", err
 		}
@@ -131,7 +140,10 @@ func GetFullEnv(data *storage.Data, project, envQ string) (string, bool) {
 	return lastMatch, true
 }
 
-func GetFullService(data *storage.Data, project, environment, serviceQ string) (string, bool) {
+func GetFullService(
+	data *storage.Data,
+	project, environment, serviceQ string,
+) (string, bool) {
 	numberOfMatches := 0
 	var lastMatch string
 
@@ -149,40 +161,84 @@ func GetFullService(data *storage.Data, project, environment, serviceQ string) (
 	return lastMatch, true
 }
 
-func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queueChan chan QueryJob) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Content-Type", "application/json")
-	rawQuery := r.URL.Query()
+func SetMsgInCache(
+	data *storage.Data,
+	requestId string,
+	status porter.QStatus,
+	msg string,
+) {
+	key := requestId
 
-	tokenQ := rawQuery.Get("token")
-	projectName, statusCode, ok := authorize(data, tokenQ)
-	if !ok {
-		w.WriteHeader(statusCode)
-		return
+	valJson, err := json.Marshal(porter.QResp{Msg: msg, Status: status})
+	if err != nil {
+		log.Panicln("failed to marshal meta message for requested query", err)
 	}
 
-	query := rawQuery.Get("query")
+	if err := data.Cache.Set(key, valJson, 1*time.Minute); err != nil {
+		log.Error("failed to set qmeta in cache", err)
+	}
+}
+
+func SetResultInCache(
+	data *storage.Data,
+	requestId string,
+	msg string,
+	result []map[string]interface{},
+) {
+	key := requestId
+
+	valJson, err := json.Marshal(porter.QResp{Msg: msg, Status: porter.QDone, Result: result})
+	if err != nil {
+		log.Panicln("failed to marshal meta message for requested query", err)
+	}
+
+	if err := data.Cache.Set(key, valJson, 1*time.Minute); err != nil {
+		log.Error("failed to set qmeta in cache", err)
+	}
+}
+
+func PlaceQuery(
+	qr porter.QueryRequest,
+	data *storage.Data,
+	queueChan chan QueryJob,
+) {
+	query := qr.QueryText
 	log.Printf("Requested query %q", query)
 
 	querySet := strings.Fields(query)
 	queryLen := len(querySet)
 
 	if queryLen < 3 || queryLen > 5 {
-		w.WriteHeader(http.StatusBadRequest)
+		SetMsgInCache(
+			data,
+			qr.RequestID,
+			porter.QFailed,
+			"Not enough args in main query.",
+		)
 		return
 	}
 
 	environmentQ := querySet[0]
-	environment, ok := GetFullEnv(data, projectName, environmentQ)
+	environment, ok := GetFullEnv(data, qr.ProjectID, environmentQ)
 	if !ok {
-		w.WriteHeader(http.StatusBadRequest)
+		SetMsgInCache(
+			data,
+			qr.RequestID,
+			porter.QFailed,
+			"No matching environments found.",
+		)
 		return
 	}
 
 	serviceQ := querySet[1]
-	service, ok := GetFullService(data, projectName, environment, serviceQ)
+	service, ok := GetFullService(data, qr.ProjectID, environment, serviceQ)
 	if !ok {
-		w.WriteHeader(http.StatusBadRequest)
+		SetMsgInCache(
+			data,
+			qr.RequestID,
+			porter.QFailed,
+			"No matching services found.",
+		)
 		return
 	}
 
@@ -223,7 +279,7 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 	}
 
 	requestQuery := RequestQuery{
-		ProjectName: projectName,
+		ProjectName: qr.ProjectID,
 		Env:         environment,
 		Service:     service,
 		Date:        date,
@@ -234,21 +290,31 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 
 	beacon, err := requestQuery.BeaconToSeek(tSyntax)
 	if err != nil {
-		w.WriteHeader(400)
+		SetMsgInCache(
+			data,
+			qr.RequestID,
+			porter.QFailed,
+			"Internal error. Failed to construct beacon.",
+		)
 		return
 	}
 	validPrefix := requestQuery.ValidPrefix(tSyntax)
 
 	northStar, err := requestQuery.NorthStar(tSyntax, now)
 	if err != nil {
-		w.WriteHeader(400)
+		SetMsgInCache(
+			data,
+			qr.RequestID,
+			porter.QFailed,
+			"Internal error. Failed to construct north star.",
+		)
 		return
 	}
 
 	// Extra options below
 
-	fieldsQ := rawQuery.Get("fields")
-	regexQRaw := rawQuery.Get("regex")
+	fieldsQ := qr.Fields
+	regexQRaw := qr.Regex
 	negateUserRegex := false
 	var regexQField, regexQ string
 	if regexQRaw != "" {
@@ -264,7 +330,12 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 			_, err := regexp.Compile(regexQ)
 			if err != nil {
 				log.Printf("failed to compile user regexp; %v", err)
-				w.WriteHeader(http.StatusBadRequest)
+				SetMsgInCache(
+					data,
+					qr.RequestID,
+					porter.QFailed,
+					"Failed to compile regexp.",
+				)
 				return
 			}
 		}
@@ -277,11 +348,8 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 		isSimpleQuery = true
 	}
 
-	rand.Seed(time.Now().UnixNano())
-	queryID := "queryJob-" + strconv.FormatInt(rand.Int63(), 10)
-
 	queryJob := QueryJob{
-		ID:              queryID,
+		ID:              qr.RequestID,
 		IsSimpleQuery:   isSimpleQuery,
 		Beacon:          beacon,
 		ValidPrefix:     validPrefix,
@@ -294,14 +362,10 @@ func PlaceQuery(w http.ResponseWriter, r *http.Request, data *storage.Data, queu
 
 	queueChan <- queryJob
 
-	respMap := map[string]string{"qid": queryID}
-	resp, err := json.Marshal(respMap)
-	if err != nil {
-		log.Println("failed to marshal response:", err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusAccepted)
-	w.Write(resp)
+	SetMsgInCache(
+		data,
+		qr.RequestID,
+		porter.QWorking,
+		"Query request passed validation.",
+	)
 }

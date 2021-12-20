@@ -73,7 +73,7 @@ func main() {
 
 	sylon := bot.InitSylon(rdb, &config, b)
 
-	queries := make(chan porter.QueryRequest, 10)
+	queries := make(chan porter.QueryRequestWrap, 10)
 	go porter.Serve(base, sylon, queries)
 	go porter.Publisher(queries)
 
