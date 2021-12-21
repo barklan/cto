@@ -1,5 +1,5 @@
 ARG DOCKER_IMAGE_PREFIX=
-FROM ${DOCKER_IMAGE_PREFIX}node:lts-alpine as build-stage
+FROM ${DOCKER_IMAGE_PREFIX}node:17.3.0-alpine as build-stage
 WORKDIR /app
 RUN npm install -g pnpm
 COPY package*.json ./
@@ -8,7 +8,7 @@ COPY . .
 RUN pnpm run build
 
 ARG DOCKER_IMAGE_PREFIX=
-FROM ${DOCKER_IMAGE_PREFIX}nginx:stable-alpine as production-stage
+FROM ${DOCKER_IMAGE_PREFIX}nginx:1.21.4-alpine as production-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

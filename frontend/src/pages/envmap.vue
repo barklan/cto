@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-const divtext = "Hey there!"
+const divtext: string = "Hey there!"
 
 </script>
 

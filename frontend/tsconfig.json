@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "baseUrl": ".",
     "module": "ESNext",
     "target": "es2016",
@@ -16,7 +15,8 @@
     "forceConsistentCasingInFileNames": true,
     "types": [
       "vite/client",
-      "vite-plugin-pages/client"
+      "vite-plugin-pages/client",
+      "vite-plugin-vue-layouts/client"
     ],
     "paths": {
       "~/*": ["src/*"]

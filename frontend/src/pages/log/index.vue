@@ -194,7 +194,7 @@
       :data="jsonData"
       :deep=2
       :showDoubleQuotes=false
-      :showLine=false
+      :showLine='true'
     ></vue-json-pretty>
   </div>
 </template>
