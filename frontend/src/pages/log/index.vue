@@ -192,7 +192,9 @@
       style="max-width: 1500px; font-size: 12px !important;"
       :path="'res'"
       :data="jsonData"
-      :deep="depth"
+      :deep=2
+      :showDoubleQuotes=false
+      :showLine=false
     ></vue-json-pretty>
   </div>
 </template>
@@ -330,7 +332,6 @@ export default {
       fields: ref(""),
       regexq: ref(""),
       viteHostname: import.meta.env.VITE_HOSTNAME,
-      depth: 1,
       timestamp: "",
       mainbtntext: "Search",
       showlogs: "invisible",
@@ -473,7 +474,7 @@ export default {
             this.blockform = false
             return {};
           }
-          this.respFeedback = "Query job queued."
+          this.respFeedback = "Request accepted."
           this.respFeedbackColor = "text-light-500"
           setTimeout(() => this.poll, 80)
           var pollIntervalId = setInterval(this.poll, 600);
