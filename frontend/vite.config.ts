@@ -18,6 +18,14 @@ import LinkAttributes from 'markdown-it-link-attributes'
 const markdownWrapperClasses = 'prose prose-sm m-auto text-left'
 
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      external: [
+        "workbox-window",
+      ],
+    },
+  },
+
   resolve: {
     alias: {
       '~/': `${path.resolve(__dirname, 'src')}/`,
@@ -104,8 +112,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt', 'safari-pinned-tab.svg'],
       manifest: {
-        name: 'Vitesse',
-        short_name: 'Vitesse',
+        name: 'CTO',
+        short_name: 'CTO',
         theme_color: '#ffffff',
         icons: [
           {

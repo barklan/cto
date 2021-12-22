@@ -9,7 +9,12 @@ body,
 }
 
 html.dark {
-  background: #121212;
+  /* background: #121212; */
+  background: #0d1117;
+}
+
+input {
+  background-color: #010409;
 }
 
 #nprogress {
@@ -38,6 +43,6 @@ html.dark {
 .icon-btn {
   @apply inline-block cursor-pointer select-none
     opacity-75 transition duration-200 ease-in-out
-    hover:opacity-100 hover:text-green-600;
-  font-size: 0.9em;
+    hover:opacity-100 hover:text-white
+    font-size: 0.9em;
 }

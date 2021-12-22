@@ -4,9 +4,20 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
+    'AkarIcons:question': typeof import('~icons/akar-icons/question')['default']
+    'Bytesize:signIn': typeof import('~icons/bytesize/sign-in')['default']
+    'Carbon:aiStatus': typeof import('~icons/carbon/ai-status')['default']
+    'Carbon:dataViewAlt': typeof import('~icons/carbon/data-view-alt')['default']
     CarbonCampsite: typeof import('~icons/carbon/campsite')['default']
+    CarbonLanguage: typeof import('~icons/carbon/language')['default']
+    CarbonLogoGithub: typeof import('~icons/carbon/logo-github')['default']
+    CarbonMoon: typeof import('~icons/carbon/moon')['default']
+    CarbonPedestrian: typeof import('~icons/carbon/pedestrian')['default']
+    CarbonSun: typeof import('~icons/carbon/sun')['default']
+    'Codicon:home': typeof import('~icons/codicon/home')['default']
     Footer: typeof import('./components/Footer.vue')['default']
-    FooterClean: typeof import('./components/FooterClean.vue')['default']
+    FooterMy: typeof import('./components/FooterMy.vue')['default']
+    MenuBar: typeof import('./components/MenuBar.vue')['default']
     README: typeof import('./components/README.md')['default']
   }
 }

@@ -1,12 +1,6 @@
 <template>
   <div id="formdiv">
-    <div class="gap-4 grid grid-rows-1 grid-cols-3 m-auto pb-4 h-14" style="max-width: 350px; margin-top: -10px">
-      <!-- TODO menu -->
-      <button disabled class="btn col-span-1 row-span-1  rounded">Status</button>
-      <button disabled class="btn col-span-1 row-span-1  rounded">History</button>
-      <button disabled class="btn col-span-1 row-span-1 rounded">Help</button>
-    </div>
-    <div class="m-auto mb-2 mt-5" w="full" text="left" style="max-width: 500px">
+    <div class="m-auto mb-2 mt-4" w="full" text="left" style="max-width: 500px">
       <code>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -28,7 +22,6 @@
       p="x-4 y-2"
       w="full"
       text="left"
-      bg="dark-700"
       border="~ rounded gray-700"
       outline="none active:none"
       @keydown.enter="go"
@@ -48,7 +41,6 @@
       p="x-4 y-2"
       w="full"
       text="left"
-      bg="dark-700"
       border="~ rounded gray-700"
       outline="none active:none"
       @keydown.enter="go"
@@ -68,7 +60,6 @@
       p="x-4 y-2"
       w="full"
       text="left"
-      bg="dark-700"
       border="~ rounded gray-700"
       outline="none active:none"
       @keydown.enter="go"
@@ -80,13 +71,13 @@
       w="full"
       style="max-width: 500px; max-height: 480px"
     >
-      <!-- <p class="col-span-2 row-span-1"></p> -->
+      <p class="col-span-1 row-span-1"></p>
 
       <div class="col-span-1 row-span-1">
         <button
           w="full"
           style="max-width: 310px"
-          class="mt-5 p-3 text-mm btn truncate"
+          class="mt-5 p-2 text-mm btn truncate"
           :disabled="!name"
           @click="go"
         >History</button>
@@ -96,7 +87,7 @@
         <button
           w="full"
           style="max-width: 310px"
-          class="mt-5 p-3 text-mm btn truncate"
+          class="mt-5 p-2 text-mm btn truncate"
           :disabled="!name"
           @click="go"
         >{{ mainbtntext }}</button>
@@ -185,7 +176,7 @@
       remember the schema of any source and unmarshalls keys dynamically for now).
     </p>
   </div>
-  <div :class="showlogs" id="logsdiv">
+  <div :class="showlogs" id="logsdiv" class="mt-10">
     <vue-json-pretty
       class="leading-none break-all"
       :class="truncatelog"
@@ -215,6 +206,7 @@
   }
 
   #formdiv {
+    top: 80px;
     position: fixed;
     max-width: 500px;
     min-width: 33%;

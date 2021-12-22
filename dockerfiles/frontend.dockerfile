@@ -2,7 +2,7 @@ ARG DOCKER_IMAGE_PREFIX=
 FROM ${DOCKER_IMAGE_PREFIX}node:17.3.0-alpine as build-stage
 WORKDIR /app
 RUN npm install -g pnpm
-COPY package*.json ./
+COPY package*.json pnpm-lock.yaml ./
 RUN pnpm install
 COPY . .
 RUN pnpm run build
