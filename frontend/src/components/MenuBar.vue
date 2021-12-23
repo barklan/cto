@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isDark, toggleDark } from '~/composables'
+// import { isDark, toggleDark } from '~/composables'
 import { useUserStore } from '~/stores/user'
 
 const { t, availableLocales, locale } = useI18n()
@@ -14,7 +14,7 @@ const toggleLocales = () => {
 </script>
 
 <template>
-  <div id="menu-container" w="full" class="fixed p-2 z-49 text-light-50">
+  <div id="menu-container" class="w-screen fixed p-2 z-49 text-light-50">
   <nav id="menubar" w="full" class="text-lg z-50 mt-1">
     <router-link class="icon-btn mx-2" to="/" :title="t('button.home')">
        <codicon:home /><div style="top:-4px;" class="mx-4 relative inline-block">Home</div>
@@ -34,10 +34,10 @@ const toggleLocales = () => {
 
     <div style="top:-4px;" class="border-1 rounded-md px-2 inline-block icon-btn relative">{{user.savedName}}</div>
 
-    <button class="icon-btn mx-2 !outline-none" :title="t('button.toggle_dark')" @click="toggleDark()">
+    <!-- <button class="icon-btn mx-2 !outline-none" :title="t('button.toggle_dark')" @click="toggleDark()">
       <carbon-moon v-if="isDark" />
       <carbon-sun v-else />
-    </button>
+    </button> -->
 
     <a class="icon-btn mx-2" :title="t('button.toggle_langs')" @click="toggleLocales">
       <carbon-language />

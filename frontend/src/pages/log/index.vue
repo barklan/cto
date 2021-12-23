@@ -7,8 +7,7 @@
         <span
           class="text-gray-400"
         >{{ timestamp }} UTC</span>
-        <br />
-        &nbsp;&nbsp;&nbsp;&nbsp;env service dd [hh:mm:ss]
+        <br />&nbsp;&nbsp;&nbsp;&nbsp;env service dd [hh:mm:ss]
       </code>
     </div>
 
@@ -116,85 +115,48 @@
 
   <div class="fixed bottom-10 p-6"></div>
   <!-- <hr w="auto" class="my-6 mx-auto" style="max-width: 500px" /> -->
-  <div :class="showhelp" id="helpdiv" class="mt-6 pr-8 pb-10">
-    <h3 class="text-lg mb-4">Main input</h3>
-    <ul text="left" class="list-square list-inside text-sm">
-      <li class="pb-2">
-        <code class="font-extrabold">env</code> - hostname string;
-        can be a substring that uniquely identifies hostname;
+  <div :class="showhelp" id="helpdiv" class="mt-14 pr-8 pb-10">
+    <h3 class="text-lg mb-8">Examples</h3>
+    <ul text="left" class="list-none list-inside text-sm">
+      <li class="pb-4">
+        <pre>example.com backend 23 16:45:23</pre>
       </li>
-      <li class="pb-2">
-        <code class="font-extrabold">dd hh:mm:ss</code>
-        <span>
-          - only
-          <code>dd</code> part is mandatory (can be "t" for today); if some part after that
-          is not specified, then range is taken;
-        </span>
+      <li class="pb-4">
+        <pre>example.com backend 23 16:45:23</pre>
       </li>
-      <!-- <li class="pb-2"> -->
-        <!-- <code class="font-extrabold">##m</code> -->
-        <!-- <span>- alternative to the above, minutes since now;</span> -->
-      <!-- </li> -->
-      <li class="pb-2">
-        <code class="font-extrabold">service</code> - service name;
-        can be a substring that uniquely identifies service;
+      <li class="pb-4">
+        <pre>exampl back 23 16:45:23</pre>
       </li>
-      <!-- <li class="pb-2">
-        <code class="font-extrabold">flag</code> - optional, any flag
-        (it cannot be user-defined as of now and only single flag on event is possible);
-        if not specified records with any flags are included; pre-defined flags are
-        <code>err</code> and
-        <code>none</code>.
-      </li>-->
+      <li class="pb-4">
+        <pre>exampl back t 16:45:</pre>
+      </li>
+      <li class="pb-4">
+        <pre>exampl back t 16:</pre>
+      </li>
+      <li class="pb-4">
+        <pre>exampl back t 10m</pre>
+      </li>
     </ul>
-    <p
-      text="left"
-      class="text-sm"
-    >Any valid query using only main input has time complexity of O(n), where n is input events' rate.</p>
-    <h3 class="text-lg my-4">Filter by one field with regex</h3>
-    <p text="left" class="text-sm">
-      All result set can be filtered by one field's value using a regular expression.
-      This rule is applied to the set obtained with main rule.
-      Any
-      <a
-        href="https://github.com/google/re2/wiki/Syntax"
-        class="underline"
-      >RE2</a> syntax is accepted.
-      Time complexity is O(n), where n is either
-      the size of the base set or the length of the field's value in question (the latter is guaranteed by
-      go's regexp package -
-      <a
-        href="https://swtch.com/~rsc/regexp/regexp1.html"
-        class="underline"
-      >more on that here</a>).
-    </p>
-    <h3 class="text-lg my-4">Include only selected fields</h3>
-    <p text="left" class="text-sm">
-      Only selected fields (separated by space) are present in result.
-      They can be nested to arbitrary depth. Applied to the set
-      obtained with above rules. It's complexity is O(n) (should be O(1), but it does not
-      remember the schema of any source and unmarshalls keys dynamically for now).
-    </p>
   </div>
-  <div :class="showlogs" id="logsdiv" class="mt-10">
+  <div :class="showlogs" id="logsdiv" class="mt-16">
     <vue-json-pretty
       class="leading-none break-all"
       :class="truncatelog"
       style="max-width: 1500px; font-size: 12px !important;"
       :path="'res'"
       :data="jsonData"
-      :deep=2
-      :showDoubleQuotes=false
-      :showLine='true'
+      :deep="2"
+      :showDoubleQuotes="false"
+      :showLine="true"
     ></vue-json-pretty>
   </div>
 </template>
 
 <style>
-@media (min-width: 1250px) {
+@media (min-width: 800px) {
   #helpdiv {
     position: absolute;
-    right: 0px;
+    left: 48vw;
     max-width: 60%;
   }
 
@@ -208,27 +170,8 @@
   #formdiv {
     top: 80px;
     position: fixed;
-    max-width: 500px;
-    min-width: 33%;
-  }
-}
-
-@media (min-width: 1000px) and (max-width: 1250px) {
-  #helpdiv {
-    position: absolute;
-    right: 0px;
-    max-width: 62%;
-  }
-  #logsdiv {
-    position: absolute;
-    right: 0px;
-    max-width: 62%;
-    min-width: 60%;
-  }
-
-  #formdiv {
-    position: fixed;
-    max-width: 33%;
+    max-width: 42vw;
+    min-width: 35vw;
   }
 }
 
@@ -360,7 +303,7 @@ export default {
       )
         .then((response) => {
           if (response.status == 401) {
-            this.respFeedback = "No token provided. Visit this link from tg chat."
+            this.respFeedback = "Not authenticated. Visit from tg chat or sign in."
             this.respFeedbackColor = "text-red-500"
             this.pollingDone();
             return {};
@@ -421,7 +364,6 @@ export default {
       this.polltry = 0
       console.log("new query request")
       this.blockform = true
-      this.mainbtntext = "Requesting..."
       this.showlogs = "invisible"
       var urlToFetch = import.meta.env.VITE_PROTOCOL +
         "://" +
@@ -441,7 +383,7 @@ export default {
       )
         .then((response) => {
           if (response.status == 401) {
-            this.respFeedback = "No token provided. Visit this link from tg chat."
+            this.respFeedback = "Not authenticated. Visit from tg chat or sign in."
             this.respFeedbackColor = "text-red-500"
             this.blockform = false
             return {};
@@ -475,9 +417,6 @@ export default {
         })
         .then((data) => {
           localStorage.setItem("qid", data.qid);
-        })
-        .then(() => {
-          this.mainbtntext = "Please Wait";
         })
     },
     getNow: function () {

@@ -2,11 +2,12 @@
 import { useUserStore } from '~/stores/user'
 
 const user = useUserStore()
-const name = ref(user.savedName)
+const name = ref(user.name)
 
 const router = useRouter()
 const go = () => {
   if (name.value)
+    localStorage.setItem("name", name.value)
     router.push(`/hi/${encodeURIComponent(name.value)}`)
 }
 

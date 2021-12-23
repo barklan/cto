@@ -10,6 +10,7 @@ import (
 )
 
 type TokenClaims struct {
+	// UserID could be "guest"
 	ProjectName string `json:"project_name"`
 	jwt.RegisteredClaims
 }

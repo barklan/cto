@@ -121,11 +121,5 @@
             "command": "bash -i run.sh log",
             "isBackground": true,
         },
-		{
-            "label": "run.sh steal_from_dockerhub",
-            "type": "shell",
-            "command": "bash -i run.sh steal_from_dockerhub",
-            "isBackground": true,
-        },
     ],
 }

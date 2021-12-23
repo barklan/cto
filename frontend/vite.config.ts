@@ -17,6 +17,8 @@ import LinkAttributes from 'markdown-it-link-attributes'
 
 const markdownWrapperClasses = 'prose prose-sm m-auto text-left'
 
+process.env.BROWSER = "firefox-developer-edition"
+
 export default defineConfig({
   build: {
     rollupOptions: {

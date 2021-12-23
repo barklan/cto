@@ -7,7 +7,7 @@ const user = useUserStore()
 const { t } = useI18n()
 
 // watchEffect(() => {
-user.setNewName(props.name)
+user.setName(props.name)
 // })
 </script>
 
