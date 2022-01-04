@@ -24,6 +24,9 @@ const go = () => {
     user.setName(name)
     user.setToken(token)
     user.setProject(project)
+    localStorage.setItem("token", token)
+    localStorage.setItem("project", project)
+    localStorage.setItem("name", name)
     router.push(`/log`)
 }
 

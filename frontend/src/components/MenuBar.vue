@@ -32,7 +32,7 @@ const toggleLocales = () => {
        <bytesize:sign-in /><div style="top:-4px;" class="mx-4 relative inline-block">Sign in</div>
     </router-link>
 
-    <div style="top:-4px;" class="border-1 rounded-md px-2 inline-block icon-btn relative">{{user.savedName}}</div>
+    <div style="top:-4px;" class="border-1 rounded-md px-2 inline-block icon-btn relative">{{user.name}}</div>
 
     <!-- <button class="icon-btn mx-2 !outline-none" :title="t('button.toggle_dark')" @click="toggleDark()">
       <carbon-moon v-if="isDark" />

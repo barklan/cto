@@ -14,9 +14,16 @@ useHead({
 
 const user = useUserStore()
 const name = localStorage.getItem("name");
+const token = localStorage.getItem("token")
+const project = localStorage.getItem("project")
 
 if (name) {
-  user.setNewName(name)
+  user.setName(name)
+
+  if (name == "guest" && token && project) {
+    user.setToken(token)
+    user.setProject(project)
+  }
 }
 
 </script>
