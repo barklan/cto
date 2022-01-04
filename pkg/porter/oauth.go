@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -15,8 +16,9 @@ import (
 var oauthStateString = "pseudo-random"
 
 func initOAuth() *oauth2.Config {
+	log.Info("OAUTH_CALLBACK_URI: ", os.Getenv("OAUTH_CALLBACK_URI"))
 	googleOauthConfig := &oauth2.Config{
-		RedirectURL:  "https://ctopanel.com/api/porter/signin/callback",
+		RedirectURL:  os.Getenv("OAUTH_CALLBACK_URI"),
 		ClientID:     os.Getenv("OAUTH_CLIENT_ID"),
 		ClientSecret: os.Getenv("OAUTH_CLIENT_SECRET"),
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},

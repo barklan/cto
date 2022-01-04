@@ -4,12 +4,9 @@
 
 declare module 'vue' {
   export interface GlobalComponents {
-    'AkarIcons:question': typeof import('~icons/akar-icons/question')['default']
     'Bytesize:signIn': typeof import('~icons/bytesize/sign-in')['default']
     'Carbon:aiStatus': typeof import('~icons/carbon/ai-status')['default']
     'Carbon:dataViewAlt': typeof import('~icons/carbon/data-view-alt')['default']
-    CarbonCampsite: typeof import('~icons/carbon/campsite')['default']
-    CarbonDicomOverlay: typeof import('~icons/carbon/dicom-overlay')['default']
     CarbonLanguage: typeof import('~icons/carbon/language')['default']
     CarbonLogoGithub: typeof import('~icons/carbon/logo-github')['default']
     'Codicon:home': typeof import('~icons/codicon/home')['default']

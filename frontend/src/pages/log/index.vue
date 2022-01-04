@@ -70,9 +70,9 @@
       w="full"
       style="max-width: 500px; max-height: 480px"
     >
-      <p class="col-span-1 row-span-1"></p>
+      <p class="col-span-2 row-span-1"></p>
 
-      <div class="col-span-1 row-span-1">
+      <!-- <div class="col-span-1 row-span-1">
         <button
           w="full"
           style="max-width: 310px"
@@ -80,7 +80,7 @@
           :disabled="!name"
           @click="go"
         >History</button>
-      </div>
+      </div> -->
 
       <div class="col-span-1 row-span-1">
         <button

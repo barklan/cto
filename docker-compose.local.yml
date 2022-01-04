@@ -24,7 +24,8 @@ services:
     profiles: [ "main" ]
     container_name: cto_porter
     environment:
-      - CONFIG_ENV=devdocker
+      CONFIG_ENV: 'devdocker'
+      OAUTH_CALLBACK_URI: 'http://localhost:9010/api/porter/signin/callback'
 
   loginput:
     profiles: [ "main" ]

@@ -49,6 +49,8 @@ function up:core {
 function up:porter {
     _export_common
     export CONFIG_ENV=dev
+    export OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET
+    export OAUTH_CALLBACK_URI=http://localhost:9010/api/porter/signin/callback
     go run cmd/porter/main.go
 }
 
