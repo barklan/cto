@@ -14,6 +14,8 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
+	oauthConf := initOAuth()
+
 	r.Route("/api/porter", func(r chi.Router) {
 		r.Route("/query", func(r chi.Router) {
 			r.Get("/exact", func(w http.ResponseWriter, r *http.Request) {
@@ -27,6 +29,16 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 			r.Get("/poll", func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Access-Control-Allow-Origin", "*")
 				pollLogRange(base, w, r)
+			})
+		})
+		r.Route("/signin", func(r chi.Router) {
+			r.Get("/login", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
+				handleOAuthLogin(base, oauthConf, w, r)
+			})
+			r.Get("/callback", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
+				handleOAuthCallback(base, oauthConf, w, r)
 			})
 		})
 	})

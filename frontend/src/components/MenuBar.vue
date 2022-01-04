@@ -15,7 +15,7 @@ const toggleLocales = () => {
 
 <template>
   <div id="menu-container" class="w-screen fixed p-2 z-49 text-light-50">
-  <nav id="menubar" w="full" class="text-lg z-50 mt-1">
+  <nav id="menubar" w="full" class="text-md z-50 mt-1">
     <router-link class="icon-btn mx-2" to="/" :title="t('button.home')">
        <codicon:home /><div style="top:-4px;" class="mx-4 relative inline-block">Home</div>
     </router-link>
