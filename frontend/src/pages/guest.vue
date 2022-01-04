@@ -9,7 +9,7 @@ feedback.value = "Redirecting..."
 
 const token = route.query.token?.toString()
 const project = route.query.project?.toString()
-const role = "guest"
+const name = "guest"
 
 const router = useRouter()
 const go = () => {
@@ -21,10 +21,10 @@ const go = () => {
         feedback.value = "No project provided."
         return
     }
-    user.setRole(role)
+    user.setName(name)
     user.setToken(token)
     user.setProject(project)
-    router.push(`/status`)
+    router.push(`/log`)
 }
 
 setTimeout(go, 50)

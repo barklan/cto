@@ -255,6 +255,9 @@
 <script lang="js">
 import VueJsonPretty from "vue-json-pretty";
 import "vue-json-pretty/lib/styles.css";
+import { useUserStore } from '~/stores/user'
+
+const user = useUserStore()
 
 export default {
   components: {
@@ -299,7 +302,7 @@ export default {
         "/api/porter/query/poll?qid=" +
         localStorage.getItem('qid') +
         "&token=" +
-        this.$route.query.token
+        user.token
       )
         .then((response) => {
           if (response.status == 401) {
@@ -371,7 +374,7 @@ export default {
         "/api/porter/query/range?query=" +
         this.name +
         "&token=" +
-        this.$route.query.token
+        user.token
       if (this.fields != "") {
         urlToFetch = urlToFetch + "&fields=" + this.fields
       }

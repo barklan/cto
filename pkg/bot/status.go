@@ -94,9 +94,10 @@ func (s *Sylon) registerStatusHandler() {
 		}
 
 		panelURL := fmt.Sprintf(
-			"%s/log?token=%s",
+			"%s/guest?token=%s&project=%s",
 			s.Config.Log.ServiceHostname,
 			authToken,
+			project.ID,
 		)
 		selector := &tb.ReplyMarkup{}
 		btnURL := selector.URL("Search the Logs", panelURL)

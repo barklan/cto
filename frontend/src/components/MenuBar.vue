@@ -43,10 +43,6 @@ const toggleLocales = () => {
       <carbon-language />
     </a>
 
-    <router-link class="icon-btn mx-2" to="/about" :title="t('button.about')">
-      <akar-icons:question />
-    </router-link>
-
     <a class="icon-btn mx-2" rel="noreferrer" href="https://github.com/barklan/cto" target="_blank" title="GitHub">
       <carbon-logo-github />
     </a>

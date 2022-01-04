@@ -6,25 +6,14 @@ export const useUserStore = defineStore('user', () => {
    */
   const name = ref('')
   const id = ref('')
-  const role = ref('')
   const project = ref('')
   const token = ref('')
 
-  const previousNames = ref(new Set<string>())
-
-  const usedNames = computed(() => Array.from(previousNames.value))
-  const otherNames = computed(() => usedNames.value.filter(n => n !== name.value))
-
   /**
-   * Changes the current name of the user and saves the one that was used
-   * before.
    *
    * @param name - new name to set
    */
   function setName(newName: string) {
-    if (name.value)
-      previousNames.value.add(name.value)
-
     name.value = newName
   }
 
@@ -34,9 +23,6 @@ export const useUserStore = defineStore('user', () => {
   function setProject(newProject: string) {
     project.value = newProject
   }
-  function setRole(newRole: string) {
-    role.value = newRole
-  }
   function setToken(newToken: string) {
     token.value = newToken
   }
@@ -45,12 +31,9 @@ export const useUserStore = defineStore('user', () => {
     setName,
     setID,
     setProject,
-    setRole,
     setToken,
-    otherNames,
     name,
     id,
-    role,
     project,
     token,
   }

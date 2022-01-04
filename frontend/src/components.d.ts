@@ -9,15 +9,13 @@ declare module 'vue' {
     'Carbon:aiStatus': typeof import('~icons/carbon/ai-status')['default']
     'Carbon:dataViewAlt': typeof import('~icons/carbon/data-view-alt')['default']
     CarbonCampsite: typeof import('~icons/carbon/campsite')['default']
+    CarbonDicomOverlay: typeof import('~icons/carbon/dicom-overlay')['default']
     CarbonLanguage: typeof import('~icons/carbon/language')['default']
     CarbonLogoGithub: typeof import('~icons/carbon/logo-github')['default']
-    CarbonPedestrian: typeof import('~icons/carbon/pedestrian')['default']
-    CarbonWarning: typeof import('~icons/carbon/warning')['default']
     'Codicon:home': typeof import('~icons/codicon/home')['default']
     Footer: typeof import('./components/Footer.vue')['default']
     FooterMy: typeof import('./components/FooterMy.vue')['default']
     MenuBar: typeof import('./components/MenuBar.vue')['default']
-    README: typeof import('./components/README.md')['default']
   }
 }
 
