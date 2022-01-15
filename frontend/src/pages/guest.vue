@@ -8,8 +8,8 @@ const feedback = ref("")
 feedback.value = "Redirecting..."
 
 const token = route.query.token?.toString()
+const name = route.query.name?.toString()
 const project = route.query.project?.toString()
-const name = "guest"
 
 const router = useRouter()
 const go = () => {
@@ -17,6 +17,12 @@ const go = () => {
         feedback.value = "No token provided."
         return
     }
+
+    if (name === undefined) {
+        feedback.value = "No name provided."
+        return
+    }
+
     if (project === undefined) {
         feedback.value = "No project provided."
         return

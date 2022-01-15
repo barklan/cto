@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/barklan/cto/pkg/postgres/models"
+	"github.com/gofrs/uuid"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -35,6 +37,28 @@ func initOAuth() *oauth2.Config {
 	return googleOauthConfig
 }
 
+// singleAuth takes email and returns jwt token.
+func singleAuth(base *Base, email string) string {
+	client := models.Client{}
+	err := base.R.Get(&client, "select * from client where email = $1", email)
+	if err != nil {
+		uid4, err := uuid.NewV4()
+		if err != nil {
+			log.Panicln("failed to generate uuid for new clinet", err)
+		}
+		u4 := uid4.String()
+		client.ID = u4
+		client.Active = true
+		client.Email = email
+
+		insert := "insert into clinet(id, email) values ($1, $2)"
+		base.R.MustExec(insert, client.ID, client.Email)
+	}
+
+	jwt := CreateJWT(base, email, "")
+	return jwt
+}
+
 func handleOAuthLogin(base *Base, config *oauth2.Config, w http.ResponseWriter, r *http.Request) {
 	url := config.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
@@ -53,7 +77,15 @@ func handleOAuthCallback(base *Base, config *oauth2.Config, w http.ResponseWrite
 		log.Panicln("failed to unmarshal user data", err)
 	}
 
-	fmt.Fprintf(w, "User email: %s\n", user.Email)
+	jwt := singleAuth(base, user.Email)
+	http.Redirect(
+		w, r,
+		fmt.Sprintf("%s/guest?token=%s&name=%s&project=%s",
+			base.Config.Log.ServiceHostname,
+			jwt, user.Email, "",
+		),
+		http.StatusTemporaryRedirect,
+	)
 }
 
 func getUserInfo(config *oauth2.Config, state string, code string) ([]byte, error) {

@@ -89,7 +89,7 @@ func main() {
 			}
 
 			for _, projectName := range projects {
-				porter.RotateJWT(base, projectName)
+				porter.RotateJWT(base, "guest", projectName)
 			}
 			<-tokenRotationTicker.C
 		}

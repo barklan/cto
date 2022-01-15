@@ -20,6 +20,7 @@ type Base struct {
 func InitBase(config *storage.InternalConfig, db *sqlx.DB) *Base {
 	base := Base{}
 	base.Config = config
+	base.R = db
 
 	configEnvironment, ok := os.LookupEnv("CONFIG_ENV")
 	if !ok {

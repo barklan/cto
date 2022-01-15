@@ -36,7 +36,7 @@ insert into client(id, tg_nick, personal_chat) values
 	}
 
 	barklan := clients[0]
-	if barklan.TGNick != "barklan" {
+	if barklan.TGNick.String != "barklan" {
 		t.Errorf("Got %v want %v", barklan.TGNick, "barklan")
 	}
 }

@@ -11,7 +11,7 @@ export REGISTRY_PASSWORD="${REGISTRY_PASSWORD?Variable not set}"
 export DOCKER_REGISTRY="${DOCKER_REGISTRY?Variable not set}"
 export DOCKER_IMAGE_PREFIX="${DOCKER_IMAGE_PREFIX?Variable not set}"
 
-docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${DOCKER_REGISTRY}
+docker login -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}" "${DOCKER_REGISTRY}"
 
 docker-compose build #--parallel
 docker-compose push

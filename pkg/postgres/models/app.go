@@ -3,10 +3,11 @@ package models
 import "database/sql"
 
 type Client struct {
-	ID           string `db:"id"`
-	Active       bool   `db:"active"`
-	TGNick       string `db:"tg_nick"`
-	PersonalChat int64  `db:"personal_chat"`
+	ID           string         `db:"id"`
+	Active       bool           `db:"active"`
+	TGNick       sql.NullString `db:"tg_nick"`
+	PersonalChat sql.NullInt64  `db:"personal_chat"`
+	Email        string         `db:"email"`
 }
 
 type Project struct {

@@ -50,6 +50,9 @@ const toggleLocales = () => {
     </a>
   </nav>
   </div>
+  <div class="fixed bottom-2 text-xs bg-purple-900 p-1 z-999">
+    Project: {{user.project}}
+  </div>
 </template>
 
 <style>
