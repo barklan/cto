@@ -18,8 +18,6 @@ servers:
     description: Local loginput service.
 
 tags:
-  - name: auth
-    description: Authentication
   - name: core
     description: core service (8888 internal port)
   - name: porter
@@ -145,16 +143,34 @@ paths:
           description: Query not found.
   /porter/signin/login:
     get:
+      tags: [porter]
       summary: Request Google OAuth login.
       responses:
         '300':
           description: Redirects to callback page.
   /porter/signin/callback:
     get:
+      tags: [porter]
       summary: Callback page after authentication.
       responses:
         '200':
           description: OK
+  /porter/user/{userID}/project:
+    get:
+      tags: [porter]
+      summary: Get projects belonging to user.
+      parameters:
+        - $ref: "#/components/parameters/userID"
+        - $ref: "#/components/parameters/token"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
 
 
 components:
@@ -164,12 +180,33 @@ components:
       name: projectID
       schema:
         type: string
+        format: uuid
       required: true
       description: Project ID
+    userID:
+      in: path
+      name: userID
+      schema:
+        type: string
+        format: uuid
+      required: true
+      description: User ID
+    token:
+      in: query
+      name: token
+      schema:
+        type: string
+      required: true
+      description: JWT token
 
-  # schemas:
-  # Log:
-  # $ref: './schemas/Log.yml'
+  schemas:
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+
   securitySchemes:
     TokenAuth:
       type: apiKey
