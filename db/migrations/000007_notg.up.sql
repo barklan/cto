@@ -1,0 +1,7 @@
+begin;
+
+ALTER TABLE client ALTER COLUMN tg_nick DROP NOT NULL;
+ALTER TABLE client ALTER COLUMN personal_chat DROP NOT NULL;
+ALTER TABLE client ADD COLUMN email VARCHAR (100);
+
+commit;

@@ -1,0 +1,7 @@
+begin;
+
+ALTER TABLE client ALTER COLUMN tg_nick SET NOT NULL;
+ALTER TABLE client ALTER COLUMN personal_chat SET NOT NULL;
+ALTER TABLE client DROP COLUMN IF EXISTS email;
+
+commit;

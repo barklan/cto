@@ -130,6 +130,7 @@ proto() {
 db:makemigrations() {
     docker run -v "$(pwd)"/db/migrations:/migrations --network host migrate/migrate \
     create -ext sql -dir /migrations -seq "${@}"
+    sudo chown -R 1000:1000 ./db/migrations
 }
 
 db:migrate() {

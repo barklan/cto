@@ -2,6 +2,7 @@ package porter
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,13 @@ import (
 
 // TODO: randomize it
 var oauthStateString = "pseudo-random"
+
+type userData struct {
+	Email         string `json:"email"`
+	ID            string `json:"id"`
+	Picture       string `json:"picture"`
+	VerifiedEmail bool   `json:"verified_email"`
+}
 
 func initOAuth() *oauth2.Config {
 	log.Info("OAUTH_CALLBACK_URI: ", os.Getenv("OAUTH_CALLBACK_URI"))
@@ -40,7 +48,12 @@ func handleOAuthCallback(base *Base, config *oauth2.Config, w http.ResponseWrite
 		return
 	}
 
-	fmt.Fprintf(w, "Content: %s\n", content)
+	user := userData{}
+	if err = json.Unmarshal(content, &user); err != nil {
+		log.Panicln("failed to unmarshal user data", err)
+	}
+
+	fmt.Fprintf(w, "User email: %s\n", user.Email)
 }
 
 func getUserInfo(config *oauth2.Config, state string, code string) ([]byte, error) {

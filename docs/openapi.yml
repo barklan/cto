@@ -9,6 +9,13 @@ info:
 
 servers:
   - url: https://ctopanel.com/api
+    description: Production.
+  - url: http://127.0.0.1:8888/api
+    description: Local core service.
+  - url: http://127.0.0.1:9010/api
+    description: Local porter service.
+  - url: http://127.0.0.1:8900/api
+    description: Local loginput service.
 
 tags:
   - name: auth
@@ -41,6 +48,10 @@ paths:
       summary: Debug service gets key directly from badger - may be removed in future.
       parameters:
         - $ref: "#/components/parameters/projectID"
+        - in: query
+          name: key
+          schema:
+            type: string
       responses:
         "200":
           description: "OK"
@@ -132,6 +143,19 @@ paths:
           description: "Forbidden"
         "404":
           description: Query not found.
+  /porter/signin/login:
+    get:
+      summary: Request Google OAuth login.
+      responses:
+        '300':
+          description: Redirects to callback page.
+  /porter/signin/callback:
+    get:
+      summary: Callback page after authentication.
+      responses:
+        '200':
+          description: OK
+
 
 components:
   parameters:
