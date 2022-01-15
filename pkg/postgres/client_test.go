@@ -11,11 +11,12 @@ import (
 func TestClient(t *testing.T) {
 	tx := dbx.MustBegin()
 	tx.MustExec(`
-insert into client(id, tg_nick, personal_chat) values
-($1, $2, $3);`,
+insert into client(id, tg_nick, personal_chat, email) values
+($1, $2, $3, $4);`,
 		"27e9f831-4679-47c8-a64f-f7c8d0cb15ba",
 		"barklan",
 		342621688,
+		"qufiwefefwoyn@gmail.com",
 	)
 
 	err := tx.Commit()
