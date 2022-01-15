@@ -20,9 +20,42 @@ tags:
 
 paths:
   /log/input:
-    $ref: './paths/input.yml#/FluentdLogInput'
+    post:
+      tags:
+        - log
+      summary: Fluentd input.
+      security:
+        - FluentdBasicAuth: []
+      responses:
+        '200':
+          description: 'OK'
+        '401':
+          description: 'Not Authorized'
+        '403':
+          description: 'Forbidden'
   /log/exact:
-    $ref: './paths/getlogs.yml#/LogExact'
+    get:
+      tags: [log]
+      summary: Exact log by badger key.
+      parameters:
+        - in: query
+          name: key
+          schema:
+            type: string
+          description: Exact badger key.
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: "OK"
+        "401":
+          description: "Not Authorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: "Key not found"
 
 components:
   # schemas:

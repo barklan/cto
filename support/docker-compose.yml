@@ -44,6 +44,29 @@ services:
         - traefik.http.routers.pgweb-http.middlewares=adminauth
         - traefik.http.routers.pgweb-https.middlewares=adminauth
 
+  docs:
+    image: 'swaggerapi/swagger-ui'
+    environment:
+      SWAGGER_JSON: 'https://raw.githubusercontent.com/barklan/cto/main/docs/openapi.yml'
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.docs-http.rule=Host(`docs.${DOMAIN?Variable not
+          set}`)
+        - traefik.http.routers.docs-http.entrypoints=http
+        - traefik.http.routers.docs-http.middlewares=https-redirect
+        - traefik.http.routers.docs-https.rule=Host(`docs.${DOMAIN?Variable
+          not set}`)
+        - traefik.http.routers.docs-https.entrypoints=https
+        - traefik.http.routers.docs-https.tls=true
+        - traefik.http.routers.docs-https.tls.certresolver=le
+        - traefik.http.services.docs.loadbalancer.server.port=8080
+        # Auth
+        - traefik.http.routers.docs-http.middlewares=adminauth
+        - traefik.http.routers.docs-https.middlewares=adminauth
+
 volumes:
   erdapp-volume: null
 networks:

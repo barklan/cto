@@ -10,8 +10,13 @@ import (
 
 func TestClient(t *testing.T) {
 	tx := dbx.MustBegin()
-	tx.MustExec("INSERT INTO client (tg_nick) VALUES ($1)", "barklan")
-	tx.MustExec("INSERT INTO client (tg_nick) VALUES ($1)", "johndoe")
+	tx.MustExec(`
+insert into client(id, tg_nick, personal_chat) values
+($1, $2, $3);`,
+		"27e9f831-4679-47c8-a64f-f7c8d0cb15ba",
+		"barklan",
+		342621688,
+	)
 
 	err := tx.Commit()
 	if err != nil {
@@ -30,7 +35,7 @@ func TestClient(t *testing.T) {
 		panic(err)
 	}
 
-	barklan, _ := clients[0], clients[1]
+	barklan := clients[0]
 	if barklan.TGNick != "barklan" {
 		t.Errorf("Got %v want %v", barklan.TGNick, "barklan")
 	}
