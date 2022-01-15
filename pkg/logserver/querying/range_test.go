@@ -35,7 +35,7 @@ func TestBeaconToSeek(t *testing.T) {
 			TimeQuery:   "",
 		}
 
-		got, _ := rq.BeaconToSeek(prefixSyntax)
+		got, _ := rq.BeaconToSeek(prefixSyntax, time.Now())
 		want := "nftg futurearts.ru celerybeat-logger 2021-11-03 24:00:00"
 
 		gotEqWant(t, got, want)

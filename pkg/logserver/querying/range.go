@@ -30,10 +30,10 @@ type RequestQuery struct {
 	TimeQuery   string
 }
 
-func (rq RequestQuery) BeaconToSeek(syntax timeSyntax) (string, error) {
+func (rq RequestQuery) BeaconToSeek(syntax timeSyntax, now time.Time) (string, error) {
 	var timeQueryBeacon string
 	if syntax == lastMinutesSyntax {
-		timeQueryBeacon = time.Now().
+		timeQueryBeacon = now.
 			Add(1 * time.Minute).
 			UTC().
 			Format("15:04:05")
@@ -246,8 +246,10 @@ func PlaceQuery(
 	// match, _ := regexp.MatchString(`^(0[1-9]|[12]\d|3[01])$`, querySet[2])
 	day := querySet[2]
 
+	now := time.Now().UTC()
+
 	if day == "t" {
-		dayNumber := time.Now().Day()
+		dayNumber := now.Day()
 		day = strconv.FormatInt(int64(dayNumber), 10)
 		if dayNumber < 10 {
 			day = "0" + day
@@ -255,7 +257,7 @@ func PlaceQuery(
 	} else if len(day) == 1 {
 		day = "0" + day
 	}
-	yearAndMonthStr := time.Now().Format("2006-01")
+	yearAndMonthStr := now.Format("2006-01")
 	date := fmt.Sprintf("%s-%s", yearAndMonthStr, day)
 
 	var timeQuery string
@@ -286,9 +288,7 @@ func PlaceQuery(
 		TimeQuery:   timeQuery,
 	}
 
-	now := time.Now()
-
-	beacon, err := requestQuery.BeaconToSeek(tSyntax)
+	beacon, err := requestQuery.BeaconToSeek(tSyntax, now)
 	if err != nil {
 		SetMsgInCache(
 			data,
