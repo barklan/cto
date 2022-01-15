@@ -4,27 +4,6 @@
 
 [cto-core](https://hub.docker.com/repository/docker/barklan/cto-core) | [cto-porter](https://hub.docker.com/repository/docker/barklan/cto-porter) | [cto-explorer](https://hub.docker.com/repository/docker/barklan/cto-explorer) | [fluentd-cto](https://hub.docker.com/repository/docker/barklan/fluentd-cto) | [cto-loginput](https://hub.docker.com/repository/docker/barklan/cto-loginput)
 
-## Routing
-
-#### Rest
-
-```
-/api
-    /loginput/fluentd (:8900 internal)
-    /core (:8888 internal)
-        /debug/{projectID}?key | GET
-        /setproject{projectID} | POST
-    /porter (:9010 internal)
-        /query
-            /exact | GET
-            /range | POST
-            /poll | GET
-```
-
-#### gRPC
-
-`porter` on 50051
-
 ## Sanity check
 
 

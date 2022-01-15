@@ -2,7 +2,7 @@ openapi: 3.0.1
 info:
   title: CTO
   description: https://redoc.ly/docs/cli/#.pathspets.yaml
-  version: '1.0.1'
+  version: "1.0.1"
   contact:
     name: API Support
     email: example@example.com
@@ -13,29 +13,49 @@ servers:
 tags:
   - name: auth
     description: Authentication
-  - name: log
-    description: Logs
-  - name: users
-    description: Users
+  - name: core
+    description: core service (8888 internal port)
+  - name: porter
+    description: porter service (9010 internal port; 50051 grpc)
+  - name: loginput
+    description: loginput service (8900 internal port)
 
 paths:
-  /log/input:
+  /loginput/fluentd:
     post:
       tags:
-        - log
+        - loginput
       summary: Fluentd input.
       security:
         - FluentdBasicAuth: []
       responses:
-        '200':
-          description: 'OK'
-        '401':
-          description: 'Not Authorized'
-        '403':
-          description: 'Forbidden'
-  /log/exact:
+        "200":
+          description: "OK"
+        "401":
+          description: "Not Authorized"
+        "403":
+          description: "Forbidden"
+  /core/debug/{projectID}:
     get:
-      tags: [log]
+      tags: [core]
+      summary: Debug service gets key directly from badger - may be removed in future.
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+      responses:
+        "200":
+          description: "OK"
+  /core/setproject/{projectID}:
+    post:
+      tags: [core]
+      summary: Set new project.
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+      responses:
+        "200":
+          description: "OK"
+  /porter/query/exact:
+    get:
+      tags: [porter]
       summary: Exact log by badger key.
       parameters:
         - in: query
@@ -56,11 +76,76 @@ paths:
           description: "Forbidden"
         "404":
           description: "Key not found"
+  /porter/query/range:
+    post:
+      tags: [porter]
+      summary: Post range query.
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          description: JWT token
+        - in: query
+          name: query
+          schema:
+            type: string
+          description: Base query.
+        - in: query
+          name: fields
+          schema:
+            type: string
+          description: List of fields to include in response.
+        - in: query
+          name: regex
+          schema:
+            type: string
+          description: Regex reqest to filter one field.
+      responses:
+        "200":
+          description: "OK"
+        "401":
+          description: "Not Authorized"
+        "403":
+          description: "Forbidden"
+  /porter/query/poll:
+    get:
+      tags: [porter]
+      summary: Poll for range query results.
+      parameters:
+        - in: query
+          name: token
+          schema:
+            type: string
+          description: JWT token
+        - in: query
+          name: qid
+          schema:
+            type: string
+          description: Query ID.
+      responses:
+        '200':
+          description: OK
+        "401":
+          description: "Not Authorized"
+        "403":
+          description: "Forbidden"
+        "404":
+          description: Query not found.
 
 components:
+  parameters:
+    projectID:
+      in: path
+      name: projectID
+      schema:
+        type: string
+      required: true
+      description: Project ID
+
   # schemas:
-    # Log:
-      # $ref: './schemas/Log.yml'
+  # Log:
+  # $ref: './schemas/Log.yml'
   securitySchemes:
     TokenAuth:
       type: apiKey
