@@ -32,9 +32,9 @@
             "isBackground": true,
         },
 		{
-            "label": "r/up:extra",
+            "label": "r/up:support",
             "type": "shell",
-            "command": "bash -i run.sh up:extra",
+            "command": "bash -i run.sh up:support",
             "isBackground": true,
         },
 		{

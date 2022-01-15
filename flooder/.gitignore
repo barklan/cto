@@ -3,3 +3,5 @@
 htmlcov
 celerybeat-schedule
 .venv
+__pycache__
+env

@@ -63,8 +63,9 @@ up:db() {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile db up --build
 }
 
-up:extra() {
-    docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile mq --profile db --profile cache up --build
+up:support() {
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml \
+    --profile support --profile db up --build
 }
 
 psql() {

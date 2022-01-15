@@ -1,0 +1,10 @@
+fastapi
+passlib
+python-multipart
+requests
+uvicorn
+aiofiles
+ujson
+loguru
+responses
+faker

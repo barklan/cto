@@ -37,14 +37,14 @@ services:
 
   rabbitmq:
     container_name: cto_rabbitmq
-    profiles: [ "main", "mq" ]
+    profiles: [ "main", "support" ]
 
   cache:
     container_name: cto_cache
-    profiles: [ "main", "cache" ]
+    profiles: [ "main", "support" ]
 
   fluentd:
-    profiles: [ "main" ]
+    profiles: [ "main", "support" ]
     build:
       context: ./dockerfiles/fluentd_cto
       dockerfile: Dockerfile
@@ -61,7 +61,7 @@ services:
       - "24224:24224/udp"
 
   flooder:
-    profiles: [ "main" ]
+    profiles: [ "main", "support" ]
     entrypoint: [ "bash", "/entrypoint.local.sh" ]
     ports:
       - 8000:8000
@@ -70,7 +70,7 @@ services:
       - SERVER_HOST=https://stag.nftgallerydev.online/
       - LOCAL_SETUP=false
     build:
-      context: ./test/backend
+      context: ./flooder
       dockerfile: backend.dockerfile
       args:
         INSTALL_DEV: 'false'
@@ -99,6 +99,16 @@ services:
       - DATABASE_URL=postgres://${POSTGRES_USER?Variable not
         set}:${POSTGRES_PASSWORD?Variable not
         set}@cto_db:5432/${POSTGRES_DB?Variable not set}?sslmode=disable
+
+  docs:
+    profiles: [ "main", "support" ]
+    image: swaggerapi/swagger-ui
+    ports:
+      - '7878:8080'
+    volumes:
+      - ./docs:/docs
+    environment:
+      SWAGGER_JSON: '/docs/openapi.yml'
 
 volumes:
   cto-data:

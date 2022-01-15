@@ -1,4 +1,5 @@
 import pathlib
+import random
 import time
 import sys
 from typing import Any, Dict
@@ -6,9 +7,11 @@ import asyncio
 
 import fastapi as fa
 from fastapi.openapi import utils
+import faker
 
 from app.core import custom_logging
 
+fake = faker.Faker()
 
 config_path = pathlib.Path(__file__).with_name("logging_config.json")
 log = custom_logging.CustomizeLogger.make_logger(config_path)
@@ -45,11 +48,19 @@ async def catch_exceptions_middleware(request: fa.Request, call_next):  # type: 
 app.middleware("http")(catch_exceptions_middleware)
 
 
+@app.on_event("startup")
+def repeat_random_log():
+    while True:
+        time.sleep(random.randint(1, 3))
+        log.info(fake.text())
+
+
 @app.get("/info/{id}")
 async def infolog(id: str):
     log.info(f"Hey! this is a test log! {id}")
     time.sleep(1)
     return "Hey!"
+
 
 @app.get("/print/{id}")
 async def justprint(id: str):
