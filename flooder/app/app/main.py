@@ -51,7 +51,7 @@ app.middleware("http")(catch_exceptions_middleware)
 @app.on_event("startup")
 def repeat_random_log():
     while True:
-        time.sleep(random.randint(1, 3))
+        time.sleep(random.randint(10, 40))
         log.info(fake.text())
 
 
