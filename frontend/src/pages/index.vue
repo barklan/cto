@@ -41,12 +41,13 @@ if (user.name == "" || user.name == "guest") {
 </script>
 
 <template>
-  <div>
+  <div class="text-left m-auto w-150">
     <div class="m-2">
-      {{ signInMsg }} To start new project
-      <a class="btn" :href="tgInitLink" target="_blank">click here</a>.<br>
+      {{ signInMsg }} To start a new project
+      <a class="btn" :href="tgInitLink" target="_blank">click here</a>. To
+      remove any project call <code>/remove</code> in TG group.
     </div>
-    <h2 class="m-4">Your Projects:</h2>
+    <h2 class="m-auto mb-2 mt-8 text-lg text-left w-150">&nbsp;Your Projects:</h2>
     <ul id="items" class="text-left m-auto w-150">
       <li v-for="(item, index) in listData" :key="index">
         <div
