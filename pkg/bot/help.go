@@ -71,7 +71,7 @@ func (s *Sylon) registerHelpHandler() {
 			`Group chat. Registered project: <code>%s</code>; secret: <code>%s</code>; owner: <code>%s</code>.`,
 			project.ID,
 			project.SecretKey,
-			owner.TGNick,
+			owner.TGNick.String,
 		), tb.ModeHTML)
 	})
 }
