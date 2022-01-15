@@ -47,18 +47,22 @@ services:
   docs:
     image: 'swaggerapi/swagger-ui'
     environment:
-      SWAGGER_JSON: 'https://raw.githubusercontent.com/barklan/cto/main/docs/openapi.yml'
+      URL: 'https://raw.githubusercontent.com/barklan/cto/main/docs/openapi.yml'
+      BASE_URL: '/docs'
+    env_file: ./.env
+    networks:
+      - traefik-public
     deploy:
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
-        - traefik.http.routers.docs-http.rule=Host(`docs.${DOMAIN?Variable not
-          set}`)
+        - traefik.http.routers.docs-http.rule=Host(`${DOMAIN?Variable not
+          set}`) && (PathPrefix(`/docs`))
         - traefik.http.routers.docs-http.entrypoints=http
         - traefik.http.routers.docs-http.middlewares=https-redirect
-        - traefik.http.routers.docs-https.rule=Host(`docs.${DOMAIN?Variable
-          not set}`)
+        - traefik.http.routers.docs-https.rule=Host(`${DOMAIN?Variable not
+          set}`) && (PathPrefix(`/docs`))
         - traefik.http.routers.docs-https.entrypoints=https
         - traefik.http.routers.docs-https.tls=true
         - traefik.http.routers.docs-https.tls.certresolver=le
