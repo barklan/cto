@@ -86,12 +86,15 @@ services:
 
   pgweb:
     profiles: [ "main", "db" ]
+    entrypoint: [ "sh", "-c", "sleep 3 && pgweb --bind=0.0.0.0 --listen=5055"]
     networks:
       - traefik-public
     container_name: pgweb
     image: sosedoff/pgweb
     ports:
-      - '8081:8081'
+      - '5055:5055'
+    env_file:
+      - ./.env
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER?Variable not
         set}:${POSTGRES_PASSWORD?Variable not
@@ -99,4 +102,6 @@ services:
 
 volumes:
   cto-data:
+    external: false
+  pgadmin:
     external: false

@@ -206,8 +206,7 @@ services:
       - cto-postgres:/var/lib/postgresql/data/pgdata
     ports:
       - 5432:5432
-    env_file:
-      ./.env
+    env_file: ./.env
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
       # THIS IS UNSAFE!

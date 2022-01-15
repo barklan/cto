@@ -32,12 +32,12 @@ function _dc {
 
 # ----------------------------------------------------------------------------
 
-function up {
+up() {
     _export_common
     reflex -c reflex.conf --decoration=fancy
 }
 
-function up:core {
+up:core() {
     export CTO_DATA_PATH=/home/barklan/dev/cto/.cache
     export CTO_MEDIA_PATH=.cache/media
     export CTO_LOCAL_ENV=true
@@ -46,7 +46,7 @@ function up:core {
     go run cmd/cto/main.go
 }
 
-function up:porter {
+up:porter() {
     _export_common
     export CONFIG_ENV=dev
     export OAUTH_CLIENT_ID OAUTH_CLIENT_SECRET
@@ -54,52 +54,52 @@ function up:porter {
     go run cmd/porter/main.go
 }
 
-function up:loginput {
+up:loginput() {
     _export_common
     go run cmd/loginput/main.go
 }
 
-function up:db {
+up:db() {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile db up --build
 }
 
-function up:extra {
+up:extra() {
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile mq --profile db --profile cache up --build
 }
 
-function psql {
+psql() {
     _dc exec db psql -U postgres -d app "${@}"
 }
 
-function badger:reset {
+badger:reset() {
     rm -r .cache/main
     rm -r .cache/log
 }
 
-function frontend {
+frontend() {
     cd frontend && pnpm dev
 }
 
-function up:fullstack {
+up:fullstack() {
     export DOCKER_BUILDKIT=1
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile main build --parallel
     docker-compose -f docker-compose.yml -f docker-compose.local.yml --profile main up
 }
 
-function ci:direct {
+ci:direct() {
     . .env
     export REGISTRY_PASSWORD REGISTRY_USERNAME DOCKER_IMAGE_PREFIX DOCKER_REGISTRY
     echo "$DOCKER_REGISTRY"
     bash scripts/directswarm.sh
 }
 
-function ci:direct:support {
+ci:direct:support() {
     . .env
     export REGISTRY_PASSWORD REGISTRY_USERNAME DOCKER_IMAGE_PREFIX DOCKER_REGISTRY
     bash scripts/directsupport.sh
 }
 
-function fluentd:push {
+fluentd:push() {
     cd dockerfiles/fluentd_cto
     docker build -t barklan/fluentd-cto:"$1" .
     docker image push barklan/fluentd-cto:"$1"
@@ -109,34 +109,35 @@ function fluentd:push {
     docker image push barklan/fluentd-cto:"$1"es
 }
 
-function docs:dev {
+docs:dev() {
     # docker run -it --rm -p 80:80 \
     # -v "$(pwd)"/docs:/usr/share/nginx/html/swagger/ \
     # -e SPEC_URL=swagger/openapi.yml redocly/redoc:v2.0.0-rc.59
     docker run -p 80:8080 -e SWAGGER_JSON=/docs/openapi.yml -v "$(pwd)"/docs:/docs swaggerapi/swagger-ui
 }
 
-function docs:bundle {
+docs:bundle() {
     docker run --rm -v "$(pwd)"/docs:/spec redocly/openapi-cli bundle -o bundle.json --ext json openapi.yml
 }
 
-function proto {
+proto() {
     protoc --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
     pkg/protos/"${1}".proto
 }
 
-function db:makemigrations {
+db:makemigrations() {
     docker run -v "$(pwd)"/db/migrations:/migrations --network host migrate/migrate \
     create -ext sql -dir /migrations -seq "${@}"
 }
 
-function db:migrate {
+db:migrate() {
+    _export_common
     docker run -v "$(pwd)"/db/migrations:/migrations --network host migrate/migrate \
-    -database postgres://postgres:postgres@localhost:5432/app?sslmode=disable -path /migrations "${@}"
+    -database postgres://postgres:${POSTGRES_PASSWORD}@localhost:5432/app?sslmode=disable -path /migrations up
 }
 
-function db:migrate:remote {
+db:migrate:remote() {
     . .env
     export POSTGRES_PASSWORD
     ssh -tt -o StrictHostKeyChecking=no cto \
@@ -145,7 +146,7 @@ function db:migrate:remote {
     -database postgres://postgres:${POSTGRES_PASSWORD}@cto_db:5432/app?sslmode=disable up"
 }
 
-function log {
+log() {
     ssh -tt cto "docker service logs cto_$1 --since $2m"
 }
 
