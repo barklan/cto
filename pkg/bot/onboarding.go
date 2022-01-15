@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -55,9 +56,14 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 	}
 
 	log.Println("requesting cto-core to acknoledge project")
+	configEnv := os.Getenv("CONFIG_ENV")
+	coreHost := "cto_backend"
+	if configEnv == "dev" {
+		coreHost = "localhost"
+	}
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("http://cto_backend:8888/api/core/setproject/%s", u4),
+		fmt.Sprintf("http://%s:8888/api/core/setproject/%s", coreHost, u4),
 		nil,
 	)
 	if err != nil {
@@ -100,14 +106,8 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 
 func (s *Sylon) registerOnboardingHandlers() {
 	s.B.Handle("/start", func(m *tb.Message) {
-		if m.Sender.Username != "barklan" &&
-			m.Sender.Username != "qufiwefefwoyn" { // TODO
-			s.JustSend(m.Chat, "You are not authorized to do anything.")
-			return
-		}
-
 		if m.Chat.Type == tb.ChatPrivate {
-			s.JustSend(m.Chat, "User registration not implemented.") // TODO
+			s.JustSend(m.Chat, "User registration through telegrm not implemented.") // TODO
 			return
 		}
 
@@ -120,14 +120,35 @@ func (s *Sylon) registerOnboardingHandlers() {
 			return
 		}
 
-		client := models.Client{}
-		if err := s.R.Get(&client, "select * from client where personal_chat = $1", m.Sender.ID); err != nil {
+		email, ok, err := s.Cache.Get(m.Payload)
+		if err != nil {
 			s.JustSend(
 				m.Chat,
-				"This chat is not registered, but you cannot register projects "+
-					"before you register yourself. To do that call <code>/start</code> "+
-					"in personal chat with me.",
-				tb.ModeHTML,
+				"Error when getting integration pass from cache.",
+			)
+			return
+		}
+		if !ok {
+			s.JustSend(
+				m.Chat,
+				"Please visit link from ctopanel.com instead of directly invoking command.",
+			)
+			return
+		}
+
+		if _, err := s.R.Exec(
+			"update client set tg_nick = $1 where email = $2",
+			m.Sender.Username,
+			email,
+		); err != nil {
+			s.JustSend(m.Chat, "Failed to update client in database")
+		}
+
+		client := models.Client{}
+		if err := s.R.Get(&client, "select * from client where email = $1", email); err != nil {
+			s.JustSend(
+				m.Chat,
+				"Could not get client with specified email.",
 			)
 			return
 		}

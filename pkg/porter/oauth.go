@@ -44,14 +44,14 @@ func singleAuth(base *Base, email string) string {
 	if err != nil {
 		uid4, err := uuid.NewV4()
 		if err != nil {
-			log.Panicln("failed to generate uuid for new clinet", err)
+			log.Panicln("failed to generate uuid for new client", err)
 		}
 		u4 := uid4.String()
 		client.ID = u4
 		client.Active = true
 		client.Email = email
 
-		insert := "insert into clinet(id, email) values ($1, $2)"
+		insert := "insert into client(id, email) values ($1, $2)"
 		base.R.MustExec(insert, client.ID, client.Email)
 	}
 

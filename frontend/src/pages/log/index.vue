@@ -374,7 +374,9 @@ export default {
         "/api/porter/query/range?query=" +
         this.name +
         "&token=" +
-        user.token
+        user.token +
+        "&project=" +
+        user.project
       if (this.fields != "") {
         urlToFetch = urlToFetch + "&fields=" + this.fields
       }

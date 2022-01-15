@@ -5,5 +5,6 @@ var (
 	KnownErrors       = "KnownErrors"
 	PeriodicLogReport = "PeriodicLogReport"
 	// Cache
-	AuthToken = "AuthToken"
+	AuthToken       = "AuthToken"
+	IntegrationPass = "IntegrationPass"
 )

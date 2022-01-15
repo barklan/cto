@@ -155,12 +155,11 @@ paths:
       responses:
         '200':
           description: OK
-  /porter/user/{userID}/project:
+  /porter/me/project:
     get:
       tags: [porter]
-      summary: Get projects belonging to user.
+      summary: Get projects belonging to me.
       parameters:
-        - $ref: "#/components/parameters/userID"
         - $ref: "#/components/parameters/token"
       responses:
         '200':
@@ -171,6 +170,15 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Project"
+  /porter/me/project/new:
+    get:
+      tags: [porter]
+      summary: Redirects to telegram to create a new project.
+      parameters:
+        - $ref: "#/components/parameters/token"
+      responses:
+        '300':
+          description: Redirect
 
 
 components:
@@ -183,14 +191,14 @@ components:
         format: uuid
       required: true
       description: Project ID
-    userID:
-      in: path
-      name: userID
-      schema:
-        type: string
-        format: uuid
-      required: true
-      description: User ID
+    # userID:
+    #   in: path
+    #   name: userID
+    #   schema:
+    #     type: string
+    #     format: uuid
+    #   required: true
+    #   description: User ID
     token:
       in: query
       name: token

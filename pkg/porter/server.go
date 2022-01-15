@@ -41,6 +41,16 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 				handleOAuthCallback(base, oauthConf, w, r)
 			})
 		})
+		r.Route("/me/project", func(r chi.Router) {
+			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
+				getMyProjects(base, w, r)
+			})
+			r.Get("/new", func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
+				newProjectRedirect(base, w, r)
+			})
+		})
 	})
 
 	log.Println("porter rest server listening on 9010")

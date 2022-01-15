@@ -67,6 +67,28 @@ func SetQRespInCache(base *Base, requestId string, status QStatus, msg string) {
 	}
 }
 
+func checkProject(
+	base *Base,
+	w http.ResponseWriter,
+	name,
+	projectQ string,
+) bool {
+	var project string
+	get := `--sql
+		select project.id from project
+		inner join client
+			on project.client_id = client.id
+		where client.email = $1 and project.id = $2`
+	if err := base.R.Get(&project, get, name, projectQ); err != nil {
+		http.Error(w, "Non existent project", 404)
+		return false
+	}
+	if project != projectQ {
+		return false
+	}
+	return true
+}
+
 func serveLogRange(
 	base *Base,
 	s *bot.Sylon,
@@ -80,10 +102,18 @@ func serveLogRange(
 	rawQuery := r.URL.Query()
 
 	tokenQ := rawQuery.Get("token")
-	projectName, statusCode, ok := authorize(base, tokenQ)
+	projectQ := rawQuery.Get("project")
+	// FIXME check user here
+	name, projectName, statusCode, ok := authorize(base, tokenQ)
 	if !ok {
 		w.WriteHeader(statusCode)
 		return
+	}
+	if name != "guest" {
+		if !checkProject(base, w, name, projectQ) {
+			return
+		}
+		projectName = projectQ
 	}
 
 	query := rawQuery.Get("query")

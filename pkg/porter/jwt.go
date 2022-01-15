@@ -3,6 +3,8 @@ package porter
 import (
 	"time"
 
+	"github.com/barklan/cto/pkg/badrand"
+	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/storage/vars"
 	log "github.com/sirupsen/logrus"
 
@@ -46,4 +48,24 @@ func RotateJWT(base *Base, name, project string) {
 	if err != nil {
 		log.Panicln("failed to set new jwt token to cache")
 	}
+}
+
+func makeUserIntegrationPass(base *Base, email string) string {
+	pass := badrand.CharString(12)
+	err := base.Cache.Set(pass, email, 72*time.Hour)
+	if err != nil {
+		log.WithError(err).Panicln("failed to set new integration pass to cache")
+	}
+	return pass
+}
+
+func VerifyIntegrationPass(cache caching.Cache, pass string) (string, bool) {
+	email, ok, err := cache.Get(pass)
+	if err != nil {
+		log.WithError(err).Panicln("failed to get integration pass from cache")
+	}
+	if !ok {
+		return "", false
+	}
+	return string(email), true
 }

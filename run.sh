@@ -68,6 +68,10 @@ up:support() {
     --profile support --profile db up --build
 }
 
+down() {
+    docker-compose -f docker-compose.yml -f docker-compose.local.yml down --remove-orphans
+}
+
 psql() {
     _dc exec db psql -U postgres -d app "${@}"
 }

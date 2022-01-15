@@ -79,6 +79,7 @@ func main() {
 
 	wg := new(sync.WaitGroup)
 
+	// TODO should be on demand
 	tokenRotationTicker := time.NewTicker(4 * time.Hour)
 	go func() {
 		defer log.Panicln("Token rotation goroutine exited.")

@@ -9,10 +9,10 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func authorize(base *Base, tokenQ string) (string, int, bool) {
+func authorize(base *Base, tokenQ string) (string, string, int, bool) {
 	if tokenQ == "" {
 		log.Println("No token provided for query.")
-		return "", http.StatusUnauthorized, false
+		return "", "", http.StatusUnauthorized, false
 	}
 	tokenParsed, err := jwt.Parse(tokenQ, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -22,15 +22,16 @@ func authorize(base *Base, tokenQ string) (string, int, bool) {
 		return []byte(base.Config.TG.BotToken), nil
 	})
 	if err != nil {
-		return "", http.StatusUnauthorized, false
+		return "", "", http.StatusUnauthorized, false
 	}
 
 	if claims, ok := tokenParsed.Claims.(jwt.MapClaims); ok && tokenParsed.Valid {
 		log.Println("token is valid, claims:", claims)
 		projectName := claims["project_name"].(string)
-		return projectName, http.StatusOK, true
+		name := claims["name"].(string)
+		return name, projectName, http.StatusOK, true
 	} else {
 		log.Println("token is not ok (returning 403):", err)
-		return "", http.StatusForbidden, false
+		return "", "", http.StatusForbidden, false
 	}
 }

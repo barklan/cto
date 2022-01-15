@@ -46,6 +46,12 @@
             "isBackground": true,
         },
 		{
+            "label": "r/down",
+            "type": "shell",
+            "command": "bash -i run.sh down",
+            "isBackground": true,
+        },
+		{
             "label": "r/psql",
             "type": "shell",
             "command": "bash -i run.sh psql",
