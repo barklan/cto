@@ -179,6 +179,15 @@ paths:
       responses:
         '300':
           description: Redirect
+  /porter/me/project/status:
+    get:
+      tags: [porter]
+      summary: Get all status information for a project.
+      parameters:
+        - $ref: "#/components/parameters/token"
+      responses:
+        '200':
+          description: OK
 
 
 components:

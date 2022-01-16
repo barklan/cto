@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/barklan/cto/pkg/security"
+	"github.com/barklan/cto/pkg/storage/vars"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -20,8 +22,23 @@ func (s *Sylon) NotifyAboutError(
 	)
 	selector := &tb.ReplyMarkup{}
 	btnURL := selector.URL("View Log", exactLogURL)
+
+	authToken, err := security.CreateJWT(s.Config, vars.Guest, projectID)
+	if err != nil {
+		s.PSend(projectID, "Alert issued, but I failed to create JWT.")
+		return
+	}
+	panelURL := fmt.Sprintf(
+		"%s/guest?token=%s&name=%s&project=%s",
+		s.Config.Log.ServiceHostname,
+		authToken,
+		"guest",
+		projectID,
+	)
+
+	btnPanel := selector.URL("Panel", panelURL)
 	selector.Inline(
-		selector.Row(btnURL),
+		selector.Row(btnPanel, btnURL),
 	)
 
 	var extraTimeStr string

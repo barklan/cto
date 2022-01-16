@@ -99,7 +99,7 @@ func (s *Sylon) registerStatusHandler() {
 			project.ID,
 		)
 		selector := &tb.ReplyMarkup{}
-		btnURL := selector.URL("Guest Panel", panelURL)
+		btnURL := selector.URL("Panel", panelURL)
 		selector.Inline(
 			selector.Row(btnURL),
 		)
