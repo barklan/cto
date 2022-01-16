@@ -9,7 +9,7 @@ const listData = ref([])
 
 const getStatus = () => {
     let url = import.meta.env.VITE_PROTOCOL + "://" + import.meta.env.VITE_HOSTNAME +
-        "/api/porter/me/project/" + user.project + "/status?token=" + user.token
+        "/api/porter/project/" + user.project + "/issues?token=" + user.token
     axios.get(url)
         .then((response) => {
             listDataString.value = JSON.stringify(response.data, null, "\t");

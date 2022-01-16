@@ -5,8 +5,6 @@ import axios from "axios"
 
 const user = useUserStore()
 
-// const { t } = useI18n()
-
 const listDataString = ref('')
 const listData = ref([])
 
@@ -17,7 +15,7 @@ const getProjects = () => {
     .then((response) => {
       listDataString.value = JSON.stringify(response.data, null, "\t");
       listData.value = response.data;
-      return response; // multiline arrow function must return
+      return response;
     })
     .catch((error) => console.log(error));
 }
@@ -50,7 +48,7 @@ if (user.name == "" || user.name == "guest") {
           target="_blank"
         >click here</a>. To
         remove any project call
-        <code>/remove</code> in TG group.
+        <code>`/remove`</code> in TG group.
       </div>
       <h2 class="m-auto mb-2 mt-8 text-lg text-left">&nbsp;Your Projects:</h2>
       <ul id="items" class="text-left m-auto">

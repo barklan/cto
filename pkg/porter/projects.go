@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/barklan/cto/pkg/storage/vars"
 	"go.uber.org/zap"
 )
 
@@ -94,34 +93,6 @@ func (c *PublicController) verifyProject(w http.ResponseWriter, email, projectID
 		http.Error(w, "you are not the owner", http.StatusForbidden)
 	}
 	return true
-}
-
-func (c *PublicController) projectStatus(w http.ResponseWriter, r *http.Request, projectID string) {
-	token := r.URL.Query().Get("token")
-	email, project, statusCode, ok := authorize(c.B, token)
-	if !ok {
-		w.WriteHeader(statusCode)
-		return
-	}
-	if email == "guest" && project != projectID {
-		http.Error(w, "project from token and path mismatch", http.StatusForbidden)
-		return
-	} else if email != "guest" && !c.verifyProject(w, email, projectID) {
-		return
-	}
-
-	knownErrors, ok, err := c.B.Cache.GetVar(projectID, vars.KnownErrors)
-	if err != nil {
-		http.Error(w, "failed to get knownErorrs from cache", http.StatusInternalServerError)
-	}
-	if !ok {
-		w.WriteHeader(404)
-		_, _ = w.Write([]byte("no known errors"))
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write(knownErrors)
 }
 
 func (c *PublicController) getProject(w http.ResponseWriter, r *http.Request, projectID string) {

@@ -6,12 +6,14 @@ import (
 	"time"
 
 	"github.com/barklan/cto/pkg/storage"
+	"github.com/barklan/cto/pkg/storage/vars"
+	"go.uber.org/zap"
 )
 
 type Set map[string]struct{}
 
 func GetKnownServices(data *storage.Data, project, env string) Set {
-	knownServicesRaw := data.GetVar(project, env+".knownServices")
+	knownServicesRaw := data.GetVar(project, env+vars.KnownServices)
 	knownServices := Set{}
 	if string(knownServicesRaw) == "" {
 		return knownServices
@@ -23,12 +25,20 @@ func GetKnownServices(data *storage.Data, project, env string) Set {
 	return knownServices
 }
 
+// TODO json marshalling twice here
 func SetKnownServices(data *storage.Data, project, env string, knownServices Set) {
-	data.SetVar(project, env+".knownServices", knownServices, 120*time.Hour)
+	data.SetVar(project, env+vars.KnownServices, knownServices, 120*time.Hour)
+	raw, err := json.Marshal(knownServices)
+	if err != nil {
+		data.Log.Error("failed to marshal knownServices", zap.Error(err))
+	}
+	if err := data.Cache.SetVar(project, env+vars.KnownServices, raw, 120*time.Hour); err != nil {
+		data.Log.Error("error caching knownServices", zap.String("project", project), zap.Error(err))
+	}
 }
 
 func GetKnownEnvs(data *storage.Data, project string) Set {
-	knownEnvsRaw := data.GetVar(project, "knownEnvs")
+	knownEnvsRaw := data.GetVar(project, vars.KnownEnvs)
 	knownEnvs := Set{}
 	if string(knownEnvsRaw) == "" {
 		return knownEnvs
@@ -40,6 +50,14 @@ func GetKnownEnvs(data *storage.Data, project string) Set {
 	return knownEnvs
 }
 
+// TODO json marshalling twice here
 func SetKnownEnvs(data *storage.Data, project string, knownEnvs Set) {
-	data.SetVar(project, "knownEnvs", knownEnvs, 120*time.Hour)
+	data.SetVar(project, vars.KnownEnvs, knownEnvs, 120*time.Hour)
+	raw, err := json.Marshal(knownEnvs)
+	if err != nil {
+		data.Log.Error("failed to marshal knownEnvs", zap.Error(err))
+	}
+	if err := data.Cache.SetVar(project, vars.KnownEnvs, raw, 120*time.Hour); err != nil {
+		data.Log.Error("error caching knownEnvs", zap.String("project", project), zap.Error(err))
+	}
 }

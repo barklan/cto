@@ -32,3 +32,19 @@ func authorize(base *Base, tokenQ string) (string, string, int, bool) {
 		return "", "", http.StatusForbidden, false
 	}
 }
+
+func (c *PublicController) guestOrOwner(w http.ResponseWriter, r *http.Request, projectID string) (string, bool) {
+	token := r.URL.Query().Get("token")
+	email, project, statusCode, ok := authorize(c.B, token)
+	if !ok {
+		w.WriteHeader(statusCode)
+		return "", false
+	}
+	if email == "guest" && project != projectID {
+		http.Error(w, "project from token and path mismatch", http.StatusForbidden)
+		return "", false
+	} else if email != "guest" && !c.verifyProject(w, email, projectID) {
+		return "", false
+	}
+	return email, true
+}

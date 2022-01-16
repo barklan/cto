@@ -53,20 +53,29 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 				handleOAuthCallback(base, oauthConf, w, r)
 			})
 		})
+		// TODO chi does not get url path parameter otherwise
 		r.Route("/project/{projectID}", func(r chi.Router) {
 			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 				projectID := chi.URLParam(r, "projectID")
 				ctrl.getProject(w, r, projectID)
+			})
+			r.Get("/issues", func(w http.ResponseWriter, r *http.Request) {
+				projectID := chi.URLParam(r, "projectID")
+				ctrl.projectIssues(w, r, projectID)
+			})
+			r.Get("/environments", func(w http.ResponseWriter, r *http.Request) {
+				projectID := chi.URLParam(r, "projectID")
+				ctrl.projectEnvs(w, r, projectID)
+			})
+			r.Get("/services", func(w http.ResponseWriter, r *http.Request) {
+				projectID := chi.URLParam(r, "projectID")
+				ctrl.projectServices(w, r, projectID)
 			})
 		})
 		r.Route("/me/project", func(r chi.Router) {
 			r.Use(render.SetContentType(render.ContentTypeJSON))
 			r.Get("/", ctrl.getMyProjects)
 			r.Get("/new", ctrl.newProjectRedirect)
-			r.Get("/{p}/status", func(w http.ResponseWriter, r *http.Request) {
-				projectID := chi.URLParam(r, "p")
-				ctrl.projectStatus(w, r, projectID)
-			})
 		})
 	})
 

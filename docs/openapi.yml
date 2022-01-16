@@ -179,16 +179,6 @@ paths:
       responses:
         '300':
           description: Redirect
-  /porter/me/project/{projectID}/status:
-    get:
-      tags: [porter]
-      summary: Get all status information for a project.
-      parameters:
-        - $ref: "#/components/parameters/projectID"
-        - $ref: "#/components/parameters/token"
-      responses:
-        '200':
-          description: OK
   /porter/project/{projectID}:
     get:
       tags: [porter]
@@ -205,9 +195,42 @@ paths:
                 properties:
                   title:
                     type: string
-
-
-
+  /porter/project/{projectID}/issues:
+    get:
+      tags: [porter]
+      summary: Get all known issues for a project.
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/token"
+      responses:
+        '200':
+          description: OK
+  /porter/project/{projectID}/environments:
+    get:
+      tags: [porter]
+      summary: Get all known environments for a project.
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/token"
+      responses:
+        '200':
+          description: OK
+  /porter/project/{projectID}/services:
+    get:
+      tags: [porter]
+      summary: Get all known services for a project.
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+        - $ref: "#/components/parameters/token"
+        - in: query
+          name: env
+          schema:
+            type: string
+          required: true
+          description: Environment to fetch services for.
+      responses:
+        '200':
+          description: OK
 
 components:
   parameters:
