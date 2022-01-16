@@ -1,4 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
+import axios from "axios"
 
 export const useUserStore = defineStore('user', () => {
   /**
@@ -10,6 +11,7 @@ export const useUserStore = defineStore('user', () => {
   const token = ref('')
 
   const projectColor = ref('')
+  const projectPrettyTitle = ref('')
 
   /**
    *
@@ -29,6 +31,19 @@ export const useUserStore = defineStore('user', () => {
     }
     return randomColor
   }
+  function setProjectPrettyTitle(projectID: string) {
+    let url = import.meta.env.VITE_PROTOCOL + "://" + import.meta.env.VITE_HOSTNAME +
+      "/api/porter/project/" + projectID
+    axios.get(url)
+      .then((response) => {
+        if (response.status == 200 && response.data.title) {
+          projectPrettyTitle.value = response.data.title
+        } else {
+          projectPrettyTitle.value = "Error fetching project title."
+        }
+      })
+      .catch((error) => console.log(error));
+  }
 
   function setID(newID: string) {
     id.value = newID
@@ -36,6 +51,7 @@ export const useUserStore = defineStore('user', () => {
   function setProject(newProject: string) {
     project.value = newProject
     projectColor.value = pickColor()
+    setProjectPrettyTitle(project.value)
   }
   function setToken(newToken: string) {
     token.value = newToken
@@ -50,6 +66,7 @@ export const useUserStore = defineStore('user', () => {
     id,
     project,
     projectColor,
+    projectPrettyTitle,
     token,
   }
 })

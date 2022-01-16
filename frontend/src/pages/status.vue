@@ -32,7 +32,7 @@ const goToExact = (key) => {
         <ul id="items" class="text-left m-auto">
             <li v-for="(item: any, index) in listData" :key="index">
                 <div
-                    class="m-auto btn m-2 text-left text-sm"
+                    class="m-auto btn m-2 text-left text-sm break-all"
                     @click="goToExact(item.origin_badger_key)"
                 >
                     {{ `Environment: ${item.hostname}` }}

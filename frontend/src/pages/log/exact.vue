@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="break-all">
         <vue-json-pretty :path="'res'" :data="jsonData"></vue-json-pretty>
     </div>
 </template>

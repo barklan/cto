@@ -179,15 +179,34 @@ paths:
       responses:
         '300':
           description: Redirect
-  /porter/me/project/status:
+  /porter/me/project/{projectID}/status:
     get:
       tags: [porter]
       summary: Get all status information for a project.
       parameters:
+        - $ref: "#/components/parameters/projectID"
         - $ref: "#/components/parameters/token"
       responses:
         '200':
           description: OK
+  /porter/project/{projectID}:
+    get:
+      tags: [porter]
+      summary: Get project name by it's ID.
+      parameters:
+        - $ref: "#/components/parameters/projectID"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+
+
 
 
 components:

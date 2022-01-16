@@ -55,7 +55,7 @@ if (user.name == "" || user.name == "guest") {
       <h2 class="m-auto mb-2 mt-8 text-lg text-left">&nbsp;Your Projects:</h2>
       <ul id="items" class="text-left m-auto">
         <li v-for="(item:any, index) in listData" :key="index">
-          <div class="btn m-1 text-left" @click="setActiveProject(item.ID)">
+          <div class="btn m-1 text-left break-all" @click="setActiveProject(item.ID)">
             {{ `Title: ${item.PrettyTitle.String}` }}
             <br />
             {{ `ID: ${item.ID}` }}

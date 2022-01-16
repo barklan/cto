@@ -53,6 +53,12 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 				handleOAuthCallback(base, oauthConf, w, r)
 			})
 		})
+		r.Route("/project/{projectID}", func(r chi.Router) {
+			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+				projectID := chi.URLParam(r, "projectID")
+				ctrl.getProject(w, r, projectID)
+			})
+		})
 		r.Route("/me/project", func(r chi.Router) {
 			r.Use(render.SetContentType(render.ContentTypeJSON))
 			r.Get("/", ctrl.getMyProjects)

@@ -3,6 +3,7 @@ package porter
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -71,7 +72,11 @@ func (c *PublicController) verifyProject(w http.ResponseWriter, email, projectID
 		where id = $1`,
 		projectID,
 	); err != nil {
-		c.B.Log.Error("error when getting the owner of project", zap.String("project", projectID), zap.Error(err))
+		c.B.Log.Error(
+			"error when getting the owner of project",
+			zap.String("project", projectID),
+			zap.Error(err),
+		)
 		http.Error(w, "no such project", http.StatusNotFound)
 		return false
 	}
@@ -117,4 +122,32 @@ func (c *PublicController) projectStatus(w http.ResponseWriter, r *http.Request,
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(knownErrors)
+}
+
+func (c *PublicController) getProject(w http.ResponseWriter, r *http.Request, projectID string) {
+	var title string
+	err := c.B.R.Get(&title, "select pretty_title from project where id = $1", projectID)
+	if errors.Is(err, sql.ErrNoRows) {
+		http.Error(w, "project not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		errStr := "error getting pretty_title for project"
+		c.B.Log.Error(
+			errStr,
+			zap.String("project", projectID),
+			zap.Error(err),
+		)
+		http.Error(w, errStr, http.StatusInternalServerError)
+		return
+	}
+
+	resp := map[string]string{"title": title}
+	respJson, err := json.Marshal(resp)
+	if err != nil {
+		c.B.Log.Error("err marshalling resp", zap.Error(err))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(respJson)
 }
