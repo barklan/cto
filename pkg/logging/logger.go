@@ -10,8 +10,8 @@ import (
 func Dev() *zap.Logger {
 	zapConfig := zap.NewDevelopmentConfig()
 	zapConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	zapConfig.EncoderConfig.EncodeTime = nil
 	zapConfig.DisableStacktrace = true
+	zapConfig.EncoderConfig.TimeKey = ""
 	lg, err := zapConfig.Build()
 	if err != nil {
 		log.Fatal("failed to initialize logging")
