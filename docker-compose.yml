@@ -93,7 +93,6 @@ services:
       args:
         DOCKER_IMAGE_PREFIX: ${DOCKER_IMAGE_PREFIX?Variable not set}
     ports:
-      # TODO secure the shit out of this server
       - 8888:8888
     networks:
       - traefik-public
@@ -110,6 +109,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+      # TODO this should not be under traefik
       labels:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
