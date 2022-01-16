@@ -7,7 +7,6 @@ declare module 'vue' {
     'Bytesize:signIn': typeof import('~icons/bytesize/sign-in')['default']
     'Carbon:aiStatus': typeof import('~icons/carbon/ai-status')['default']
     'Carbon:dataViewAlt': typeof import('~icons/carbon/data-view-alt')['default']
-    CarbonLogoGithub: typeof import('~icons/carbon/logo-github')['default']
     'Codicon:home': typeof import('~icons/codicon/home')['default']
     Footer: typeof import('./components/Footer.vue')['default']
     FooterMy: typeof import('./components/FooterMy.vue')['default']

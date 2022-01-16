@@ -93,12 +93,15 @@ func (c *PublicController) verifyProject(w http.ResponseWriter, email, projectID
 
 func (c *PublicController) projectStatus(w http.ResponseWriter, r *http.Request, projectID string) {
 	token := r.URL.Query().Get("token")
-	email, _, statusCode, ok := authorize(c.B, token)
+	email, project, statusCode, ok := authorize(c.B, token)
 	if !ok {
 		w.WriteHeader(statusCode)
 		return
 	}
-	if !c.verifyProject(w, email, projectID) {
+	if email == "guest" && project != projectID {
+		http.Error(w, "project from token and path mismatch", http.StatusForbidden)
+		return
+	} else if email != "guest" && !c.verifyProject(w, email, projectID) {
 		return
 	}
 

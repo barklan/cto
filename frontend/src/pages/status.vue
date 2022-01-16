@@ -20,7 +20,6 @@ const getStatus = () => {
 }
 
 setTimeout(getStatus, 50)
-setInterval(getStatus, 5000)
 
 const goToExact = (key) => {
     router.push(`/log/exact?key=` + key)
