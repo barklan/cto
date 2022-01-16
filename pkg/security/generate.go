@@ -1,4 +1,4 @@
-package badrand
+package security
 
 import (
 	"math/rand"

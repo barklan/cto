@@ -3,20 +3,22 @@ package porter
 import (
 	"time"
 
-	"github.com/barklan/cto/pkg/badrand"
 	"github.com/barklan/cto/pkg/caching"
+	"github.com/barklan/cto/pkg/security"
 	"github.com/barklan/cto/pkg/storage/vars"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
+// FIXME deprecate this - use security package
 type TokenClaims struct {
 	Name        string `json:"name"`
 	ProjectName string `json:"project_name"`
 	jwt.RegisteredClaims
 }
 
+// FIXME deprecate this - use security package
 func CreateJWT(base *Base, name, project string) string {
 	mySigningKey := []byte(base.Config.TG.BotToken)
 
@@ -39,6 +41,7 @@ func CreateJWT(base *Base, name, project string) string {
 	return ss
 }
 
+// FIXME deprecate this - this should be on demand!
 func RotateJWT(base *Base, name, project string) {
 	ss := CreateJWT(base, name, project)
 	log.Println("Rotated auth token:", ss)
@@ -51,7 +54,7 @@ func RotateJWT(base *Base, name, project string) {
 }
 
 func makeUserIntegrationPass(base *Base, email string) string {
-	pass := badrand.CharString(12)
+	pass := security.CharString(12)
 	err := base.Cache.Set(pass, email, 72*time.Hour)
 	if err != nil {
 		log.WithError(err).Panicln("failed to set new integration pass to cache")

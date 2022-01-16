@@ -8,6 +8,7 @@ require (
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/dgraph-io/badger/v3 v3.2103.2
 	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/render v1.0.1
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/golang-jwt/jwt/v4 v4.2.0

@@ -22,7 +22,8 @@ func (s *Sylon) logAndReport(chat *tb.Chat, msg string, err error) {
 
 func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 	rand.Seed(time.Now().UnixNano())
-	secretKey := RandStringBytesMaskImpr(48) // TODO should be more secure and random
+	secretKey := RandStringBytesMaskImpr(24) // TODO should be more secure and random
+	prettyTitle := from.Title
 
 	uid4, err := uuid.NewV4()
 	if err != nil {
@@ -37,8 +38,8 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 		s.logAndReport(from, "failed to create db transaction.", err)
 		return
 	}
-	insert := "insert into project(id, client_id, secret_key) values ($1, $2, $3)"
-	if _, err = tx.Exec(insert, u4, client.ID, secretKey); err != nil {
+	insert := "insert into project(id, client_id, pretty_title, secret_key) values ($1, $2, $3, $4)"
+	if _, err = tx.Exec(insert, u4, client.ID, prettyTitle, secretKey); err != nil {
 		s.logAndReport(from, "failed to insert new project", err)
 		if e := tx.Rollback(); e != nil {
 			s.logAndReport(from, "failed to rollback transaction", err)
@@ -136,12 +137,31 @@ func (s *Sylon) registerOnboardingHandlers() {
 			return
 		}
 
+		var existringEmail string
+		err = s.R.Get(&existringEmail, "select email from client where tg_nick = $1", m.Sender.Username)
+		if err != nil {
+			log.WithError(err).Error("Failed to verify if tg nick already exists.")
+		}
+		if existringEmail != "" && existringEmail != string(email) {
+			log.WithField("existringEmail", existringEmail).Info("Already registered for other email.")
+			s.JustSend(
+				m.Chat,
+				fmt.Sprintf(
+					"This telegram user already registered for dirrerent email: <code>%s</code>.",
+					existringEmail,
+				),
+				tb.ModeHTML,
+			)
+			return
+		}
+
 		if _, err := s.R.Exec(
 			"update client set tg_nick = $1 where email = $2",
 			m.Sender.Username,
 			email,
 		); err != nil {
 			s.JustSend(m.Chat, "Failed to update client in database")
+			return
 		}
 
 		client := models.Client{}

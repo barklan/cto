@@ -7,4 +7,5 @@ var (
 	// Cache
 	AuthToken       = "AuthToken"
 	IntegrationPass = "IntegrationPass"
+	Guest           = "guest"
 )

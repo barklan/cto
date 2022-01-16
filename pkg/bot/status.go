@@ -3,8 +3,8 @@ package bot
 import (
 	"fmt"
 
+	"github.com/barklan/cto/pkg/security"
 	"github.com/barklan/cto/pkg/storage/vars"
-	log "github.com/sirupsen/logrus"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 
@@ -85,12 +85,10 @@ func (s *Sylon) registerStatusHandler() {
 
 		msg += fmt.Sprintf(`Logs are retained for %d hours\. `, s.Config.Log.RetentionHours)
 
-		authToken, ok, err := s.Cache.GetVar(project.ID, vars.AuthToken)
+		authToken, err := security.CreateJWT(s.Config, vars.Guest, project.ID)
 		if err != nil {
-			log.Panicln("Failed to access cache.")
-		}
-		if !ok {
-			s.JustSend(m.Chat, "Auth token not found in cache.")
+			s.JustSend(m.Chat, "Failed to create JWT.")
+			return
 		}
 
 		panelURL := fmt.Sprintf(

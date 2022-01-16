@@ -42,10 +42,10 @@ func InitSylon(r *sqlx.DB, config *storage.InternalConfig, b *tb.Bot, cache cach
 func (d *Sylon) Send(to tb.Recipient, msg interface{}, options ...interface{}) (*tb.Message, error) {
 	m, err := d.B.Send(to, msg, options...)
 	if err != nil {
-		log.Printf("Failed to send tg message. %v", err)
+		log.WithError(err).WithField("msg", msg).Error("failed to send tg message")
 		return nil, err
 	}
-	log.Printf("Send TG message %v\n", msg)
+	log.WithField("msg", msg).Info("sent tg msg")
 	return m, err
 }
 

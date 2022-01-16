@@ -16,14 +16,14 @@ type ProjectResp struct {
 	SecretKey   string         `db:"secret_key"`
 }
 
-func newProjectRedirect(base *Base, w http.ResponseWriter, r *http.Request) {
+func (c *PublicController) newProjectRedirect(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
-	email, _, statusCode, ok := authorize(base, token)
+	email, _, statusCode, ok := authorize(c.B, token)
 	if !ok {
 		w.WriteHeader(statusCode)
 		return
 	}
-	pass := makeUserIntegrationPass(base, email)
+	pass := makeUserIntegrationPass(c.B, email)
 	botName := "ctootestbot"
 	if os.Getenv("CONFIG_ENV") == "prod" {
 		botName = "ctoobot"
@@ -36,9 +36,9 @@ func newProjectRedirect(base *Base, w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, newProjectTGLink, http.StatusTemporaryRedirect)
 }
 
-func getMyProjects(base *Base, w http.ResponseWriter, r *http.Request) {
+func (c *PublicController) getMyProjects(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
-	name, _, statusCode, ok := authorize(base, token)
+	name, _, statusCode, ok := authorize(c.B, token)
 	if !ok {
 		w.WriteHeader(statusCode)
 		return
@@ -49,7 +49,7 @@ func getMyProjects(base *Base, w http.ResponseWriter, r *http.Request) {
 		inner join client
 			on project.client_id = client.id
 		where client.email = $1`
-	if err := base.R.Select(&projects, query, name); err != nil {
+	if err := c.B.R.Select(&projects, query, name); err != nil {
 		log.Println("err when selecting projects for user: ", err)
 	}
 

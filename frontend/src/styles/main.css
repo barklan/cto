@@ -35,7 +35,7 @@ input {
 
 .btn {
   @apply px-4 py-1 rounded inline-block
-    bg-gray-600 text-white cursor-pointer
+    bg-blue-gray-800 text-white cursor-pointer
     hover:bg-gray-700
     disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50;
 }
