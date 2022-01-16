@@ -53,6 +53,7 @@ def repeat_random_log():
     while True:
         time.sleep(random.randint(10, 40))
         log.info(fake.text())
+        log.error("This is the ERROR!")
 
 
 @app.get("/info/{id}")
