@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type ProjectResp struct {
@@ -50,7 +48,8 @@ func (c *PublicController) getMyProjects(w http.ResponseWriter, r *http.Request)
 			on project.client_id = client.id
 		where client.email = $1`
 	if err := c.B.R.Select(&projects, query, name); err != nil {
-		log.Println("err when selecting projects for user: ", err)
+		http.Error(w, "could not get project from db", 500)
+		return
 	}
 
 	resp, err := json.Marshal(projects)

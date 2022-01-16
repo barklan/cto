@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	log.Println("Starting...")
+	log.Info("Starting...")
 
 	var rdb *sqlx.DB
 	var err error

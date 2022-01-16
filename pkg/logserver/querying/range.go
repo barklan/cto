@@ -41,8 +41,6 @@ func (rq RequestQuery) BeaconToSeek(syntax timeSyntax, now time.Time) (string, e
 		timeQueryBeacon = TimeQueryBeaconToSeek(rq.TimeQuery)
 	}
 
-	log.Println("beacon", timeQueryBeacon)
-
 	beacon := strings.Join([]string{
 		rq.ProjectName,
 		rq.Env,
@@ -88,7 +86,6 @@ func (rq RequestQuery) NorthStar(
 			minutesAgoStr,
 		}, " ")
 
-		log.Println("north star string: ", northStar)
 		return northStar, nil
 	}
 	return "", nil
@@ -109,7 +106,7 @@ func TimeQueryBeaconToSeek(timeQuery string) string {
 	last := timeQuerySplit[len(timeQuerySplit)-1]
 	lastInt, err := strconv.ParseInt(last, 10, 64)
 	if err != nil {
-		log.Println("failed to parse int in time query:", err)
+		log.WithError(err).Error("failed to parse int in time query")
 	}
 	lastInt++
 	lastIntStr := strconv.FormatInt(lastInt, 10)

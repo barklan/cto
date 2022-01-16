@@ -32,7 +32,7 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 	}
 	u4 := uid4.String()
 
-	log.Println("opening tx to create new project")
+	log.Info("opening tx to create new project")
 	tx, err := s.R.Begin()
 	if err != nil {
 		s.logAndReport(from, "failed to create db transaction.", err)

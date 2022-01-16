@@ -33,7 +33,7 @@ func similarErrorExists(
 		}
 	}
 
-	log.Println("max similarity with previous error:", maxSimilarity)
+	log.Info("max similarity with previous error:", maxSimilarity)
 
 	if maxSimilarity > data.Config.Internal.Log.SimilarityThreshold {
 		sessData.KnownErrors[maxSimilarityIndex].Counter++
@@ -70,7 +70,7 @@ func handleErrorRecord(
 		LastSeen:        time.Now(),
 	}
 	sessData.KnownErrors = append(sessData.KnownErrors, newError)
-	log.Println("Added new Error!")
+	log.WithField("project", projectName).Info("added new issue")
 	sessData.KnownErrorsMutex.Unlock()
 
 	raw := data.GetLog(badgerKey)

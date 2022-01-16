@@ -117,7 +117,7 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 			SetResultInCache(data, queryJob.ID, msg, filteredValues)
 		}
 
-		log.Println("worker finished job successfuly:", queryJob.ID)
+		log.WithField("qid", queryJob.ID).Info("worker finished job successfuly")
 	}
 }
 
@@ -237,7 +237,7 @@ func filterKeys(
 		return nil
 	})
 	if err != nil {
-		log.Println("ERROR iterating")
+		log.WithError(err).Error("ERROR iterating")
 	}
 	return keys
 }

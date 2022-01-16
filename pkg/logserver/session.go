@@ -13,6 +13,7 @@ import (
 	"github.com/barklan/cto/pkg/storage/vars"
 )
 
+// TODO this should not select all projects
 func openSession(data *storage.Data) map[string]*SessionData {
 	sessionDataMap := map[string]*SessionData{}
 
@@ -38,15 +39,15 @@ func openOrEnterSession(
 ) {
 	if v, ok := sessDataMap[projectName]; ok {
 		atomic.AddUint64(v.Using, 1)
-		log.Printf("%q project entered session", projectName)
+		log.WithField("project", projectName).Info("project entered session")
 	} else {
 		knownErrorsMutex := new(sync.Mutex)
 		knownErrors := make([]types.KnownError, 0)
 		knownErrorsRaw := data.GetVar(projectName, vars.KnownErrors)
 		if string(knownErrorsRaw) != "" {
-			log.Printf("known errors found for project %s", projectName)
+			log.WithField("project", projectName).Info("known errors found")
 			if err := json.Unmarshal(knownErrorsRaw, &knownErrors); err != nil {
-				log.Println("failed to unmarshal KnownErrors", err)
+				log.WithError(err).Error("failed to unmarshal KnownErrors")
 			}
 		}
 		var using uint64 = 1
@@ -70,7 +71,7 @@ func closeOrLeaveSession(
 	for i, knownError := range sessData.KnownErrors {
 		if knownError.LastSeen.Before(time.Now().Add(time.Duration(-12) * time.Hour)) {
 			sessData.KnownErrors = remove(sessData.KnownErrors, i)
-			log.Println("deteted old error", knownError.OriginBadgerKey)
+			log.Info("deteted old error", knownError.OriginBadgerKey)
 			break
 		}
 	}

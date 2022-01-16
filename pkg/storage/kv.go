@@ -12,15 +12,13 @@ import (
 func OpenDB(customPath string, dbPath string) *badger.DB {
 	var badgerPath string
 	if customPath != "" {
-		log.Println("Setting custom badger path.")
 		badgerPath = customPath
 	} else if v, ok := os.LookupEnv("CTO_DATA_PATH"); ok {
-		log.Println("Setting environment badger path.")
 		badgerPath = v + dbPath
 	} else {
-		log.Println("Setting default badger path.")
 		badgerPath = "/app/data" + dbPath
 	}
+	log.WithField("badgerPath", badgerPath).Info("setting badger path")
 	badgerOptions := badger.DefaultOptions(badgerPath)
 	// badgerOptions.SyncWrites = true
 	db, err := badger.Open(badgerOptions)

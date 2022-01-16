@@ -42,7 +42,7 @@ func logOneRequest(
 		recordsRecieved := len(multiLog)
 		log.Printf("unmarshaled log dump containing %d records", recordsRecieved)
 		if recordsRecieved == 0 {
-			log.Println("no records to unmarshal")
+			log.WithField("project", projectName).Warn("no records to unmarshal")
 			return
 		}
 

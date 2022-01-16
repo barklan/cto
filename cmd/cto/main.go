@@ -51,7 +51,7 @@ func CrashExit(data *storage.Data, info string) {
 }
 
 func main() {
-	log.Println("Starting...")
+	log.Info("Starting...")
 
 	// https://dgraph.io/docs/badger/faq/#are-there-any-go-specific-settings-that-i-should-use
 	runtime.GOMAXPROCS(128)

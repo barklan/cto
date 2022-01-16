@@ -2,7 +2,6 @@ package loginput
 
 import (
 	"crypto/subtle"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -44,15 +43,15 @@ func logOneRequest(
 
 	projectName, ok := authorizeRequest(rdb, r)
 	if !ok {
-		log.Println("recieved unauthorized request")
+		log.Warn("recieved unauthorized request")
 		w.WriteHeader(401)
 		return
 	}
 
-	log.Println(fmt.Sprintf("recieved log dump for project %q", projectName))
+	log.WithField("project", projectName).Info("recieved log dump")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.Printf("failed to read loginput body of project %q", projectName)
+		log.WithField("project", projectName).Warn("failed to read loginput body of project")
 		w.WriteHeader(400)
 		return
 	}

@@ -49,6 +49,6 @@ func getKey(data *storage.Data, w http.ResponseWriter, r *http.Request) {
 
 	_, err := w.Write(val)
 	if err != nil {
-		log.Println("failed to write debug response")
+		log.Error("failed to write debug response")
 	}
 }

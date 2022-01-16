@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"sync"
@@ -37,8 +36,7 @@ func handleSysSignals(base *porter.Base, sylon *bot.Sylon) {
 		sigID = "UNKNOWN"
 	}
 	sylon.B.Close()
-	log.Println(fmt.Sprintf("I received %s. Exiting now!", sigID))
-	os.Exit(0)
+	log.WithField("signal", sigID).Fatal("exiting now")
 }
 
 // TODO handle closing database gracefully

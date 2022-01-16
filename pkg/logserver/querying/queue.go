@@ -12,7 +12,7 @@ import (
 )
 
 func Queue(data *storage.Data, queueChan chan QueryJob) {
-	log.Println("queue starting")
+	log.Info("queue starting")
 
 	jobsQueue := list.New()
 	var mx sync.Mutex

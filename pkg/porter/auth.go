@@ -11,7 +11,7 @@ import (
 
 func authorize(base *Base, tokenQ string) (string, string, int, bool) {
 	if tokenQ == "" {
-		log.Println("No token provided for query.")
+		log.Warn("no token provided for query")
 		return "", "", http.StatusUnauthorized, false
 	}
 	tokenParsed, err := jwt.Parse(tokenQ, func(token *jwt.Token) (interface{}, error) {
@@ -26,12 +26,11 @@ func authorize(base *Base, tokenQ string) (string, string, int, bool) {
 	}
 
 	if claims, ok := tokenParsed.Claims.(jwt.MapClaims); ok && tokenParsed.Valid {
-		log.Println("token is valid, claims:", claims)
 		projectName := claims["project_name"].(string)
 		name := claims["name"].(string)
 		return name, projectName, http.StatusOK, true
 	} else {
-		log.Println("token is not ok (returning 403):", err)
+		log.Warn("token is not ok (returning 403):", err)
 		return "", "", http.StatusForbidden, false
 	}
 }

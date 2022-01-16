@@ -50,7 +50,7 @@ func PrepareTestDB() (*sql.DB, *dockertest.Pool, *dockertest.Resource) {
 	databaseUrl := fmt.Sprintf("postgres://postgres:postgres@%s/app?sslmode=disable",
 		hostAndPort)
 
-	log.Println("Connecting to database on url: ", databaseUrl)
+	log.WithField("uri", databaseUrl).Info("connecting to database")
 
 	resource.Expire(60) // Tell docker to hard kill the container in 120 seconds
 
