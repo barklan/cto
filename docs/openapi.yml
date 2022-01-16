@@ -1,11 +1,11 @@
 openapi: 3.0.1
 info:
   title: CTO
-  description: https://redoc.ly/docs/cli/#.pathspets.yaml
-  version: "1.0.1"
+  description: All api documentation.
+  version: "1.0.2"
   contact:
     name: API Support
-    email: example@example.com
+    email: qufiwefefwoyn@gmail.com
 
 servers:
   - url: https://ctopanel.com/api
@@ -59,6 +59,19 @@ paths:
       summary: Set new project.
       parameters:
         - $ref: "#/components/parameters/projectID"
+      responses:
+        "200":
+          description: "OK"
+  /core/multi:
+    delete:
+      tags: [core]
+      summary: Delete all keys with specified prefix.
+      parameters:
+        - in: query
+          name: prefix
+          schema:
+            type: string
+          required: true
       responses:
         "200":
           description: "OK"
@@ -242,14 +255,6 @@ components:
         format: uuid
       required: true
       description: Project ID
-    # userID:
-    #   in: path
-    #   name: userID
-    #   schema:
-    #     type: string
-    #     format: uuid
-    #   required: true
-    #   description: User ID
     token:
       in: query
       name: token

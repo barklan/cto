@@ -11,9 +11,15 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+type restCore struct {
+	Data *storage.Data
+}
+
 func Serve(data *storage.Data) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+
+	ctrl := restCore{Data: data}
 
 	r.Route("/api/core", func(r chi.Router) {
 		r.Route("/debug/{project}", func(r chi.Router) {
@@ -25,9 +31,18 @@ func Serve(data *storage.Data) {
 		r.Post("/setproject/{projectID}", func(w http.ResponseWriter, r *http.Request) {
 			createNewProject(data, w, r)
 		})
+
+		r.Delete("/multi", ctrl.deletePrefix)
 	})
 
 	log.Panic(http.ListenAndServe(":8888", r))
+}
+
+func (c *restCore) deletePrefix(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	prefix := r.URL.Query().Get("prefix")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(prefix))
 }
 
 func createNewProject(data *storage.Data, w http.ResponseWriter, r *http.Request) {
