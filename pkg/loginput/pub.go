@@ -48,7 +48,7 @@ func Publisher(reqs <-chan LogRequest) {
 			})
 		panicOnErr(err, "failed to publish a message")
 
-		log.Printf("published loginginput for project %q", req.ProjectID)
+		log.WithField("project", req.ProjectID).Info("published loginginput")
 	}
 }
 

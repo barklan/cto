@@ -61,7 +61,7 @@ func ReadInternalConfig(path string) (InternalConfig, error) {
 		return config, fmt.Errorf("Failed to parse config file. %v", err)
 	}
 
-	log.Printf("ReadConfig: %#v\n", fmt.Sprint(config))
+	log.WithField("config", config).Info("read internal config")
 
 	return config, nil
 }

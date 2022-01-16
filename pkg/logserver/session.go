@@ -23,7 +23,7 @@ func openSession(data *storage.Data) map[string]*SessionData {
 	}
 
 	if data.Config.Internal.Log.ClearOnRestart {
-		log.Printf("clearing known errors for projects %s", projects)
+		log.Warn("clearing known errors for all projects")
 		for _, projectName := range projects {
 			data.DeleteVar(projectName, vars.KnownErrors)
 		}
@@ -56,7 +56,7 @@ func openOrEnterSession(
 			KnownErrors:      knownErrors,
 			Using:            &using,
 		}
-		log.Printf("%q project opened session", projectName)
+		log.WithField("project", projectName).Info("project opened session")
 	}
 }
 
@@ -80,9 +80,9 @@ func closeOrLeaveSession(
 
 	if *sessDataMap[projectName].Using == uint64(1) {
 		delete(sessDataMap, projectName)
-		log.Printf("%q project closed session", projectName)
+		log.WithField("project", projectName).Info("project closed session")
 	} else {
 		atomic.AddUint64(sessDataMap[projectName].Using, ^uint64(0))
-		log.Printf("%q project left session", projectName)
+		log.WithField("project", projectName).Info("project left session")
 	}
 }

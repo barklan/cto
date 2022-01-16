@@ -26,17 +26,17 @@ func Subscriber(data *storage.Data, reqs chan<- loginput.LogRequest) {
 		for d := range msgs {
 			projectID := d.Headers["projectID"].(string)
 			if !data.VarExists(projectID, "") {
-				log.Printf("rejecting log req for project %s\n", projectID)
+				log.WithField("project", projectID).Warn("rejecting log req ")
 				// TODO add `continue` here after you made sure you have that flag
 			}
 			reqs <- loginput.LogRequest{
 				ProjectID: projectID,
 				Body:      d.Body,
 			}
-			log.Printf("log req for project %s added to local queue", projectID)
+			log.WithField("project", projectID).Info("log req for added to local queue")
 		}
 	}()
 
-	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
+	log.WithField("service", "logserver").Info("sub is active")
 	<-make(chan struct{})
 }

@@ -39,15 +39,14 @@ func (d *Data) ProjectAlert(project, message string) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	r, err := c.ProjectAlert(ctx, &pb.ProjectAlertRequest{
+	_, err = c.ProjectAlert(ctx, &pb.ProjectAlertRequest{
 		Project: project,
 		Message: message,
 	})
 	if err != nil {
-		log.Printf("could not send grpc ProjectAlert: %v", err)
+		log.WithError(err).Error("could not send grpc ProjectAlert")
 		return
 	}
-	log.Printf("grpc reply to ProjectAlert: %s", r.GetMessage())
 }
 
 func (d *Data) InternalAlert(message string) {
@@ -61,14 +60,13 @@ func (d *Data) InternalAlert(message string) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	r, err := c.InternalAlert(ctx, &pb.Message{
+	_, err = c.InternalAlert(ctx, &pb.Message{
 		Message: message,
 	})
 	if err != nil {
-		log.Printf("could not send grpc InternalAlert: %v", err)
+		log.WithError(err).Error("could not send grpc InternalAlert")
 		return
 	}
-	log.Printf("grpc reply to InternalAlert: %s", r.GetMessage())
 }
 
 func (d *Data) NewIssue(projectID, env, service, timestamp, key, flag string) {
@@ -82,7 +80,7 @@ func (d *Data) NewIssue(projectID, env, service, timestamp, key, flag string) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	r, err := c.NewIssue(ctx, &pb.NewIssueRequest{
+	_, err = c.NewIssue(ctx, &pb.NewIssueRequest{
 		Project:   projectID,
 		Env:       env,
 		Service:   service,
@@ -91,8 +89,7 @@ func (d *Data) NewIssue(projectID, env, service, timestamp, key, flag string) {
 		Flag:      flag,
 	})
 	if err != nil {
-		log.Printf("could not send grpc NewIssue: %v", err)
+		log.WithError(err).Error("could not send grpc NewIssue")
 		return
 	}
-	log.Printf("grpc reply to NewIssue: %s", r.GetMessage())
 }

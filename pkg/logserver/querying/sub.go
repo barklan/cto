@@ -27,7 +27,7 @@ func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
 		for d := range msgs {
 			projectID := d.Headers["projectID"].(string)
 			if !data.VarExists(projectID, "") {
-				log.Printf("rejecting log req for project %s\n", projectID)
+				log.WithField("project", projectID).Warn("rejecting log req ")
 				// TODO add `continue` here after you made sure you have that flag
 			}
 
@@ -43,6 +43,6 @@ func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
 		}
 	}()
 
-	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
+	log.WithField("service", "querying").Info("sub is active")
 	<-make(chan struct{})
 }
