@@ -6,6 +6,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/caching"
 	"github.com/dgraph-io/badger/v3"
@@ -16,6 +17,7 @@ import (
 var variableKeySymbol = "$"
 
 type Data struct {
+	Log       *zap.Logger
 	Chat      *tb.Chat
 	DB        *badger.DB
 	Config    *Config

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/storage"
@@ -16,6 +17,7 @@ import (
 )
 
 type Sylon struct {
+	Log    *zap.Logger
 	R      *sqlx.DB
 	Config *storage.InternalConfig
 	B      *tb.Bot
@@ -23,13 +25,20 @@ type Sylon struct {
 	Cache  caching.Cache
 }
 
-func InitSylon(r *sqlx.DB, config *storage.InternalConfig, b *tb.Bot, cache caching.Cache) *Sylon {
+func InitSylon(
+	r *sqlx.DB,
+	config *storage.InternalConfig,
+	b *tb.Bot,
+	cache caching.Cache,
+	lg *zap.Logger,
+) *Sylon {
 	chatID := config.TG.BossChatID
 	chat, err := b.ChatByID(fmt.Sprint(chatID))
 	if err != nil {
 		log.Panicln("failed to init sylon", err)
 	}
 	sylon := &Sylon{
+		Log:    lg,
 		R:      r,
 		Config: config,
 		B:      b,
@@ -39,33 +48,33 @@ func InitSylon(r *sqlx.DB, config *storage.InternalConfig, b *tb.Bot, cache cach
 	return sylon
 }
 
-func (d *Sylon) Send(to tb.Recipient, msg interface{}, options ...interface{}) (*tb.Message, error) {
-	m, err := d.B.Send(to, msg, options...)
+func (s *Sylon) Send(
+	to tb.Recipient,
+	msg string,
+	options ...interface{},
+) (*tb.Message, error) {
+	m, err := s.B.Send(to, msg, options...)
 	if err != nil {
-		log.WithError(err).WithField("msg", msg).Error("failed to send tg message")
+		s.Log.Error("failed to send tg message", zap.String("msg", msg), zap.Error(err))
 		return nil, err
 	}
-	log.WithField("msg", msg).Info("sent tg msg")
+	s.Log.Info("sent tg msg", zap.String("msg", msg))
 	return m, err
 }
 
-func (d *Sylon) JustSend(to tb.Recipient, msg interface{}, options ...interface{}) {
+func (d *Sylon) JustSend(to tb.Recipient, msg string, options ...interface{}) {
 	go func() {
 		_, _ = d.Send(to, msg, options...)
 	}()
 }
 
-func (d *Sylon) CSendSync(msg interface{}, options ...interface{}) (*tb.Message, error) {
-	return d.Send(d.Chat, msg, options...)
-}
-
-func (d *Sylon) CSend(msg interface{}, options ...interface{}) {
+func (d *Sylon) CSend(msg string, options ...interface{}) {
 	go func() {
 		_, _ = d.Send(d.Chat, msg, options...)
 	}()
 }
 
-func (d *Sylon) PSend(projectName string, msg interface{}, options ...interface{}) {
+func (d *Sylon) PSend(projectName string, msg string, options ...interface{}) {
 	// TODO recovery for mute operation for v5 and use this instead of JustSend where it is meant to be
 	// muted := d.VarExists(projectName, "muted")
 	// if muted {

@@ -24,7 +24,7 @@ type QueryRequestWrap struct {
 func Publisher(base *Base, queries <-chan QueryRequestWrap) {
 	defer log.Panicln("publisher exited")
 
-	conn := rabbit.OpenMQ()
+	conn := rabbit.OpenMQ(base.Log)
 	defer conn.Close()
 
 	ch, err := conn.Channel()

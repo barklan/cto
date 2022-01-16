@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/postgres/models"
 	"github.com/go-chi/chi/v5"
@@ -34,6 +35,7 @@ func authorizeRequest(rdb *sqlx.DB, r *http.Request) (string, bool) {
 }
 
 func logOneRequest(
+	lg *zap.Logger,
 	rdb *sqlx.DB,
 	reqs chan<- LogRequest,
 	w http.ResponseWriter,
@@ -48,10 +50,10 @@ func logOneRequest(
 		return
 	}
 
-	log.WithField("project", projectName).Info("recieved log dump")
+	lg.Info("recieved log dump", zap.String("project", projectName))
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		log.WithField("project", projectName).Warn("failed to read loginput body of project")
+		lg.Warn("failed to read loginput body of project", zap.String("project", projectName))
 		w.WriteHeader(400)
 		return
 	}
@@ -62,12 +64,12 @@ func logOneRequest(
 	}
 }
 
-func Serve(rdb *sqlx.DB, reqs chan<- LogRequest) {
+func Serve(lg *zap.Logger, rdb *sqlx.DB, reqs chan<- LogRequest) {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
 	r.Post("/api/loginput/fluentd", func(w http.ResponseWriter, r *http.Request) {
-		logOneRequest(rdb, reqs, w, r)
+		logOneRequest(lg, rdb, reqs, w, r)
 	})
 	log.Panic(http.ListenAndServe(":8900", r))
 }

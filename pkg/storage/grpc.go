@@ -6,6 +6,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	pb "github.com/barklan/cto/pkg/protos/porter"
 	"google.golang.org/grpc"
@@ -44,7 +45,7 @@ func (d *Data) ProjectAlert(project, message string) {
 		Message: message,
 	})
 	if err != nil {
-		log.WithError(err).Error("could not send grpc ProjectAlert")
+		d.Log.Warn("could not send grpc ProjectAlert", zap.Error(err))
 		return
 	}
 }
@@ -64,7 +65,7 @@ func (d *Data) InternalAlert(message string) {
 		Message: message,
 	})
 	if err != nil {
-		log.WithError(err).Error("could not send grpc InternalAlert")
+		d.Log.Warn("could not send grpc InternalAlert", zap.Error(err))
 		return
 	}
 }
@@ -89,7 +90,7 @@ func (d *Data) NewIssue(projectID, env, service, timestamp, key, flag string) {
 		Flag:      flag,
 	})
 	if err != nil {
-		log.WithError(err).Error("could not send grpc NewIssue")
+		d.Log.Warn("could not send grpc NewIssue", zap.Error(err))
 		return
 	}
 }

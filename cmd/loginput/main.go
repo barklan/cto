@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/barklan/cto/pkg/logging"
 	"github.com/barklan/cto/pkg/loginput"
 	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/jmoiron/sqlx"
@@ -10,7 +11,11 @@ import (
 )
 
 func main() {
-	log.Info("Starting...")
+	lg := logging.Dev()
+	defer func() {
+		_ = lg.Sync()
+	}()
+	lg.Info("starting")
 
 	var rdb *sqlx.DB
 	var err error
@@ -28,8 +33,8 @@ func main() {
 
 	reqs := make(chan loginput.LogRequest, 5)
 
-	go loginput.Serve(rdb, reqs)
-	go loginput.Publisher(reqs)
+	go loginput.Serve(lg, rdb, reqs)
+	go loginput.Publisher(lg, reqs)
 
 	<-make(chan struct{})
 }

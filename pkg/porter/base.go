@@ -4,6 +4,7 @@ import (
 	"os"
 
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/storage"
@@ -15,12 +16,14 @@ type Base struct {
 	MediaPath string
 	R         *sqlx.DB
 	Cache     caching.Cache
+	Log       *zap.Logger
 }
 
-func InitBase(config *storage.InternalConfig, db *sqlx.DB) *Base {
+func InitBase(config *storage.InternalConfig, db *sqlx.DB, lg *zap.Logger) *Base {
 	base := Base{}
 	base.Config = config
 	base.R = db
+	base.Log = lg
 
 	configEnvironment, ok := os.LookupEnv("CONFIG_ENV")
 	if !ok {

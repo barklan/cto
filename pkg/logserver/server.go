@@ -7,6 +7,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/loginput"
 	"github.com/barklan/cto/pkg/logserver/querying"
@@ -40,7 +41,7 @@ func logOneRequest(
 		}
 
 		recordsRecieved := len(multiLog)
-		log.WithField("project", projectName).Infof("unmarshaled log dump containing %d records", recordsRecieved)
+		data.Log.Info("unmarshaled log dump", zap.String("project", projectName), zap.Int("records", recordsRecieved))
 		if recordsRecieved == 0 {
 			log.WithField("project", projectName).Warn("no records to unmarshal")
 			return

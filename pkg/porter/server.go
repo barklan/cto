@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/go-chi/chi/v5"
@@ -58,6 +59,6 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 		})
 	})
 
-	log.Info("porter rest server listening on 9010")
+	base.Log.Info("porter rest server is listening", zap.Int64("port", 9010))
 	log.Panicln(http.ListenAndServe(":9010", r))
 }

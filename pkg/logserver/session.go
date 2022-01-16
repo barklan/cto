@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
@@ -19,11 +19,11 @@ func openSession(data *storage.Data) map[string]*SessionData {
 
 	projects := make([]string, 0)
 	if err := data.R.Select(&projects, "select id from project"); err != nil {
-		log.Println("no projects found when opening logserver session")
+		data.Log.Warn("no projects found when opening logserver session")
 	}
 
 	if data.Config.Internal.Log.ClearOnRestart {
-		log.Warn("clearing known errors for all projects")
+		data.Log.Warn("clearing known errors for all projects")
 		for _, projectName := range projects {
 			data.DeleteVar(projectName, vars.KnownErrors)
 		}
@@ -39,15 +39,15 @@ func openOrEnterSession(
 ) {
 	if v, ok := sessDataMap[projectName]; ok {
 		atomic.AddUint64(v.Using, 1)
-		log.WithField("project", projectName).Info("project entered session")
+		data.Log.Info("project entered session", zap.String("project", projectName))
 	} else {
 		knownErrorsMutex := new(sync.Mutex)
 		knownErrors := make([]types.KnownError, 0)
 		knownErrorsRaw := data.GetVar(projectName, vars.KnownErrors)
 		if string(knownErrorsRaw) != "" {
-			log.WithField("project", projectName).Info("known errors found")
+			data.Log.Info("known issues found", zap.String("project", projectName))
 			if err := json.Unmarshal(knownErrorsRaw, &knownErrors); err != nil {
-				log.WithError(err).Error("failed to unmarshal KnownErrors")
+				data.Log.Error("failed to unmarshal KnownErrors", zap.Error(err))
 			}
 		}
 		var using uint64 = 1
@@ -56,7 +56,7 @@ func openOrEnterSession(
 			KnownErrors:      knownErrors,
 			Using:            &using,
 		}
-		log.WithField("project", projectName).Info("project opened session")
+		data.Log.Info("project opened session", zap.String("project", projectName))
 	}
 }
 
@@ -71,7 +71,7 @@ func closeOrLeaveSession(
 	for i, knownError := range sessData.KnownErrors {
 		if knownError.LastSeen.Before(time.Now().Add(time.Duration(-12) * time.Hour)) {
 			sessData.KnownErrors = remove(sessData.KnownErrors, i)
-			log.Info("deteted old error", knownError.OriginBadgerKey)
+			data.Log.Info("deteted old error", zap.String("key", knownError.OriginBadgerKey))
 			break
 		}
 	}
@@ -80,9 +80,9 @@ func closeOrLeaveSession(
 
 	if *sessDataMap[projectName].Using == uint64(1) {
 		delete(sessDataMap, projectName)
-		log.WithField("project", projectName).Info("project closed session")
+		data.Log.Info("project closed session", zap.String("project", projectName))
 	} else {
 		atomic.AddUint64(sessDataMap[projectName].Using, ^uint64(0))
-		log.WithField("project", projectName).Info("project left session")
+		data.Log.Info("project left session", zap.String("project", projectName))
 	}
 }

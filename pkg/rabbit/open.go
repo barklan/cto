@@ -5,6 +5,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/caarlos0/env"
 	"github.com/streadway/amqp"
@@ -16,7 +17,7 @@ type MQConnectionData struct {
 	Password string `env:"RABBITMQ_DEFAULT_PASS"`
 }
 
-func OpenMQ() *amqp.Connection {
+func OpenMQ(lg *zap.Logger) *amqp.Connection {
 	cfg := MQConnectionData{}
 	err := env.Parse(&cfg)
 	if err != nil {
@@ -44,6 +45,6 @@ func OpenMQ() *amqp.Connection {
 		}
 	}
 
-	log.Println("connected to mq")
+	lg.Info("connected to mq")
 	return conn
 }

@@ -90,7 +90,7 @@ func processLogRecord(
 	logData.Flag = flag
 
 	// Save log record
-	badgerKey, _ := constructBadgerKey(data, logData, projectName)
+	badgerKey, _ := constructBadgerKey(logData, projectName)
 	retentionDuration := time.Duration(data.Config.Internal.Log.RetentionHours) * time.Hour
 
 	data.SetLog(badgerKey, record, retentionDuration)
@@ -104,7 +104,6 @@ func processLogRecord(
 }
 
 func constructBadgerKey(
-	data *storage.Data,
 	logData *LogMetadata,
 	projectName string,
 ) (string, error) {

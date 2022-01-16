@@ -10,7 +10,7 @@ import (
 )
 
 func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
-	conn := rabbit.OpenMQ()
+	conn := rabbit.OpenMQ(data.Log)
 	defer conn.Close()
 
 	ch, err := conn.Channel()
@@ -43,6 +43,6 @@ func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
 		}
 	}()
 
-	log.WithField("service", "querying").Info("sub is active")
+	data.Log.Info("sub is active")
 	<-make(chan struct{})
 }

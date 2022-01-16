@@ -3,10 +3,11 @@ package caching
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/caarlos0/env"
 	"github.com/go-redis/redis/v8"
@@ -33,7 +34,7 @@ type Redis struct {
 	cl *redis.Client
 }
 
-func InitRedis() *Redis {
+func InitRedis(lg *zap.Logger) *Redis {
 	cfg := RedisConnectionData{}
 	err := env.Parse(&cfg)
 	if err != nil {
@@ -49,7 +50,7 @@ func InitRedis() *Redis {
 	if err = rs.Set("test", "", 1*time.Minute); err != nil {
 		log.Panicln("failed to test test key to redis")
 	}
-	log.Info("redis client is ready")
+	lg.Info("redis client is ready")
 
 	return rs
 }

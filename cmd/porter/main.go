@@ -9,6 +9,7 @@ import (
 
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/barklan/cto/pkg/caching"
+	"github.com/barklan/cto/pkg/logging"
 	porter "github.com/barklan/cto/pkg/porter"
 	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/barklan/cto/pkg/storage"
@@ -41,7 +42,12 @@ func handleSysSignals(base *porter.Base, sylon *bot.Sylon) {
 
 // TODO handle closing database gracefully
 func main() {
-	log.Info("Starting...")
+	lg := logging.Dev()
+	defer func() {
+		_ = lg.Sync()
+	}()
+
+	lg.Info("starting")
 
 	config, err := storage.ReadInternalConfig("")
 	if err != nil {
@@ -61,15 +67,15 @@ func main() {
 	}
 	defer rdb.Close()
 
-	base := porter.InitBase(&config, rdb)
+	base := porter.InitBase(&config, rdb, lg)
 
-	redis := caching.InitRedis()
+	redis := caching.InitRedis(lg)
 	base.Cache = redis
 
 	// TODO telebot migrating to v3 soon
 	b := bot.Bot(config.TG.BotToken)
 
-	sylon := bot.InitSylon(rdb, &config, b, redis)
+	sylon := bot.InitSylon(rdb, &config, b, redis, lg)
 
 	queries := make(chan porter.QueryRequestWrap, 10)
 	go porter.Serve(base, sylon, queries)

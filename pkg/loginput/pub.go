@@ -2,6 +2,7 @@ package loginput
 
 import (
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/rabbit"
 	"github.com/streadway/amqp"
@@ -12,10 +13,10 @@ type LogRequest struct {
 	Body      []byte
 }
 
-func Publisher(reqs <-chan LogRequest) {
+func Publisher(lg *zap.Logger, reqs <-chan LogRequest) {
 	defer log.Panicln("publisher exited")
 
-	conn := rabbit.OpenMQ()
+	conn := rabbit.OpenMQ(lg)
 	defer conn.Close()
 
 	ch, err := conn.Channel()
@@ -48,7 +49,7 @@ func Publisher(reqs <-chan LogRequest) {
 			})
 		panicOnErr(err, "failed to publish a message")
 
-		log.WithField("project", req.ProjectID).Info("published loginginput")
+		lg.Info("published loginginput", zap.String("project", req.ProjectID))
 	}
 }
 

@@ -26,7 +26,6 @@ type userData struct {
 }
 
 func initOAuth() *oauth2.Config {
-	log.Info("OAUTH_CALLBACK_URI: ", os.Getenv("OAUTH_CALLBACK_URI"))
 	googleOauthConfig := &oauth2.Config{
 		RedirectURL:  os.Getenv("OAUTH_CALLBACK_URI"),
 		ClientID:     os.Getenv("OAUTH_CLIENT_ID"),

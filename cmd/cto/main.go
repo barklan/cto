@@ -12,6 +12,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/caching"
+	"github.com/barklan/cto/pkg/logging"
 	"github.com/barklan/cto/pkg/logserver"
 	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/barklan/cto/pkg/restcore"
@@ -51,12 +52,18 @@ func CrashExit(data *storage.Data, info string) {
 }
 
 func main() {
-	log.Info("Starting...")
+	lg := logging.Dev()
+	defer func() {
+		_ = lg.Sync()
+	}()
+
+	lg.Info("starting")
 
 	// https://dgraph.io/docs/badger/faq/#are-there-any-go-specific-settings-that-i-should-use
 	runtime.GOMAXPROCS(128)
 
 	data := &storage.Data{}
+	data.Log = lg
 
 	var rdb *sqlx.DB
 	var err error
@@ -80,7 +87,7 @@ func main() {
 	config := storage.ReadConfig(data)
 	data.Config = config
 
-	redis := caching.InitRedis()
+	redis := caching.InitRedis(lg)
 	data.Cache = redis
 
 	defer CrashExit(data, "Deferred in main.")

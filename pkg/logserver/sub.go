@@ -2,6 +2,7 @@ package logserver
 
 import (
 	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/loginput"
 	"github.com/barklan/cto/pkg/rabbit"
@@ -9,7 +10,7 @@ import (
 )
 
 func Subscriber(data *storage.Data, reqs chan<- loginput.LogRequest) {
-	conn := rabbit.OpenMQ()
+	conn := rabbit.OpenMQ(data.Log)
 	defer conn.Close()
 
 	ch, err := conn.Channel()
@@ -26,17 +27,18 @@ func Subscriber(data *storage.Data, reqs chan<- loginput.LogRequest) {
 		for d := range msgs {
 			projectID := d.Headers["projectID"].(string)
 			if !data.VarExists(projectID, "") {
-				log.WithField("project", projectID).Warn("rejecting log req ")
+				data.Log.Warn("rejecting log req", zap.String("project", projectID))
 				// TODO add `continue` here after you made sure you have that flag
 			}
 			reqs <- loginput.LogRequest{
 				ProjectID: projectID,
 				Body:      d.Body,
 			}
-			log.WithField("project", projectID).Info("log req for added to local queue")
+			data.Log.Info("log req for added to local queue", zap.String("project", projectID))
 		}
 	}()
 
-	log.WithField("service", "logserver").Info("sub is active")
+	data.Log.Info("sub is active")
+
 	<-make(chan struct{})
 }
