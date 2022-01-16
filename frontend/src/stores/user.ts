@@ -9,8 +9,7 @@ export const useUserStore = defineStore('user', () => {
   const project = ref('')
   const token = ref('')
 
-  const projectColor = ref('bg-blue-900')
-  const projectPrettyName = ref('')
+  const projectColor = ref('')
 
   /**
    *
@@ -21,22 +20,15 @@ export const useUserStore = defineStore('user', () => {
   }
 
   function pickColor() {
-    var baseColors = ['orange', 'yellow', 'green', 'cyan', 'indigo', 'violet', 'fuchsia']
-    var randomBaseColor = baseColors[Math.floor(
+    var baseColors = ['#7c2d12', '#831843', '#14532d', '#164e63', '#312e81', '#4c1d95', '#701a75']
+    var randomColor = baseColors[Math.floor(
       Math.random() * baseColors.length)];
 
-    var randomColor = 'bg-' + randomBaseColor + '-900'
     if (randomColor == projectColor.value) {
       randomColor = pickColor()
     }
     return randomColor
   }
-
-  // TODO
-  function getProjectPrettyName(projectID) {
-    return ""
-  }
-
 
   function setID(newID: string) {
     id.value = newID
@@ -44,7 +36,6 @@ export const useUserStore = defineStore('user', () => {
   function setProject(newProject: string) {
     project.value = newProject
     projectColor.value = pickColor()
-    projectPrettyName.value = getProjectPrettyName(project.value)
   }
   function setToken(newToken: string) {
     token.value = newToken
@@ -59,7 +50,6 @@ export const useUserStore = defineStore('user', () => {
     id,
     project,
     projectColor,
-    projectPrettyName,
     token,
   }
 })

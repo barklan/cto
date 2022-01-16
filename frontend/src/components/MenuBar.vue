@@ -18,7 +18,7 @@ const toggleLocales = () => {
 <template>
   <div id="menu-container" class="w-screen fixed pb-2 z-49 text-light-50">
     <div
-      class="text-xs p-1 mb-3 z-999 transition duration-400 ease-in-out" :class="user.projectColor"
+      class="text-xs p-1 mb-3 z-9999 transition duration-400 ease-in-out" :style="{ backgroundColor: user.projectColor }"
     >Active project: {{ user.project }}</div>
     <nav id="menubar" w="full" class="text-md z-50 mt-1">
       <router-link class="icon-btn mx-1" to="/" :title="t('button.home')">

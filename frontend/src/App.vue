@@ -18,12 +18,12 @@ const token = localStorage.getItem("token")
 const project = localStorage.getItem("project")
 
 if (name) {
-  if (name && token) {
+  if (token) {
     user.setName(name)
     user.setToken(token)
-    if (project) {
-      user.setProject(project)
-    }
+  }
+  if (project) {
+    user.setProject(project)
   }
 }
 
