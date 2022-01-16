@@ -26,8 +26,6 @@ const getStatus = async () => {
 
   response = await getList("/environments", "")
   envs.value = response?.data;
-  console.log(envs.value);
-
 
   for (var env in envs.value) {
     response = await getList("/services", "&env=" + env)
