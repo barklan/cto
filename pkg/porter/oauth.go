@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 
 	"github.com/barklan/cto/pkg/postgres/models"
+	"github.com/barklan/cto/pkg/security"
 	"github.com/gofrs/uuid"
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
@@ -54,7 +56,11 @@ func singleAuth(base *Base, email string) string {
 		base.R.MustExec(insert, client.ID, client.Email)
 	}
 
-	jwt := CreateJWT(base, email, "")
+	jwt, err := security.CreateJWT(base.Config, email, "")
+	if err != nil {
+		base.Log.Error("failed to create jwt", zap.Error(err))
+		return ""
+	}
 	return jwt
 }
 

@@ -2,12 +2,13 @@ package porter
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/gofrs/uuid"
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 type QStatus int
@@ -47,8 +48,6 @@ func serveLogExact(
 		return
 	}
 
-	log.Info(string(value))
-
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	_, _ = w.Write(value)
@@ -63,7 +62,7 @@ func SetQRespInCache(base *Base, requestId string, status QStatus, msg string) {
 	}
 
 	if err := base.Cache.Set(key, valJson, 1*time.Minute); err != nil {
-		log.Error("failed to set qmeta in cache", err)
+		base.Log.Error("failed to set qmeta in cache", zap.Error(err))
 	}
 }
 

@@ -3,9 +3,9 @@ package loginput
 import (
 	"crypto/subtle"
 	"io"
+	"log"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/postgres/models"
@@ -45,7 +45,7 @@ func logOneRequest(
 
 	projectName, ok := authorizeRequest(rdb, r)
 	if !ok {
-		log.Warn("recieved unauthorized request")
+		lg.Warn("recieved unauthorized request")
 		w.WriteHeader(401)
 		return
 	}

@@ -1,9 +1,10 @@
 package restcore
 
 import (
+	"log"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/go-chi/chi/v5"
@@ -49,6 +50,6 @@ func getKey(data *storage.Data, w http.ResponseWriter, r *http.Request) {
 
 	_, err := w.Write(val)
 	if err != nil {
-		log.Error("failed to write debug response")
+		data.Log.Error("failed to write debug response", zap.Error(err))
 	}
 }

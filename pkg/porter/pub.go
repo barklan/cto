@@ -1,7 +1,9 @@
 package porter
 
 import (
-	log "github.com/sirupsen/logrus"
+	"log"
+
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/rabbit"
 	"github.com/streadway/amqp"
@@ -57,7 +59,7 @@ func Publisher(base *Base, queries <-chan QueryRequestWrap) {
 		panicOnErr(err, "failed to publish a message")
 
 		SetQRespInCache(base, req.QID, QWorking, "Query published to rabbit.")
-		log.WithField("pid", req.ProjectID).Info("published query request")
+		base.Log.Info("published query request", zap.String("project", req.ProjectID))
 	}
 }
 

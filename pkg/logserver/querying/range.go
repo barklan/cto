@@ -3,12 +3,13 @@ package querying
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/storage"
@@ -106,7 +107,7 @@ func TimeQueryBeaconToSeek(timeQuery string) string {
 	last := timeQuerySplit[len(timeQuerySplit)-1]
 	lastInt, err := strconv.ParseInt(last, 10, 64)
 	if err != nil {
-		log.WithError(err).Error("failed to parse int in time query")
+		log.Println("failed to parse int in time query: ", err)
 	}
 	lastInt++
 	lastIntStr := strconv.FormatInt(lastInt, 10)
@@ -172,7 +173,7 @@ func SetMsgInCache(
 	}
 
 	if err := data.Cache.Set(key, valJson, 1*time.Minute); err != nil {
-		log.Error("failed to set qmeta in cache", err)
+		data.Log.Error("failed to set qmeta in cache", zap.Error(err))
 	}
 }
 
@@ -190,7 +191,7 @@ func SetResultInCache(
 	}
 
 	if err := data.Cache.Set(key, valJson, 1*time.Minute); err != nil {
-		log.Error("failed to set qmeta in cache", err)
+		data.Log.Error("failed to set qmeta in cache", zap.Error(err))
 	}
 }
 

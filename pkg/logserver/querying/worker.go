@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"regexp"
 	"strconv"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/storage"
@@ -117,7 +118,7 @@ func Worker(data *storage.Data, workerChan chan QueryJob) {
 			SetResultInCache(data, queryJob.ID, msg, filteredValues)
 		}
 
-		log.WithField("qid", queryJob.ID).Info("worker finished job successfuly")
+		data.Log.Info("worker finished job successfuly", zap.String("qid", queryJob.ID))
 	}
 }
 
@@ -237,7 +238,7 @@ func filterKeys(
 		return nil
 	})
 	if err != nil {
-		log.WithError(err).Error("ERROR iterating")
+		data.Log.Error("error iterating", zap.Error(err))
 	}
 	return keys
 }

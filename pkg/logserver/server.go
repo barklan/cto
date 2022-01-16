@@ -2,11 +2,11 @@ package logserver
 
 import (
 	"encoding/json"
+	"log"
 	"math/rand"
 	"sync"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/loginput"
@@ -37,13 +37,13 @@ func logOneRequest(
 		multiLog := make([]RawLogRecord, 1)
 		err := json.Unmarshal(body, &multiLog)
 		if err != nil {
-			log.Println("Failed to unmarshal log request.")
+			data.Log.Warn("failed to unmarshal log request", zap.String("project", projectName))
 		}
 
 		recordsRecieved := len(multiLog)
 		data.Log.Info("unmarshaled log dump", zap.String("project", projectName), zap.Int("records", recordsRecieved))
 		if recordsRecieved == 0 {
-			log.WithField("project", projectName).Warn("no records to unmarshal")
+			data.Log.Warn("no records to unmarshal", zap.String("project", projectName))
 			return
 		}
 
@@ -74,7 +74,7 @@ func processLogInputs(
 	sessDataMap map[string]*SessionData,
 	reportChan chan LogRecordReport,
 ) {
-	defer log.Panicln("log input processing stopped")
+	defer data.Log.Panic("log input processing stopped")
 	for req := range reqs {
 		logOneRequest(req.ProjectID, req.Body, data, sessDataMap, reportChan)
 	}

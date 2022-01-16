@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/golang-jwt/jwt/v4"
 )
 
 func authorize(base *Base, tokenQ string) (string, string, int, bool) {
 	if tokenQ == "" {
-		log.Warn("no token provided for query")
+		base.Log.Warn("no token provided for query")
 		return "", "", http.StatusUnauthorized, false
 	}
 	tokenParsed, err := jwt.Parse(tokenQ, func(token *jwt.Token) (interface{}, error) {
@@ -30,7 +28,7 @@ func authorize(base *Base, tokenQ string) (string, string, int, bool) {
 		name := claims["name"].(string)
 		return name, projectName, http.StatusOK, true
 	} else {
-		log.Warn("token is not ok (returning 403):", err)
+		base.Log.Warn("token is not ok (returning 403)")
 		return "", "", http.StatusForbidden, false
 	}
 }

@@ -2,9 +2,9 @@ package rabbit
 
 import (
 	"fmt"
+	"log"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 
 	"github.com/caarlos0/env"

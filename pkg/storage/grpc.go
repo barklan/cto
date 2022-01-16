@@ -2,10 +2,10 @@ package storage
 
 import (
 	"context"
+	"log"
 	"os"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 
 	pb "github.com/barklan/cto/pkg/protos/porter"

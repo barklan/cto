@@ -1,7 +1,7 @@
 package storage
 
 import (
-	log "github.com/sirupsen/logrus"
+	"log"
 )
 
 type Config struct {

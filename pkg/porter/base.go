@@ -1,9 +1,9 @@
 package porter
 
 import (
+	"log"
 	"os"
 
-	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/caching"

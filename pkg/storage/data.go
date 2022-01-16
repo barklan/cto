@@ -2,10 +2,10 @@ package storage
 
 import (
 	"encoding/json"
+	"log"
 	"reflect"
 	"time"
 
-	log "github.com/sirupsen/logrus"
 	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/caching"

@@ -2,11 +2,12 @@ package querying
 
 import (
 	"encoding/json"
+	"log"
 
 	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/rabbit"
 	"github.com/barklan/cto/pkg/storage"
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
@@ -27,7 +28,7 @@ func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
 		for d := range msgs {
 			projectID := d.Headers["projectID"].(string)
 			if !data.VarExists(projectID, "") {
-				log.WithField("project", projectID).Warn("rejecting log req ")
+				data.Log.Warn("rejecting log req", zap.String("project", projectID))
 				// TODO add `continue` here after you made sure you have that flag
 			}
 
@@ -39,7 +40,7 @@ func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
 			SetMsgInCache(data, qr.RequestID, porter.QWorking, "Query taken from rabbit by core replica.")
 
 			reqs <- qr
-			log.Printf("log req for project %s added to local queue", projectID)
+			data.Log.Info("log req for project %s added to local queue", zap.String("project", projectID))
 		}
 	}()
 

@@ -1,7 +1,8 @@
 package logserver
 
 import (
-	log "github.com/sirupsen/logrus"
+	"log"
+
 	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/loginput"

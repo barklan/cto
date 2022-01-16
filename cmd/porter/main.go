@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -14,7 +15,7 @@ import (
 	postgres "github.com/barklan/cto/pkg/postgres"
 	"github.com/barklan/cto/pkg/storage"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 )
 
 func handleSysSignals(base *porter.Base, sylon *bot.Sylon) {
@@ -37,7 +38,7 @@ func handleSysSignals(base *porter.Base, sylon *bot.Sylon) {
 		sigID = "UNKNOWN"
 	}
 	sylon.B.Close()
-	log.WithField("signal", sigID).Fatal("exiting now")
+	base.Log.Fatal("exiting now", zap.String("signal", sigID))
 }
 
 // TODO handle closing database gracefully
@@ -82,23 +83,6 @@ func main() {
 	go porter.Publisher(base, queries)
 
 	wg := new(sync.WaitGroup)
-
-	// TODO should be on demand
-	tokenRotationTicker := time.NewTicker(4 * time.Hour)
-	go func() {
-		defer log.Panicln("Token rotation goroutine exited.")
-		for {
-			projects := make([]string, 0)
-			if err := rdb.Select(&projects, "select id from project"); err != nil {
-				log.Panicln("failed to get projects from db to rotate jwt")
-			}
-
-			for _, projectName := range projects {
-				porter.RotateJWT(base, "guest", projectName)
-			}
-			<-tokenRotationTicker.C
-		}
-	}()
 
 	wg.Add(1)
 	go func() {

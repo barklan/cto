@@ -1,10 +1,9 @@
 package storage
 
 import (
+	"log"
 	"os"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/dgraph-io/badger/v3"
 )
@@ -18,7 +17,7 @@ func OpenDB(customPath string, dbPath string) *badger.DB {
 	} else {
 		badgerPath = "/app/data" + dbPath
 	}
-	log.WithField("badgerPath", badgerPath).Info("setting badger path")
+	log.Printf("setting badger path %q", badgerPath)
 	badgerOptions := badger.DefaultOptions(badgerPath)
 	// badgerOptions.SyncWrites = true
 	db, err := badger.Open(badgerOptions)

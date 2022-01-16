@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
@@ -33,7 +33,7 @@ func similarErrorExists(
 		}
 	}
 
-	log.Info("max similarity with previous error:", maxSimilarity)
+	data.Log.Info("max similarity with previous error", zap.Float64("maxSimilarity", maxSimilarity))
 
 	if maxSimilarity > data.Config.Internal.Log.SimilarityThreshold {
 		sessData.KnownErrors[maxSimilarityIndex].Counter++
@@ -70,13 +70,13 @@ func handleErrorRecord(
 		LastSeen:        time.Now(),
 	}
 	sessData.KnownErrors = append(sessData.KnownErrors, newError)
-	log.WithField("project", projectName).Info("added new issue")
+	data.Log.Info("added new issue", zap.String("project", projectName))
 	sessData.KnownErrorsMutex.Unlock()
 
 	raw := data.GetLog(badgerKey)
 	if err := data.Cache.Set(badgerKey, raw, 336*time.Hour); err != nil {
 		warn := "failed to set new error in cache"
-		log.WithField("badgerKey", badgerKey).Warn(warn)
+		data.Log.Warn(warn, zap.String("badgerKey", badgerKey))
 		data.InternalAlert(warn)
 	}
 

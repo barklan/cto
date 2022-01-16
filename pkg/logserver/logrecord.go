@@ -2,12 +2,11 @@ package logserver
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
 	"strings"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/logserver/querying"
 	"github.com/barklan/cto/pkg/storage"

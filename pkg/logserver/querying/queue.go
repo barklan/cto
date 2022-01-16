@@ -2,10 +2,9 @@ package querying
 
 import (
 	"container/list"
+	"log"
 	"sync"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 
 	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/storage"

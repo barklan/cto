@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"testing"
 	"time"
@@ -13,7 +14,6 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
-	log "github.com/sirupsen/logrus"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
@@ -50,7 +50,7 @@ func PrepareTestDB() (*sql.DB, *dockertest.Pool, *dockertest.Resource) {
 	databaseUrl := fmt.Sprintf("postgres://postgres:postgres@%s/app?sslmode=disable",
 		hostAndPort)
 
-	log.WithField("uri", databaseUrl).Info("connecting to database")
+	log.Printf("connecting to database on %q\n", databaseUrl)
 
 	resource.Expire(60) // Tell docker to hard kill the container in 120 seconds
 

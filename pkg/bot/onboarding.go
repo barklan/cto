@@ -2,12 +2,13 @@ package bot
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/postgres/models"
 	"github.com/gofrs/uuid"
@@ -32,7 +33,7 @@ func (s *Sylon) newProject(from *tb.Chat, client *models.Client) {
 	}
 	u4 := uid4.String()
 
-	log.Info("opening tx to create new project")
+	s.Log.Info("opening tx to create new project", zap.String("projectTitle", prettyTitle))
 	tx, err := s.R.Begin()
 	if err != nil {
 		s.logAndReport(from, "failed to create db transaction.", err)
@@ -140,10 +141,9 @@ func (s *Sylon) registerOnboardingHandlers() {
 		var existringEmail string
 		err = s.R.Get(&existringEmail, "select email from client where tg_nick = $1", m.Sender.Username)
 		if err != nil {
-			log.WithError(err).Error("Failed to verify if tg nick already exists.")
+			s.Log.Error("failed to verify if tg nick already exists", zap.Error(err))
 		}
 		if existringEmail != "" && existringEmail != string(email) {
-			log.WithField("existringEmail", existringEmail).Info("Already registered for other email.")
 			s.JustSend(
 				m.Chat,
 				fmt.Sprintf(
