@@ -76,6 +76,12 @@ func closeOrLeaveSession(
 		}
 	}
 	data.SetVar(projectName, vars.KnownErrors, sessData.KnownErrors, 48*time.Hour)
+	knownErrorsJson, err := json.Marshal(sessData.KnownErrors)
+	if err != nil {
+		data.Log.Error("failed to marshal knownErrors", zap.String("project", projectName))
+	} else if err := data.Cache.SetVar(projectName, vars.KnownErrors, knownErrorsJson, 48*time.Hour); err != nil {
+		data.Log.Error("failed to set knownErrors to cache", zap.String("project", projectName), zap.Error(err))
+	}
 	sessData.KnownErrorsMutex.Unlock()
 
 	if *sessDataMap[projectName].Using == uint64(1) {

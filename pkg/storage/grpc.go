@@ -51,6 +51,7 @@ func (d *Data) ProjectAlert(project, message string) {
 }
 
 func (d *Data) InternalAlert(message string) {
+	d.Log.Warn("internal alert", zap.String("msg", message))
 	conn, err := d.dial()
 	if err != nil {
 		log.Printf("did not connect: %v", err)

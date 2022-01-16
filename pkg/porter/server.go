@@ -54,8 +54,13 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 			})
 		})
 		r.Route("/me/project", func(r chi.Router) {
+			r.Use(render.SetContentType(render.ContentTypeJSON))
 			r.Get("/", ctrl.getMyProjects)
 			r.Get("/new", ctrl.newProjectRedirect)
+			r.Get("/{p}/status", func(w http.ResponseWriter, r *http.Request) {
+				projectID := chi.URLParam(r, "p")
+				ctrl.projectStatus(w, r, projectID)
+			})
 		})
 	})
 
