@@ -10,6 +10,7 @@ import (
 
 	"github.com/barklan/cto/pkg/logserver/querying"
 	"github.com/barklan/cto/pkg/storage"
+	"go.uber.org/zap"
 )
 
 const (
@@ -29,7 +30,12 @@ type LogMetadata struct {
 	Flag      string
 }
 
-func constructMetadata(record RawLogRecord) *LogMetadata {
+func serviceFromContainer(container string) string {
+	service := strings.SplitN(container, ".", 2)[0]
+	return service[1:]
+}
+
+func constructMetadata(record RawLogRecord) (*LogMetadata, error) {
 	logMetadata := LogMetadata{}
 
 	key := "fluentd_hostname"
@@ -37,17 +43,19 @@ func constructMetadata(record RawLogRecord) *LogMetadata {
 		if v, okType := val.(string); okType {
 			logMetadata.Hostname = v
 		}
-	} else {
-		log.Printf("Record missing required field: %v", key)
+	}
+	if logMetadata.Hostname == "" {
+		logMetadata.Hostname = "undefined"
 	}
 
-	key = "service_name"
+	key = "container_name"
 	if val, ok := record[key]; ok {
 		if v, okType := val.(string); okType {
-			logMetadata.Service = v
+			logMetadata.Service = serviceFromContainer(v)
 		}
-	} else {
-		log.Printf("Record missing required field: %v", key)
+	}
+	if logMetadata.Service == "" {
+		logMetadata.Service = "undefined"
 	}
 
 	key = "fluentd_time"
@@ -55,11 +63,12 @@ func constructMetadata(record RawLogRecord) *LogMetadata {
 		if v, okType := val.(string); okType {
 			logMetadata.Timestamp = v
 		}
-	} else {
-		log.Printf("Record missing required field: %v", key)
+	}
+	if logMetadata.Timestamp == "" {
+		// FIXME reasonable defaults here and ingest msg
 	}
 
-	return &logMetadata
+	return &logMetadata, nil
 }
 
 func processLogRecord(
@@ -69,7 +78,12 @@ func processLogRecord(
 	sessDataMap map[string]*SessionData,
 	reportChan chan LogRecordReport,
 ) {
-	logData := constructMetadata(record)
+	logData, err := constructMetadata(record)
+	if err != nil {
+		data.Log.Error("failed to construct metadata", zap.String("project", projectName), zap.Error(err))
+		log.Printf("%s\n", record)
+		return
+	}
 
 	knownEnvs := querying.GetKnownEnvs(data, projectName)
 	if _, ok := knownEnvs[logData.Hostname]; !ok {

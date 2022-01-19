@@ -55,7 +55,7 @@ services:
       - host.docker.internal:host-gateway
     environment:
       FLUENTD_HTTP_DUMP_ENDPOINT: 'http://host.docker.internal:8900/api/loginput/fluentd'
-      FLUENTD_HOSTNAME: 'stag.nftgallerydev.online'
+      FLUENTD_HOSTNAME: 'testenv'
       FLUENTD_CTO_PROJECT_TOKEN: '12345'
       FLUENTD_CTO_PROJECT_NAME: '0b6badb2-edbe-458c-a6af-df49e393e5fc'
     ports:
@@ -83,7 +83,7 @@ services:
       driver: fluentd
       options:
         fluentd-address: localhost:24224
-        tag: docker.efk.flooder-logger
+        # tag: docker.efk.flooder-logger
         # fluentd-async-connect: "true"
 
   pgweb:
