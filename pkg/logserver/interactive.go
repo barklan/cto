@@ -52,12 +52,12 @@ func handleErrorRecord(
 	sessData *SessionData,
 	projectName string,
 ) {
-	sessData.KnownErrorsMutex.Lock()
+	sessData.Mutex.Lock()
 
 	recordStr := fmt.Sprint(record)
 
 	if similarErrorExists(data, logData, sessData, recordStr) {
-		sessData.KnownErrorsMutex.Unlock()
+		sessData.Mutex.Unlock()
 		return
 	}
 
@@ -71,7 +71,7 @@ func handleErrorRecord(
 	}
 	sessData.KnownErrors = append(sessData.KnownErrors, newError)
 	data.Log.Info("added new issue", zap.String("project", projectName))
-	sessData.KnownErrorsMutex.Unlock()
+	sessData.Mutex.Unlock()
 
 	raw := data.GetLog(badgerKey)
 	if err := data.Cache.Set(badgerKey, raw, 336*time.Hour); err != nil {

@@ -11,6 +11,7 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/barklan/cto/pkg/core/namespaces"
 	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/storage"
 )
@@ -97,7 +98,7 @@ func TimeQueryBeaconToSeek(timeQuery string) string {
 		return "24:00:00"
 	}
 	padWithLeadingZero := true
-	if string(timeQuery[len(timeQuery)-1]) == ":" {
+	if timeQuery[len(timeQuery)-1] == ':' {
 		timeQuery = timeQuery[:len(timeQuery)-1]
 	} else if string(timeQuery[len(timeQuery)-2]) == ":" {
 		padWithLeadingZero = false
@@ -124,7 +125,7 @@ func GetFullEnv(data *storage.Data, project, envQ string) (string, bool) {
 	numberOfMatches := 0
 	var lastMatch string
 
-	knownEnvs := GetKnownEnvs(data, project)
+	knownEnvs := namespaces.GetKnownEnvs(data, project)
 	for k := range knownEnvs {
 		if strings.Contains(k, envQ) {
 			numberOfMatches++
@@ -145,7 +146,7 @@ func GetFullService(
 	numberOfMatches := 0
 	var lastMatch string
 
-	knownServices := GetKnownServices(data, project, environment)
+	knownServices := namespaces.GetKnownServices(data, project, environment)
 	for k := range knownServices {
 		if strings.Contains(k, serviceQ) {
 			numberOfMatches++

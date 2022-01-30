@@ -36,12 +36,12 @@ func openOrEnterSession(
 	data *storage.Data,
 	sessDataMap map[string]*SessionData,
 	projectName string,
-) {
+) *SessionData {
 	if v, ok := sessDataMap[projectName]; ok {
 		atomic.AddUint64(v.Using, 1)
 		data.Log.Info("project entered session", zap.String("project", projectName))
 	} else {
-		knownErrorsMutex := new(sync.Mutex)
+		Mutex := new(sync.Mutex)
 		knownErrors := make([]types.KnownError, 0)
 		knownErrorsRaw := data.GetVar(projectName, vars.KnownErrors)
 		if string(knownErrorsRaw) != "" {
@@ -52,12 +52,13 @@ func openOrEnterSession(
 		}
 		var using uint64 = 1
 		sessDataMap[projectName] = &SessionData{
-			KnownErrorsMutex: knownErrorsMutex,
-			KnownErrors:      knownErrors,
-			Using:            &using,
+			Mutex:       Mutex,
+			KnownErrors: knownErrors,
+			Using:       &using,
 		}
 		data.Log.Info("project opened session", zap.String("project", projectName))
 	}
+	return sessDataMap[projectName]
 }
 
 func closeOrLeaveSession(
@@ -65,9 +66,13 @@ func closeOrLeaveSession(
 	sessDataMap map[string]*SessionData,
 	projectName string,
 ) {
-	sessData := sessDataMap[projectName]
+	sessData, ok := sessDataMap[projectName]
+	if !ok {
+		data.Log.Warn("project session not found when trying to close", zap.String("pid", projectName))
+		return
+	}
 
-	sessData.KnownErrorsMutex.Lock()
+	sessData.Mutex.Lock()
 	for i, knownError := range sessData.KnownErrors {
 		if knownError.LastSeen.Before(time.Now().Add(time.Duration(-12) * time.Hour)) {
 			sessData.KnownErrors = remove(sessData.KnownErrors, i)
@@ -82,8 +87,9 @@ func closeOrLeaveSession(
 	} else if err := data.Cache.SetVar(projectName, vars.KnownErrors, knownErrorsJson, 48*time.Hour); err != nil {
 		data.Log.Error("failed to set knownErrors to cache", zap.String("project", projectName), zap.Error(err))
 	}
-	sessData.KnownErrorsMutex.Unlock()
+	sessData.Mutex.Unlock()
 
+	// FIXME nil pointer deref here
 	if *sessDataMap[projectName].Using == uint64(1) {
 		delete(sessDataMap, projectName)
 		data.Log.Info("project closed session", zap.String("project", projectName))

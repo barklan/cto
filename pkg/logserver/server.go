@@ -21,9 +21,9 @@ type LogRecordReport struct {
 }
 
 type SessionData struct {
-	Using            *uint64
-	KnownErrorsMutex *sync.Mutex
-	KnownErrors      []types.KnownError
+	Using       *uint64
+	Mutex       *sync.Mutex
+	KnownErrors []types.KnownError
 }
 
 func logOneRequest(
@@ -47,14 +47,14 @@ func logOneRequest(
 			return
 		}
 
-		openOrEnterSession(data, sessDataMap, projectName)
+		sessData := openOrEnterSession(data, sessDataMap, projectName)
 
 		var wg sync.WaitGroup
 		wg.Add(len(multiLog))
 		for _, pick := range multiLog {
 			go func(record RawLogRecord) {
 				defer wg.Done()
-				processLogRecord(data, projectName, record, sessDataMap, reportChan)
+				processLogRecord(data, projectName, record, sessData, reportChan)
 			}(pick)
 		}
 		wg.Wait()

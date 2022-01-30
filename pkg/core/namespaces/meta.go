@@ -1,4 +1,4 @@
-package querying
+package namespaces
 
 import (
 	"encoding/json"
@@ -18,6 +18,7 @@ func GetKnownServices(data *storage.Data, project, env string) Set {
 	if string(knownServicesRaw) == "" {
 		return knownServices
 	}
+
 	err := json.Unmarshal(knownServicesRaw, &knownServices)
 	if err != nil {
 		data.InternalAlert(fmt.Sprintf("Failed to unmarshal knownServices for %s.", env))
