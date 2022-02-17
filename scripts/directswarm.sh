@@ -16,11 +16,11 @@ docker login -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}" "${DOCKER_REGIS
 docker-compose build #--parallel
 docker-compose push
 
-docker-compose -f docker-compose.yml config > docker-stack.yml
+(echo -e "version: '3.9'\n";  docker compose -f docker-compose.yml config) > docker-stack.yml
 
 ssh -tt -o StrictHostKeyChecking=no "${SSH_SERVER_NAME}" "mkdir -p ${PROJECT_PATH}/environment"
 
-scp docker-stack.yml "${SSH_SERVER_NAME}:${PROJECT_PATH}/"
+scp docker-stack.yml .env "${SSH_SERVER_NAME}:${PROJECT_PATH}/"
 scp -r environment "${SSH_SERVER_NAME}:${PROJECT_PATH}"
 
 ssh -tt -o StrictHostKeyChecking=no "${SSH_SERVER_NAME}" \
