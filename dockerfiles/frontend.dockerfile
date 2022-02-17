@@ -1,6 +1,9 @@
 # syntax=docker/dockerfile:1.3
 ARG DOCKER_IMAGE_PREFIX=
 FROM ${DOCKER_IMAGE_PREFIX}node:17.3.0-alpine as build-stage
+
+ARG BUILDKIT_INLINE_CACHE=1
+
 WORKDIR /app
 RUN npm install -g pnpm
 COPY package*.json pnpm-lock.yaml ./
