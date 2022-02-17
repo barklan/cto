@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.3
 ARG DOCKER_IMAGE_PREFIX=
 FROM ${DOCKER_IMAGE_PREFIX}node:17.3.0-alpine as build-stage
 WORKDIR /app
