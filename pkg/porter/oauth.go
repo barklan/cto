@@ -43,9 +43,9 @@ func singleAuth(base *Base, email string) string {
 	client := models.Client{}
 	err := base.R.Get(&client, "select * from client where email = $1", email)
 	if err != nil {
-		uid4, err := uuid.NewV4()
-		if err != nil {
-			log.Panicln("failed to generate uuid for new client", err)
+		uid4, e := uuid.NewV4()
+		if e != nil {
+			log.Panicln("failed to generate uuid for new client", e)
 		}
 		u4 := uid4.String()
 		client.ID = u4
@@ -64,7 +64,7 @@ func singleAuth(base *Base, email string) string {
 	return jwt
 }
 
-func handleOAuthLogin(base *Base, config *oauth2.Config, w http.ResponseWriter, r *http.Request) {
+func handleOAuthLogin(config *oauth2.Config, w http.ResponseWriter, r *http.Request) {
 	url := config.AuthCodeURL(oauthStateString)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }

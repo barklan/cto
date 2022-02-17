@@ -90,7 +90,6 @@ func checkProject(
 
 func serveLogRange(
 	base *Base,
-	s *bot.Sylon,
 	queries chan<- QueryRequestWrap,
 	w http.ResponseWriter,
 	r *http.Request,

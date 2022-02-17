@@ -39,7 +39,7 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 				serveLogExact(base, s, w, r)
 			})
 			r.Get("/range", func(w http.ResponseWriter, r *http.Request) {
-				serveLogRange(base, s, queries, w, r)
+				serveLogRange(base, queries, w, r)
 			})
 			r.Get("/poll", func(w http.ResponseWriter, r *http.Request) {
 				pollLogRange(base, w, r)
@@ -47,7 +47,7 @@ func Serve(base *Base, s *bot.Sylon, queries chan<- QueryRequestWrap) {
 		})
 		r.Route("/signin", func(r chi.Router) {
 			r.Get("/login", func(w http.ResponseWriter, r *http.Request) {
-				handleOAuthLogin(base, oauthConf, w, r)
+				handleOAuthLogin(oauthConf, w, r)
 			})
 			r.Get("/callback", func(w http.ResponseWriter, r *http.Request) {
 				handleOAuthCallback(base, oauthConf, w, r)

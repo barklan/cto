@@ -42,7 +42,7 @@ func openOrEnterSession(
 		data.Log.Info("project entered session", zap.String("project", projectName))
 	} else {
 		Mutex := new(sync.Mutex)
-		knownErrors := make([]types.KnownError, 0)
+		knownErrors := make(map[string]types.KnownError)
 		knownErrorsRaw := data.GetVar(projectName, vars.KnownErrors)
 		if string(knownErrorsRaw) != "" {
 			data.Log.Info("known issues found", zap.String("project", projectName))
@@ -75,17 +75,18 @@ func closeOrLeaveSession(
 	sessData.Mutex.Lock()
 	for i, knownError := range sessData.KnownErrors {
 		if knownError.LastSeen.Before(time.Now().Add(time.Duration(-12) * time.Hour)) {
-			sessData.KnownErrors = remove(sessData.KnownErrors, i)
+			delete(sessData.KnownErrors, i)
 			data.Log.Info("deteted old error", zap.String("key", knownError.OriginBadgerKey))
 			break
 		}
 	}
-	data.SetVar(projectName, vars.KnownErrors, sessData.KnownErrors, 48*time.Hour)
+	data.SetVar(projectName, vars.KnownErrors, sessData.KnownErrors, 24*time.Hour)
 	knownErrorsJson, err := json.Marshal(sessData.KnownErrors)
 	if err != nil {
 		data.Log.Error("failed to marshal knownErrors", zap.String("project", projectName))
-	} else if err := data.Cache.SetVar(projectName, vars.KnownErrors, knownErrorsJson, 48*time.Hour); err != nil {
-		data.Log.Error("failed to set knownErrors to cache", zap.String("project", projectName), zap.Error(err))
+		if e := data.Cache.SetVar(projectName, vars.KnownErrors, knownErrorsJson, 48*time.Hour); e != nil {
+			data.Log.Error("failed to set knownErrors to cache", zap.String("project", projectName), zap.Error(e))
+		}
 	}
 	sessData.Mutex.Unlock()
 

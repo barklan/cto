@@ -242,19 +242,3 @@ func filterKeys(
 	}
 	return keys
 }
-
-func simpleQuery(data *storage.Data, keys [][]byte) []byte {
-	values := make([]byte, 0)
-	newline := []byte(",")
-
-	values = append(values, []byte("[")...)
-	for i, key := range keys {
-		value := data.GetLogRaw(key)
-		values = append(values, value...)
-		if i != len(keys)-1 {
-			values = append(values, newline...)
-		}
-	}
-	values = append(values, []byte("]")...)
-	return values
-}

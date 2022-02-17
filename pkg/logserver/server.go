@@ -23,7 +23,7 @@ type LogRecordReport struct {
 type SessionData struct {
 	Using       *uint64
 	Mutex       *sync.Mutex
-	KnownErrors []types.KnownError
+	KnownErrors map[string]types.KnownError
 }
 
 func logOneRequest(
@@ -61,11 +61,6 @@ func logOneRequest(
 
 		closeOrLeaveSession(data, sessDataMap, projectName)
 	}(body)
-}
-
-func remove(s []types.KnownError, i int) []types.KnownError {
-	s[i] = s[len(s)-1]
-	return s[:len(s)-1]
 }
 
 func processLogInputs(

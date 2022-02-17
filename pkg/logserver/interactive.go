@@ -10,6 +10,7 @@ import (
 	"github.com/adrg/strutil/metrics"
 	"github.com/barklan/cto/pkg/logserver/types"
 	"github.com/barklan/cto/pkg/storage"
+	"github.com/gofrs/uuid"
 )
 
 func similarErrorExists(
@@ -19,7 +20,7 @@ func similarErrorExists(
 	recordStr string,
 ) bool {
 	var maxSimilarity float64
-	var maxSimilarityIndex int
+	var maxSimilarityIndex string
 	for i, knownErr := range sessData.KnownErrors {
 		if knownErr.Hostname != logData.Hostname || knownErr.Service != logData.Service {
 			continue
@@ -36,8 +37,13 @@ func similarErrorExists(
 	data.Log.Info("max similarity with previous error", zap.Float64("maxSimilarity", maxSimilarity))
 
 	if maxSimilarity > data.Config.Internal.Log.SimilarityThreshold {
-		sessData.KnownErrors[maxSimilarityIndex].Counter++
-		sessData.KnownErrors[maxSimilarityIndex].LastSeen = time.Now()
+		if kErr, ok := sessData.KnownErrors[maxSimilarityIndex]; ok {
+			kErr.Counter++
+			kErr.LastSeen = time.Now()
+		} else {
+			data.Log.Warn("expected to find knownError by key but none found", zap.String("key", maxSimilarityIndex))
+		}
+
 		return true
 	}
 
@@ -69,7 +75,13 @@ func handleErrorRecord(
 		Counter:         1,
 		LastSeen:        time.Now(),
 	}
-	sessData.KnownErrors = append(sessData.KnownErrors, newError)
+	uid4, err := uuid.NewV4()
+	if err != nil {
+		data.Log.Error("failed to generate uuid for new error", zap.Error(err))
+		return
+	}
+	u4 := uid4.String()
+	sessData.KnownErrors[u4] = newError
 	data.Log.Info("added new issue", zap.String("project", projectName))
 	sessData.Mutex.Unlock()
 

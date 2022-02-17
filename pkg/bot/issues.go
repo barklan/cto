@@ -59,5 +59,5 @@ func (s *Sylon) NotifyAboutError(
 		extraTimeStr,
 	)
 
-	s.PSend(projectID, message, tb.ModeMarkdown, selector)
+	s.PSend(projectID, message, selector)
 }
