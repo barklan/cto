@@ -1,19 +1,52 @@
 version: "3.7"
 services:
-  fluentd:
-    # `bash run.sh registry:refresh` to build and push internal fluentd
-    image: barklan/fluentd-cto:2.2.1
-    env_file: ./.env
-    ports:
-      - 24224:24224
-      - 24224:24224/udp
-    user: root
+  # fluentd:
+  #   # `bash run.sh registry:refresh` to build and push internal fluentd
+  #   image: barklan/fluentd-cto:2.2.1
+  #   env_file: ./.env
+  #   ports:
+  #     - 24224:24224
+  #     - 24224:24224/udp
+  #   user: root
+  #   networks:
+  #     - traefik-public
+  #   deploy:
+  #     mode: global
+  #     restart_policy:
+  #       condition: on-failure
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.39.3
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - "/dev/kmsg"
     networks:
       - traefik-public
     deploy:
-      mode: global
-      restart_policy:
-        condition: on-failure
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=traefik-public
+        - traefik.constraint-label=traefik-public
+        - traefik.http.routers.cadvisor-http.rule=Host(`cadvisor.${DOMAIN?Variable not
+          set}`)
+        - traefik.http.routers.cadvisor-http.entrypoints=http
+        - traefik.http.routers.cadvisor-http.middlewares=https-redirect
+        - traefik.http.routers.cadvisor-https.rule=Host(`cadvisor.${DOMAIN?Variable
+          not set}`)
+        - traefik.http.routers.cadvisor-https.entrypoints=https
+        - traefik.http.routers.cadvisor-https.tls=true
+        - traefik.http.routers.cadvisor-https.tls.certresolver=le
+        - traefik.http.services.cadvisor.loadbalancer.server.port=8080
+        # Auth
+        - traefik.http.routers.cadvisor-http.middlewares=adminauth
+        - traefik.http.routers.cadvisor-https.middlewares=adminauth
+
 
   pgweb:
     image: 'sosedoff/pgweb'
