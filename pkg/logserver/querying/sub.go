@@ -27,10 +27,10 @@ func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
 		// That means that projectID var not set in any core, but project exists in pg.
 		for d := range msgs {
 			projectID := d.Headers["projectID"].(string)
-			if !data.VarExists(projectID, "") {
-				data.Log.Warn("rejecting log req", zap.String("project", projectID))
-				// TODO add `continue` here after you made sure you have that flag
-			}
+			// if !data.VarExists(projectID, "") {
+			// 	data.Log.Warn("rejecting log req", zap.String("project", projectID))
+			// TODO add `continue` here after you made sure you have that flag
+			// }
 
 			qr := porter.QueryRequest{}
 			if err := json.Unmarshal(d.Body, &qr); err != nil {

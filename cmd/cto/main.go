@@ -59,7 +59,7 @@ func main() {
 	lg.Info("starting")
 
 	// https://dgraph.io/docs/badger/faq/#are-there-any-go-specific-settings-that-i-should-use
-	runtime.GOMAXPROCS(128)
+	runtime.GOMAXPROCS(32)
 
 	data := &storage.Data{}
 	data.Log = lg

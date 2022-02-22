@@ -1,7 +1,6 @@
 package logserver
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
 	"strconv"
@@ -85,23 +84,36 @@ func processLogRecord(
 		return
 	}
 
-	sessData.Mutex.Lock()
-	knownEnvs := namespaces.GetKnownEnvs(data, pid)
-	if _, ok := knownEnvs[logData.Hostname]; !ok {
-		knownEnvs[logData.Hostname] = struct{}{}
-		namespaces.SetKnownEnvs(data, pid, knownEnvs)
-	}
-	// This is for querying purposes.
-	// TODO it is heavy to do it on every log record - should decide randomly instead.
-	knownServices := namespaces.GetKnownServices(data, pid, logData.Hostname)
-	if _, ok := knownServices[logData.Service]; !ok {
-		knownServices[logData.Service] = struct{}{}
-		namespaces.SetKnownServices(data, pid, logData.Hostname, knownServices)
-	}
-	sessData.Mutex.Unlock()
+	// FIXME hardcoded, but still better to have some small number than nothing
+	if rand.Intn(20) == 0 {
+		sessData.Mutex.Lock()
 
-	flag := assignFlag(fmt.Sprint(record))
-	logData.Flag = flag
+		sinceLast := namespaces.GetLastRefresh(data, pid)
+		// FIXME maybe need more than that
+		if sinceLast > 6*time.Hour {
+			namespaces.Clear(data, pid)
+			namespaces.SetLastRefresh(data, pid)
+		}
+
+		knownEnvs := namespaces.GetKnownEnvs(data, pid)
+		if _, ok := knownEnvs[logData.Hostname]; !ok {
+			knownEnvs[logData.Hostname] = struct{}{}
+			namespaces.SetKnownEnvs(data, pid, knownEnvs)
+		}
+		// This is for querying purposes.
+		// TODO it is heavy to do it on every log record - should decide randomly instead.
+		knownServices := namespaces.GetKnownServices(data, pid, logData.Hostname)
+		if _, ok := knownServices[logData.Service]; !ok {
+			knownServices[logData.Service] = struct{}{}
+			namespaces.SetKnownServices(data, pid, logData.Hostname, knownServices)
+		}
+		sessData.Mutex.Unlock()
+	}
+
+	// flag := assignFlag(fmt.Sprint(record))
+	// logData.Flag = flag
+	// FIXME no error reporting for now
+	logData.Flag = flagNone
 
 	// Save log record
 	badgerKey, _ := constructBadgerKey(logData, pid)

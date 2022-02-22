@@ -32,9 +32,11 @@ func SetKnownServices(data *storage.Data, project, env string, knownServices Set
 	raw, err := json.Marshal(knownServices)
 	if err != nil {
 		data.Log.Error("failed to marshal knownServices", zap.Error(err))
+		return
 	}
 	if err := data.Cache.SetVar(project, env+vars.KnownServices, raw, 120*time.Hour); err != nil {
 		data.Log.Error("error caching knownServices", zap.String("project", project), zap.Error(err))
+		return
 	}
 }
 
@@ -57,8 +59,32 @@ func SetKnownEnvs(data *storage.Data, project string, knownEnvs Set) {
 	raw, err := json.Marshal(knownEnvs)
 	if err != nil {
 		data.Log.Error("failed to marshal knownEnvs", zap.Error(err))
+		return
 	}
 	if err := data.Cache.SetVar(project, vars.KnownEnvs, raw, 120*time.Hour); err != nil {
 		data.Log.Error("error caching knownEnvs", zap.String("project", project), zap.Error(err))
+		return
 	}
+}
+
+func SetLastRefresh(data *storage.Data, project string) {
+	data.SetVar(project, vars.MetaLastRefesh, time.Now(), 48*time.Hour)
+}
+
+func GetLastRefresh(data *storage.Data, project string) time.Duration {
+	b := data.GetVar(project, vars.MetaLastRefesh)
+	var last time.Time
+	if err := json.Unmarshal(b, &last); err != nil {
+		data.Log.Error("failed to unmarshal last meta time", zap.Error(err))
+		return 24 * time.Hour
+	}
+	return time.Since(last)
+}
+
+func Clear(data *storage.Data, project string) {
+	envs := GetKnownEnvs(data, project)
+	for k := range envs {
+		SetKnownServices(data, project, k, Set{})
+	}
+	SetKnownEnvs(data, project, Set{})
 }

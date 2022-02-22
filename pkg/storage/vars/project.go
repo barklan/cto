@@ -5,6 +5,7 @@ var (
 	KnownErrors       = "KnownErrors"
 	KnownEnvs         = "knownEnvs"
 	KnownServices     = ".knownServices"
+	MetaLastRefesh    = "MetaLastRefesh"
 	PeriodicLogReport = "PeriodicLogReport"
 	// Cache
 	AuthToken       = "AuthToken"

@@ -33,34 +33,32 @@ func logOneRequest(
 	sessDataMap map[string]*SessionData,
 	reportChan chan LogRecordReport,
 ) {
-	go func([]byte) {
-		multiLog := make([]RawLogRecord, 1)
-		err := json.Unmarshal(body, &multiLog)
-		if err != nil {
-			data.Log.Warn("failed to unmarshal log request", zap.String("project", projectName))
-		}
+	multiLog := make([]RawLogRecord, 1)
+	err := json.Unmarshal(body, &multiLog)
+	if err != nil {
+		data.Log.Warn("failed to unmarshal log request", zap.String("project", projectName))
+	}
 
-		recordsRecieved := len(multiLog)
-		data.Log.Info("unmarshaled log dump", zap.String("project", projectName), zap.Int("records", recordsRecieved))
-		if recordsRecieved == 0 {
-			data.Log.Warn("no records to unmarshal", zap.String("project", projectName))
-			return
-		}
+	recordsRecieved := len(multiLog)
+	data.Log.Info("unmarshaled log dump", zap.String("project", projectName), zap.Int("records", recordsRecieved))
+	if recordsRecieved == 0 {
+		data.Log.Warn("no records to unmarshal", zap.String("project", projectName))
+		return
+	}
 
-		sessData := openOrEnterSession(data, sessDataMap, projectName)
+	sessData := openOrEnterSession(data, sessDataMap, projectName)
 
-		var wg sync.WaitGroup
-		wg.Add(len(multiLog))
-		for _, pick := range multiLog {
-			go func(record RawLogRecord) {
-				defer wg.Done()
-				processLogRecord(data, projectName, record, sessData, reportChan)
-			}(pick)
-		}
-		wg.Wait()
+	var wg sync.WaitGroup
+	wg.Add(len(multiLog))
+	for _, pick := range multiLog {
+		go func(record RawLogRecord) {
+			defer wg.Done()
+			processLogRecord(data, projectName, record, sessData, reportChan)
+		}(pick)
+	}
+	wg.Wait()
 
-		closeOrLeaveSession(data, sessDataMap, projectName)
-	}(body)
+	closeOrLeaveSession(data, sessDataMap, projectName)
 }
 
 func processLogInputs(
@@ -71,7 +69,9 @@ func processLogInputs(
 ) {
 	defer data.Log.Panic("log input processing stopped")
 	for req := range reqs {
-		logOneRequest(req.ProjectID, req.Body, data, sessDataMap, reportChan)
+		bodyCopy := make([]byte, len(req.Body))
+		copy(bodyCopy, req.Body)
+		go logOneRequest(req.ProjectID, bodyCopy, data, sessDataMap, reportChan)
 	}
 }
 
