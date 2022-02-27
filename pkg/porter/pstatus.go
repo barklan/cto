@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/barklan/cto/pkg/storage/vars"
+	"github.com/barklan/cto/pkg/vars"
 	"go.uber.org/zap"
 )
 

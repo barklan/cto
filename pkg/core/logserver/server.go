@@ -9,11 +9,11 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/barklan/cto/pkg/core/logserver/querying"
+	"github.com/barklan/cto/pkg/core/logserver/types"
+	"github.com/barklan/cto/pkg/core/storage"
 	"github.com/barklan/cto/pkg/loginput"
-	"github.com/barklan/cto/pkg/logserver/querying"
-	"github.com/barklan/cto/pkg/logserver/types"
-	"github.com/barklan/cto/pkg/storage"
-	"github.com/barklan/cto/pkg/storage/vars"
+	"github.com/barklan/cto/pkg/vars"
 )
 
 type LogRecordReport struct {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/barklan/cto/pkg/security"
-	"github.com/barklan/cto/pkg/storage/vars"
+	"github.com/barklan/cto/pkg/vars"
 	tb "gopkg.in/tucnak/telebot.v2"
 )
 

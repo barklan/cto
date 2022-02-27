@@ -11,7 +11,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/barklan/cto/pkg/caching"
-	"github.com/barklan/cto/pkg/storage"
+	"github.com/barklan/cto/pkg/core/storage"
 	"github.com/jmoiron/sqlx"
 	tb "gopkg.in/tucnak/telebot.v2"
 )

@@ -3,8 +3,8 @@ package querying
 import (
 	"log"
 
+	"github.com/barklan/cto/pkg/core/storage"
 	"github.com/barklan/cto/pkg/porter"
-	"github.com/barklan/cto/pkg/storage"
 )
 
 type QueryJob struct {

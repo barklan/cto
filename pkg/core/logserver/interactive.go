@@ -8,8 +8,8 @@ import (
 
 	"github.com/adrg/strutil"
 	"github.com/adrg/strutil/metrics"
-	"github.com/barklan/cto/pkg/logserver/types"
-	"github.com/barklan/cto/pkg/storage"
+	"github.com/barklan/cto/pkg/core/logserver/types"
+	"github.com/barklan/cto/pkg/core/storage"
 	"github.com/gofrs/uuid"
 )
 

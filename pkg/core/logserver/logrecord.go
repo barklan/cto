@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/barklan/cto/pkg/core/namespaces"
-	"github.com/barklan/cto/pkg/storage"
+	"github.com/barklan/cto/pkg/core/storage"
 	"go.uber.org/zap"
 )
 

@@ -10,10 +10,10 @@ import (
 
 	"github.com/barklan/cto/pkg/bot"
 	"github.com/barklan/cto/pkg/caching"
+	"github.com/barklan/cto/pkg/core/storage"
 	"github.com/barklan/cto/pkg/logging"
 	porter "github.com/barklan/cto/pkg/porter"
 	postgres "github.com/barklan/cto/pkg/postgres"
-	"github.com/barklan/cto/pkg/storage"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )

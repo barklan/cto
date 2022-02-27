@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/barklan/cto/pkg/storage"
-	"github.com/barklan/cto/pkg/storage/vars"
+	"github.com/barklan/cto/pkg/core/storage"
+	"github.com/barklan/cto/pkg/vars"
 	"go.uber.org/zap"
 )
 

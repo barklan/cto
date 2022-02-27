@@ -1,16 +1,16 @@
-package logserver
+package querying
 
 import (
+	"encoding/json"
 	"log"
 
-	"go.uber.org/zap"
-
-	"github.com/barklan/cto/pkg/loginput"
+	"github.com/barklan/cto/pkg/core/storage"
+	"github.com/barklan/cto/pkg/porter"
 	"github.com/barklan/cto/pkg/rabbit"
-	"github.com/barklan/cto/pkg/storage"
+	"go.uber.org/zap"
 )
 
-func Subscriber(data *storage.Data, reqs chan<- loginput.LogRequest) {
+func Subscriber(data *storage.Data, reqs chan<- porter.QueryRequest) {
 	conn := rabbit.OpenMQ(data.Log)
 	defer conn.Close()
 
@@ -20,7 +20,7 @@ func Subscriber(data *storage.Data, reqs chan<- loginput.LogRequest) {
 	}
 	defer ch.Close()
 
-	msgs := rabbit.OpenSubAutoAck(ch, "logs")
+	msgs := rabbit.OpenSubAutoAck(ch, "queries")
 
 	go func() {
 		// TODO should detect a situation where all cores reject request.
@@ -31,15 +31,19 @@ func Subscriber(data *storage.Data, reqs chan<- loginput.LogRequest) {
 			// 	data.Log.Warn("rejecting log req", zap.String("project", projectID))
 			// TODO add `continue` here after you made sure you have that flag
 			// }
-			reqs <- loginput.LogRequest{
-				ProjectID: projectID,
-				Body:      d.Body,
+
+			qr := porter.QueryRequest{}
+			if err := json.Unmarshal(d.Body, &qr); err != nil {
+				log.Panicln("failed to unmarshal query request from mq")
 			}
-			data.Log.Info("log req for added to local queue", zap.String("project", projectID))
+
+			SetMsgInCache(data, qr.RequestID, porter.QWorking, "Query taken from rabbit by core replica.")
+
+			reqs <- qr
+			data.Log.Info("log req for project %s added to local queue", zap.String("project", projectID))
 		}
 	}()
 
 	data.Log.Info("sub is active")
-
 	<-make(chan struct{})
 }

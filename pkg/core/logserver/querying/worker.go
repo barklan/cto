@@ -11,8 +11,8 @@ import (
 
 	"go.uber.org/zap"
 
+	"github.com/barklan/cto/pkg/core/storage"
 	"github.com/barklan/cto/pkg/porter"
-	"github.com/barklan/cto/pkg/storage"
 	"github.com/dgraph-io/badger/v3"
 	"github.com/thedevsaddam/gojsonq/v2"
 )
