@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	_ "net/http/pprof"
+
 	"github.com/barklan/cto/pkg/caching"
 	"github.com/barklan/cto/pkg/core/logserver"
 	"github.com/barklan/cto/pkg/core/restcore"

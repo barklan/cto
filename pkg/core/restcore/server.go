@@ -22,7 +22,7 @@ func Serve(data *storage.Data) {
 	ctrl := restCore{Data: data}
 
 	r.Route("/api/core", func(r chi.Router) {
-		r.Route("/debug/{project}", func(r chi.Router) {
+		r.Route("/temp/{project}", func(r chi.Router) {
 			r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 				getKey(data, w, r)
 			})
@@ -33,6 +33,7 @@ func Serve(data *storage.Data) {
 		})
 
 		r.Delete("/multi", ctrl.deletePrefix)
+		r.Mount("/debug", middleware.Profiler())
 	})
 
 	log.Panic(http.ListenAndServe(":8888", r))

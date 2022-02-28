@@ -40,7 +40,7 @@ paths:
           description: "Not Authorized"
         "403":
           description: "Forbidden"
-  /core/debug/{projectID}:
+  /core/temp/{projectID}:
     get:
       tags: [core]
       summary: Debug service gets key directly from badger - may be removed in future.

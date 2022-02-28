@@ -85,7 +85,7 @@ func processLogRecord(
 	}
 
 	// FIXME hardcoded, but still better to have some small number than nothing
-	if rand.Intn(20) == 0 {
+	if rand.Intn(1) == 0 {
 		sessData.Mutex.Lock()
 
 		sinceLast := namespaces.GetLastRefresh(data, pid)

@@ -51,9 +51,11 @@ app.middleware("http")(catch_exceptions_middleware)
 @app.on_event("startup")
 def repeat_random_log():
     while True:
-        time.sleep(random.randint(10, 40))
-        log.info(fake.text())
-        log.error("This is the ERROR!")
+        # time.sleep(random.randint(1, 2))
+        time.sleep(0.5)
+        for i in range(5):
+            log.info(fake.text())
+            log.error("This is the ERROR!")
 
 
 @app.get("/info/{id}")

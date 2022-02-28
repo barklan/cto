@@ -48,9 +48,11 @@ func logOneRequest(
 
 	sessData := openOrEnterSession(data, sessDataMap, projectName)
 
+	subSet := GetSubset(multiLog, 20)
+
 	var wg sync.WaitGroup
-	wg.Add(len(multiLog))
-	for _, pick := range multiLog {
+	wg.Add(len(subSet))
+	for _, pick := range subSet {
 		go func(record RawLogRecord) {
 			defer wg.Done()
 			processLogRecord(data, projectName, record, sessData, reportChan)

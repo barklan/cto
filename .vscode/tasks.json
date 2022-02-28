@@ -13,6 +13,7 @@
 			"label": "r/up",
 			"type": "shell",
 			"command": "bash -i run.sh up",
+			"isBackground": true,
 		},
 		{
 			"label": "r/up:core",
