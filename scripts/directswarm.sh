@@ -16,7 +16,9 @@ docker login -u "${REGISTRY_USERNAME}" -p "${REGISTRY_PASSWORD}" "${DOCKER_REGIS
 docker-compose build #--parallel
 docker-compose push
 
-(echo -e "version: '3.9'\n";  docker compose -f docker-compose.yml config) > docker-stack.yml
+# note: docker compose v2 has problems
+# (echo -e "version: '3.9'\n";  docker compose -f docker-compose.yml config) > docker-stack.yml
+bash run.sh compose:config
 
 ssh -tt -o StrictHostKeyChecking=no "${SSH_SERVER_NAME}" "mkdir -p ${PROJECT_PATH}/environment"
 

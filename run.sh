@@ -156,6 +156,15 @@ log() {
     ssh -tt cto "docker service logs cto_$1 --since $2m"
 }
 
+compose:config() (
+    docker run --rm -it -v "$(pwd)":/data barklan/docker_and_compose:1.2.0 docker-compose -v
+    (echo -e "version: '3.9'\n"; \
+    docker run --rm -it -v "$(pwd)":/data -w /data \
+    -e DOCKER_IMAGE_PREFIX="${DOCKER_IMAGE_PREFIX}" \
+    -e PROJECT_PATH="${PROJECT_PATH}" \
+    barklan/docker_and_compose:1.2.0 docker-compose -f /data/docker-compose.yml config) > docker-stack.yml
+)
+
 # -----------------------------------------------------------------------------
 
 function help {
